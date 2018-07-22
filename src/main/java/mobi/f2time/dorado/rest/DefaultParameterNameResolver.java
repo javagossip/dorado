@@ -42,7 +42,6 @@ public class DefaultParameterNameResolver implements ParameterNameResolver {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
 		Annotation parameterAnnotation = null;
-
 		for (int i = 0; i < parameterNames.length; i++) {
 			if (parameterAnnotations[i].length == 0) {
 				continue;
