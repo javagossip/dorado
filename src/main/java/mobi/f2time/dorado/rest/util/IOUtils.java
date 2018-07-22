@@ -7,6 +7,7 @@
  */
 package mobi.f2time.dorado.rest.util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -133,5 +134,20 @@ public class IOUtils {
 			count += n;
 		}
 		return count;
+	}
+
+	public static byte[] readBytes(InputStream input) {
+		try {
+			ByteArrayOutputStream output = new ByteArrayOutputStream();
+			byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+			int n = 0;
+			while (-1 != (n = input.read(buffer))) {
+				output.write(buffer, 0, n);
+			}
+			return output.toByteArray();
+		} catch (Exception ex) {
+			// ignore this ex
+		}
+		return null;
 	}
 }

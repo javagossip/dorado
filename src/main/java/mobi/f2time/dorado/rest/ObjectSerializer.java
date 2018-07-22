@@ -15,6 +15,7 @@
  */
 package mobi.f2time.dorado.rest;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import com.alibaba.fastjson.JSONObject;
@@ -62,5 +63,21 @@ public interface ObjectSerializer {
 		}
 	};
 
-	ObjectSerializer DEFAULT = JSON;
+	ObjectSerializer DEFAULT = new ObjectSerializer() {
+		@Override
+		public byte[] serialize(Object t) {
+			return com.alibaba.fastjson.JSON.toJSONBytes(t);
+		}
+
+		@SuppressWarnings("rawtypes")
+		@Override
+		public Object deserialize(InputStream in, Class type) {
+			try {
+				return JSONObject.parseObject(in, type);
+			} catch (IOException ex) {
+				//ignore exception
+			}
+			return null;
+		}
+	};
 }

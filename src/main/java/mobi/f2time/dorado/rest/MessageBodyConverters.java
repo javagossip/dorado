@@ -24,18 +24,19 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MessageBodyConverters {
 	@SuppressWarnings("rawtypes")
-	private static Map<String,MessageBodyConverter> messageBodyConverterHolder = new ConcurrentHashMap<>();
-	
+	private static Map<String, MessageBodyConverter> messageBodyConverterHolder = new ConcurrentHashMap<>();
+
 	static {
 		messageBodyConverterHolder.put(MimeTypes.TEXT_PLAIN, MessageBodyConverter.TEXT_PLAIN);
 		messageBodyConverterHolder.put(MimeTypes.APPLICATION_JSON, MessageBodyConverter.JSON);
 		messageBodyConverterHolder.put(MimeTypes.APPLICATION_PROTOBUF, MessageBodyConverter.PROTOBUF);
 		messageBodyConverterHolder.put(MimeTypes.ALL, MessageBodyConverter.DEFAULT);
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	public static MessageBodyConverter getMessageBodyConverter(String produce) {
-		return messageBodyConverterHolder.get(produce);
+		MessageBodyConverter messageBodyConverter = messageBodyConverterHolder.get(produce);
+		return messageBodyConverter == null ? MessageBodyConverter.DEFAULT : messageBodyConverter;
 	}
 
 }
