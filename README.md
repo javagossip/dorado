@@ -6,9 +6,9 @@ Http Restful API framework implemention with Netty4
 
 * HTTP/1.1 and HTTP/1.0 protocol support 
 * Http Long-connection supported (also Connection: keep-alive)
-* Http Restful serialized (usually as json) in string body (With Gson)
+* Http Restful serialized
 * Http Short Connection on async mode by default
-* Http request mapping variable support
+* Http Uri route mapping support
 
 Annotation | From 
 --- | --- 
@@ -91,7 +91,6 @@ public class HelloWorldController {
 		return readBytesFromImageUrl(imageUrl);
 	}
 }
-
 ```
 
 * Filter
@@ -105,15 +104,3 @@ public class HelloWorldController {
 Please visit https://github.com/javagossip/dorado/wiki/More-Examples
 
 ## Performance
-
-java -server -Xmx4G -Xms4G -Xmn1536M -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC
-
-Http short connection
-* Conccurent : 512 http connections 
-* Qps : 40,000+
-* Latency : < 10ms
-
-Http long connection (Connection: keep-alive)
-* Conccurent : 4096 http connections 
-* Qps : 180,000 ~ 200,000
-* Latency : < 50ms
