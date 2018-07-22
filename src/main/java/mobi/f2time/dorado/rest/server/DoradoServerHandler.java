@@ -93,13 +93,17 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 				response.setStatus(HttpResponseStatus.NOT_FOUND);
 			} else {
 				String[] pathVariables = uriRouting.pathVariables();
-				uriRouting.controller().invoke(_request, _response, pathVariables);
+				try {
+					uriRouting.controller().invoke(_request, _response, pathVariables);
+				} catch (Exception ex) {
+					response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
+					throw ex;
+				}
 			}
 
 			if (isKeepAlive) {
 				HttpUtil.setContentLength(response, response.content().readableBytes());
 			}
-			response.headers().set(HttpHeaderNames.SERVER, "dorado/1.x");
 			channelFuture = ctx.channel().writeAndFlush(response);
 		} catch (Throwable ex) {
 			LOG.error("handle http request error", ex);
