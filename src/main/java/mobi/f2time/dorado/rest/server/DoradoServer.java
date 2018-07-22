@@ -62,7 +62,7 @@ public class DoradoServer {
 
 							pipeline.addLast(new HttpServerCodec());
 							pipeline.addLast(new HttpObjectAggregator(builder.getMaxPacketLength()));
-							pipeline.addLast(new IdleStateHandler(0, 0, builder.getMaxIdleTime()));
+							pipeline.addLast(new IdleStateHandler(builder.getMaxIdleTime(), 0, 0));
 							pipeline.addLast(DoradoServerHandler.create(builder));
 						}
 					});

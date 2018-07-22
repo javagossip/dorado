@@ -55,12 +55,11 @@ public interface ParameterValueResolver {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	ParameterValueResolver REQUEST_BODY = (req, resp, methodDesc, methodParam, pathVariable) -> {
 		Class<?> parameterType = methodParam.getType();
-		if (ClassUtils.isStringOrPrimitive(parameterType) && parameterType != String.class) {
+		if (ClassUtils.isPrimitiveOrWrapper(parameterType)) {
 			throw new IllegalArgumentException("invalid parameter type");
 		}
 
 		InputStream payload = req.getInputStream();
-
 		MessageBodyConverter converter = MessageBodyConverters.getMessageBodyConverter(methodDesc.consume());
 		return converter.readMessageBody(payload, parameterType);
 

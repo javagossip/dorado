@@ -37,6 +37,7 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.timeout.IdleStateEvent;
 import mobi.f2time.dorado.rest.router.UriRoutingMatchResult;
 import mobi.f2time.dorado.rest.servlet.HttpRequest;
 import mobi.f2time.dorado.rest.servlet.HttpResponse;
@@ -106,6 +107,7 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 			channelFuture = ctx.channel().writeAndFlush(response);
 		} catch (Throwable ex) {
 			LOG.error("handle http request error", ex);
+			ctx.channel().close();
 		} finally {
 			unset();
 			if (!isKeepAlive && channelFuture != null) {
@@ -116,6 +118,12 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+		if (evt instanceof IdleStateEvent) {
+			IdleStateEvent e = (IdleStateEvent) evt;
+			if (e == IdleStateEvent.READER_IDLE_STATE_EVENT) {
+				ctx.channel().close();
+			}
+		}
 		super.userEventTriggered(ctx, evt);
 	}
 

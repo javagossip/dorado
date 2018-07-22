@@ -17,13 +17,12 @@ package mobi.f2time.dorado.rest;
 
 import java.io.InputStream;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.protobuf.Message;
 
 import io.netty.util.CharsetUtil;
-import mobi.f2time.dorado.rest.util.ClassUtils;
 import mobi.f2time.dorado.rest.util.IOUtils;
-import mobi.f2time.dorado.rest.util.TypeConverters;
+import mobi.f2time.dorado.rest.util.ProtobufMessageDescriptors;
 
 /**
  * 
@@ -35,25 +34,33 @@ public interface ObjectSerializer {
 	@SuppressWarnings("rawtypes")
 	Object deserialize(InputStream in, Class type);
 
-	ObjectSerializer DEFAULT = new ObjectSerializer() {
+	ObjectSerializer JSON = new ObjectSerializer() {
 		@Override
 		public byte[] serialize(Object t) {
-			if (ClassUtils.isStringOrPrimitive(t.getClass())) {
-				return t.toString().getBytes(CharsetUtil.UTF_8);
-			}
-			return JSON.toJSONString(t).getBytes(CharsetUtil.UTF_8);
+			return com.alibaba.fastjson.JSON.toJSONString(t).getBytes(CharsetUtil.UTF_8);
 		}
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
 		public Object deserialize(InputStream in, Class type) {
-			if (ClassUtils.isStringOrPrimitive(type)) {
-				String payload = IOUtils.toString(in, CharsetUtil.UTF_8.name());
-				TypeConverters.resolveConverter(type).convert(payload);
-			}
-
 			String text = IOUtils.toString(in, CharsetUtil.UTF_8.name());
 			return JSONObject.parseObject(text, type);
 		}
 	};
+
+	ObjectSerializer PROTOBUF = new ObjectSerializer() {
+		@Override
+		public byte[] serialize(Object t) {
+			Message message = (Message) t;
+			return message.toByteArray();
+		}
+
+		@SuppressWarnings("rawtypes")
+		@Override
+		public Object deserialize(InputStream in, Class type) {
+			return ProtobufMessageDescriptors.newMessageForType(in, type);
+		}
+	};
+
+	ObjectSerializer DEFAULT = JSON;
 }

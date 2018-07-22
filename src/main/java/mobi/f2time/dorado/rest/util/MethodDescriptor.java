@@ -18,12 +18,16 @@ package mobi.f2time.dorado.rest.util;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
+import com.google.protobuf.Message;
+
 import mobi.f2time.dorado.rest.DefaultParameterNameResolver;
 import mobi.f2time.dorado.rest.ParameterNameResolver;
 import mobi.f2time.dorado.rest.annotation.Consume;
 import mobi.f2time.dorado.rest.annotation.Produce;
 import mobi.f2time.dorado.rest.servlet.HttpRequest;
 import mobi.f2time.dorado.rest.servlet.HttpResponse;
+
+import static mobi.f2time.dorado.rest.util.ProtobufMessageDescriptors.*;
 
 /**
  * 
@@ -50,6 +54,9 @@ public class MethodDescriptor {
 		this.method = method;
 		this.returnType = method.getReturnType();
 
+		if (!method.isAccessible()) {
+			method.setAccessible(true);
+		}
 		Class<?>[] parameterTypes = method.getParameterTypes();
 		String[] parameterNames = parameterNameResolver.getParameterNames(method);
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
@@ -66,6 +73,9 @@ public class MethodDescriptor {
 			String name = parameterNames[i];
 
 			methodParameters[i] = MethodParameter.create(name, type, annotation);
+			if (Message.class.isAssignableFrom(type)) {
+				registerMessageDescriptorForType(type);
+			}
 		}
 	}
 

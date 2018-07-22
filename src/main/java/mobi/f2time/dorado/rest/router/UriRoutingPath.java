@@ -58,7 +58,7 @@ public class UriRoutingPath implements Comparable<UriRoutingPath> {
 			pathVariableIndex++;
 		}
 		matchResult.appendTail(routingPathRegex);
-
+		
 		routingPathPattern = Pattern.compile(routingPathRegex.toString());
 	}
 

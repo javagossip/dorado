@@ -21,19 +21,27 @@ package mobi.f2time.dorado.rest.util;
  */
 public final class ClassUtils {
 
-	public static boolean isStringOrPrimitive(Class<?> c) {
-		if (c.isPrimitive()) {
-			return true;
-		}
+	public static boolean isPrimitive(Class<?> type) {
+		return type.isPrimitive();
+	}
 
-		if (c == String.class) {
-			return true;
-		}
+	public static boolean isWrapper(Class<?> type) {
+		return (type == Integer.class) 
+				|| (type == Long.class) || (type == Short.class) 
+				|| (type == Float.class)|| (type == Double.class) 
+				|| (type == Boolean.class) 
+				|| (type == Character.class);
+	}
 
-		if (c == Integer.class || c == Long.class || c == Float.class || c == Double.class || c == Short.class
-				|| c == Byte.class || c == Boolean.class || c == Void.class || c == Character.class) {
-			return true;
-		}
-		return false;
+	public static boolean isPrimitiveOrWrapper(Class<?> type) {
+		return isPrimitive(type) || isWrapper(type);
+	}
+	
+	public static boolean isSerializableType(Class<?> type) {
+		return !isPrimitive(type) 
+				&& !isWrapper(type) 
+				&& type != String.class
+				&& type != byte[].class
+				&& type != Byte[].class;
 	}
 }

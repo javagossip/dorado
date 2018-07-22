@@ -33,15 +33,15 @@ import mobi.f2time.dorado.rest.util.MethodDescriptor.MethodParameter;
  */
 public class UriRoutingController {
 	private final MethodDescriptor methodDescriptor;
-	private final UriRoutingPath routeMapping;
+	private final UriRoutingPath uriRoutingPath;
 
-	private UriRoutingController(UriRoutingPath routeMapping, Class<?> clazz, Method method) {
+	private UriRoutingController(UriRoutingPath uriRoutingPath, Class<?> clazz, Method method) {
 		methodDescriptor = MethodDescriptor.create(clazz, method);
-		this.routeMapping = routeMapping;
+		this.uriRoutingPath = uriRoutingPath;
 	}
 
-	public static UriRoutingController create(UriRoutingPath routeMapping, Class<?> clazz, Method method) {
-		return new UriRoutingController(routeMapping, clazz, method);
+	public static UriRoutingController create(UriRoutingPath uriRoutingPath, Class<?> clazz, Method method) {
+		return new UriRoutingController(uriRoutingPath, clazz, method);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -70,7 +70,7 @@ public class UriRoutingController {
 			return null;
 		Object[] methodArgs = new Object[methodParameters.length];
 		for (int i = 0; i < methodArgs.length; i++) {
-			int pathVariableIndex = routeMapping.resolvePathIndex(methodParameters[i].getName());
+			int pathVariableIndex = uriRoutingPath.resolvePathIndex(methodParameters[i].getName());
 			methodArgs[i] = resolveMethodArg(request, response, methodDescriptor, methodParameters[i],
 					pathVariableIndex == -1 ? null : pathVariables[pathVariableIndex]);
 		}
