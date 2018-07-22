@@ -117,6 +117,7 @@ public class MethodDescriptor {
 			this.type = type;
 			this.annotation = annotation;
 			this.annotationType = annotation == null ? null : annotation.annotationType();
+
 			if (type == HttpRequest.class)
 				this.annotationType = HttpRequest.class;
 			if (type == HttpResponse.class)
