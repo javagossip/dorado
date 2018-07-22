@@ -57,9 +57,8 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 	private DoradoServerHandler(DoradoServerBuilder builder) {
 		this.webapp = Webapp.get();
 
-		asyncExecutor = new ThreadPoolExecutor(builder.getMinWorkerThread(), builder.getMaxWorkerThread(), 120,
-				TimeUnit.SECONDS, new ArrayBlockingQueue<>(builder.getMaxPendingRequest()),
-				new ThreadPoolExecutor.AbortPolicy());
+		asyncExecutor = new ThreadPoolExecutor(builder.getMinWorkers(), builder.getMaxWorkers(), 120, TimeUnit.SECONDS,
+				new ArrayBlockingQueue<>(builder.getMaxPendingRequest()), new ThreadPoolExecutor.AbortPolicy());
 	}
 
 	public static DoradoServerHandler create(DoradoServerBuilder builder) {

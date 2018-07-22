@@ -23,11 +23,11 @@ import mobi.f2time.dorado.rest.util.Constant;
  */
 public final class DoradoServerBuilder {
 	private int backlog = Constant.DEFAULT_BACKLOG;
-	private int acceptorCount = Constant.DEFAULT_ACCEPTOR_COUNT;
-	private int ioWorkerCount = Constant.DEFAULT_IO_WORKER_COUNT;
+	private int acceptors = Constant.DEFAULT_ACCEPTOR_COUNT;
+	private int ioWorkers = Constant.DEFAULT_IO_WORKER_COUNT;
 
-	private int minWorkerThread = Constant.DEFAULT_MIN_WORKER_THREAD;
-	private int maxWorkerThread = Constant.DEFAULT_MAX_WORKER_THREAD;
+	private int minWorkers = Constant.DEFAULT_MIN_WORKER_THREAD;
+	private int maxWorkers = Constant.DEFAULT_MAX_WORKER_THREAD;
 
 	private int maxConnection = Integer.MAX_VALUE;
 	private int maxPendingRequest = Constant.DEFAULT_MAX_PENDING_REQUEST;
@@ -38,7 +38,7 @@ public final class DoradoServerBuilder {
 	private int recvBuffer = Constant.DEFAULT_RECV_BUFFER_SIZE;
 
 	private int maxPacketLength = Constant.DEFAULT_MAX_PACKET_LENGTH;
-	private String scanPackage;
+	private String[] scanPackages;
 
 	private final int port;
 
@@ -55,23 +55,23 @@ public final class DoradoServerBuilder {
 		return this;
 	}
 
-	public DoradoServerBuilder acceptorCount(int acceptorCount) {
-		this.acceptorCount = acceptorCount;
+	public DoradoServerBuilder acceptors(int acceptors) {
+		this.acceptors = acceptors;
 		return this;
 	}
 
-	public DoradoServerBuilder ioWorkerCount(int ioWorkerCount) {
-		this.ioWorkerCount = ioWorkerCount;
+	public DoradoServerBuilder ioWorkers(int ioWorkers) {
+		this.ioWorkers = ioWorkers;
 		return this;
 	}
 
-	public DoradoServerBuilder minWorkerThread(int minWorkerThread) {
-		this.minWorkerThread = minWorkerThread;
+	public DoradoServerBuilder minWorkers(int minWorkers) {
+		this.minWorkers = minWorkers;
 		return this;
 	}
 
-	public DoradoServerBuilder maxWorkerThread(int maxWorkerThread) {
-		this.maxWorkerThread = maxWorkerThread;
+	public DoradoServerBuilder maxWorkers(int maxWorkers) {
+		this.maxWorkers = maxWorkers;
 		return this;
 	}
 
@@ -100,13 +100,13 @@ public final class DoradoServerBuilder {
 		return this;
 	}
 
-	public DoradoServerBuilder setMaxPacketLength(int maxPacketLength) {
+	public DoradoServerBuilder maxPacketLength(int maxPacketLength) {
 		this.maxPacketLength = maxPacketLength;
 		return this;
 	}
 
-	public DoradoServerBuilder scanPackage(String scanPackage) {
-		this.scanPackage = scanPackage;
+	public DoradoServerBuilder scanPackages(String... packages) {
+		this.scanPackages = packages;
 		return this;
 	}
 
@@ -114,20 +114,20 @@ public final class DoradoServerBuilder {
 		return backlog;
 	}
 
-	public int getAcceptorCount() {
-		return acceptorCount;
+	public int getAcceptors() {
+		return acceptors;
 	}
 
-	public int getIoWorkerCount() {
-		return ioWorkerCount;
+	public int getIoWorkers() {
+		return ioWorkers;
 	}
 
-	public int getMinWorkerThread() {
-		return minWorkerThread;
+	public int getMinWorkers() {
+		return minWorkers;
 	}
 
-	public int getMaxWorkerThread() {
-		return maxWorkerThread;
+	public int getMaxWorkers() {
+		return maxWorkers;
 	}
 
 	public int getMaxConnection() {
@@ -154,8 +154,8 @@ public final class DoradoServerBuilder {
 		return maxPacketLength;
 	}
 
-	public String scanPackage() {
-		return this.scanPackage;
+	public String[] scanPackages() {
+		return this.scanPackages;
 	}
 
 	public int getPort() {
@@ -163,7 +163,7 @@ public final class DoradoServerBuilder {
 	}
 
 	public DoradoServer build() {
-		if (scanPackage == null || Constant.BLANK_STRING.equals(scanPackage.trim())) {
+		if (scanPackages == null || scanPackages.length == 0) {
 			throw new IllegalArgumentException("scanPackage should not be null");
 		}
 		return new DoradoServer(this);

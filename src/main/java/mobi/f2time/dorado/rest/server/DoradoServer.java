@@ -48,9 +48,9 @@ public class DoradoServer {
 	}
 
 	public void start() {
-		Webapp.create(builder.scanPackage());
-		EventLoopGroup acceptor = new NioEventLoopGroup(builder.getAcceptorCount());
-		EventLoopGroup worker = new NioEventLoopGroup(builder.getIoWorkerCount());
+		Webapp.create(builder.scanPackages());
+		EventLoopGroup acceptor = new NioEventLoopGroup(builder.getAcceptors());
+		EventLoopGroup worker = new NioEventLoopGroup(builder.getIoWorkers());
 
 		ServerBootstrap bootstrap = null;
 		try {

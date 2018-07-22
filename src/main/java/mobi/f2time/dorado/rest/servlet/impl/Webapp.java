@@ -17,11 +17,10 @@ package mobi.f2time.dorado.rest.servlet.impl;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import mobi.f2time.dorado.exception.DoradoException;
 import mobi.f2time.dorado.rest.annotation.Controller;
 import mobi.f2time.dorado.rest.annotation.HttpMethod;
 import mobi.f2time.dorado.rest.annotation.Path;
@@ -36,18 +35,16 @@ import mobi.f2time.dorado.rest.util.PackageScanner;
  * @author wangwp
  */
 public class Webapp {
-	private static final Logger LOG = LoggerFactory.getLogger(Webapp.class);
-
 	private static Webapp webapp;
 
-	private final String packageName;
+	private final String[] packages;
 
-	private Webapp(String packageName) {
-		this.packageName = packageName;
+	private Webapp(String[] packages) {
+		this.packages = packages;
 	}
 
-	public static synchronized void create(String packageName) {
-		webapp = new Webapp(packageName);
+	public static synchronized void create(String[] packages) {
+		webapp = new Webapp(packages);
 		webapp.initialize();
 	}
 
@@ -59,20 +56,21 @@ public class Webapp {
 	}
 
 	public void initialize() {
-
+		List<Class<?>> classes = new ArrayList<>();
 		try {
-			List<Class<?>> classes = PackageScanner.scan(packageName);
+			for (String scanPackage : packages) {
+				classes.addAll(PackageScanner.scan(scanPackage));
+			}
 			classes.forEach(clazz -> initializeUriRouting(clazz));
 		} catch (Exception ex) {
-			LOG.error("");
-			throw new RuntimeException(ex);
+			throw new DoradoException(ex);
 		}
 	}
 
 	private void initializeUriRouting(Class<?> clazz) {
 		initUriRoutingController(clazz);
 	}
-	
+
 	private void initUriRoutingController(Class<?> c) {
 		Controller controller = c.getAnnotation(Controller.class);
 		if (controller == null)
