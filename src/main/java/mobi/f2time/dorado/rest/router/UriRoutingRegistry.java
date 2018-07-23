@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
+import mobi.f2time.dorado.rest.servlet.HttpRequest;
+
 /**
  * 
  * @author wangwp
@@ -40,12 +42,15 @@ public class UriRoutingRegistry {
 		uriRoutingRegistry.sort((a, b) -> a.path.compareTo(b.path));
 	}
 
-	public UriRoutingMatchResult findRouteController(String uri) {
+	public UriRoutingMatchResult findRouteController(HttpRequest request) {
 		Matcher matchResult = null;
 
+		String routingMethod = null;
 		for (UriRouting uriRouting : uriRoutingRegistry) {
-			matchResult = uriRouting.path.routingPathPattern().matcher(uri);
-			if (matchResult.matches()) {
+			routingMethod = uriRouting.path.httpMethod();
+			matchResult = uriRouting.path.routingPathPattern().matcher(request.getRequestURI());
+
+			if (matchResult.matches() && (routingMethod == null || (request.getMethod().equals(routingMethod)))) {
 				return UriRoutingMatchResult.create(uriRouting.controller, matchResult);
 			}
 		}

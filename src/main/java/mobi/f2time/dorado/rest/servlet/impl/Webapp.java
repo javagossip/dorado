@@ -15,6 +15,7 @@
  */
 package mobi.f2time.dorado.rest.servlet.impl;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -86,7 +87,7 @@ public class Webapp {
 			}
 
 			Path methodLevelPath = controllerMethod.getAnnotation(Path.class);
-			HttpMethod httpMethod = controllerMethod.getAnnotation(HttpMethod.class);
+			HttpMethod httpMethod = getHttpMethod(controllerMethod.getAnnotations());
 
 			String methodPath = methodLevelPath == null ? Constant.BLANK_STRING : methodLevelPath.value();
 
@@ -95,6 +96,18 @@ public class Webapp {
 			UriRoutingController routeController = UriRoutingController.create(uriRoutingPath, c, controllerMethod);
 			getUriRoutingRegistry().register(uriRoutingPath, routeController);
 		}
+	}
+
+	private HttpMethod getHttpMethod(Annotation[] annotations) {
+		HttpMethod httpMethod = null;
+
+		for (Annotation annotation : annotations) {
+			httpMethod = annotation.annotationType().getAnnotation(HttpMethod.class);
+			if (httpMethod != null) {
+				return httpMethod;
+			}
+		}
+		return null;
 	}
 
 	public FilterManager getFilterManager() {

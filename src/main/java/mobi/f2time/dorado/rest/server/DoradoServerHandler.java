@@ -87,8 +87,7 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 			HttpRequest _request = new HttpRequestImpl(request);
 			HttpResponse _response = new HttpResponseImpl(response);
 
-			UriRoutingMatchResult uriRouting = webapp.getUriRoutingRegistry()
-					.findRouteController(_request.getRequestURI());
+			UriRoutingMatchResult uriRouting = webapp.getUriRoutingRegistry().findRouteController(_request);
 			if (uriRouting == null) {
 				response.setStatus(HttpResponseStatus.NOT_FOUND);
 			} else {
