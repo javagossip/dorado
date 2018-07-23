@@ -34,6 +34,12 @@ public interface TypeConverter<F, T> {
 
 	TypeConverter<String, Short> STRING_SHORT = s -> s == null ? null : Short.parseShort(s);
 
+	TypeConverter<String, Boolean> STRING_BOOL = s -> s == null ? null : Boolean.valueOf(s);
+
+	TypeConverter<String, Character> STRING_CHAR = s -> s == null ? null : Character.valueOf(s.toCharArray()[0]);
+
+	TypeConverter<String, Byte> STRING_BYTE = s -> s == null ? null : Byte.valueOf(s);
+
 	TypeConverter<Object, Object> DUMMY = s -> s;
 
 	TypeConverter<InputStream, InputStream> INPUTSTREAM = s -> s;
