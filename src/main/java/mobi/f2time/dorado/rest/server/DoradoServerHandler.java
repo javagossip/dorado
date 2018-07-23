@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -93,13 +94,15 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 			UriRoutingMatchResult uriRouting = webapp.getUriRoutingRegistry().findRouteController(_request);
 			if (uriRouting == null) {
 				response.setStatus(HttpResponseStatus.NOT_FOUND);
+				ByteBufUtil.writeUtf8(response.content(), String.format("resource not found,url: %s, http_method:%s",
+						request.uri(), _request.getMethod()));
 			} else {
 				String[] pathVariables = uriRouting.pathVariables();
 				try {
 					uriRouting.controller().invoke(_request, _response, pathVariables);
 				} catch (Exception ex) {
 					response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
-					throw ex;
+					ByteBufUtil.writeUtf8(response.content(), "500 Internal Server Error");
 				}
 			}
 
