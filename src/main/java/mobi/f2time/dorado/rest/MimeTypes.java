@@ -20,17 +20,17 @@ package mobi.f2time.dorado.rest;
  * @author wangwp
  */
 public interface MimeTypes {
-	String APPLICATION_JSON = "application/json;charset=utf-8";
+	String APPLICATION_JSON = "application/json";
 	
-	String TEXT_PLAIN = "text/plain; charset=utf-8";
+	String TEXT_PLAIN = "text/plain";
 	
-	String TEXT_HTML = "text/html; charset=utf-8";
+	String TEXT_HTML = "text/html";
 	
-	String TEXT_XML = "text/xml; charset=utf-8";
+	String TEXT_XML = "text/xml";
 	
 	String APPLICATION_PROTOBUF = "application/x-protobuf";
 	
-	String APPLICATION_XML = "application/xml; charset=utf-8";
+	String APPLICATION_XML = "application/xml";
 
 	String ALL = "*/*";
 }
