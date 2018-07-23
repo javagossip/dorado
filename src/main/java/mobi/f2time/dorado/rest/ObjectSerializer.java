@@ -66,6 +66,9 @@ public interface ObjectSerializer {
 	ObjectSerializer DEFAULT = new ObjectSerializer() {
 		@Override
 		public byte[] serialize(Object t) {
+			if (t instanceof Message) {
+				return ((Message) t).toByteArray();
+			}
 			return com.alibaba.fastjson.JSON.toJSONBytes(t);
 		}
 
@@ -73,9 +76,12 @@ public interface ObjectSerializer {
 		@Override
 		public Object deserialize(InputStream in, Class type) {
 			try {
+				if (Message.class.isAssignableFrom(type)) {
+					return ProtobufMessageDescriptors.newMessageForType(in, type);
+				}
 				return JSONObject.parseObject(in, type);
 			} catch (IOException ex) {
-				//ignore exception
+				// ignore exception
 			}
 			return null;
 		}

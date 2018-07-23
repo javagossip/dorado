@@ -26,6 +26,8 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
+import mobi.f2time.dorado.exception.DoradoException;
+
 /**
  * 利用asm从类的局部变量表中获取方法参数名
  * 
@@ -65,7 +67,7 @@ public class LocalVariableTableParameterNameResolver implements ParameterNameRes
 								Label end, int index) {
 							if (Modifier.isStatic(method.getModifiers())) {
 								parameterNames[index] = name;
-							} else if (index > 0) {
+							} else if (index > 0 && index <= parameterNames.length) {
 								parameterNames[index - 1] = name;
 							}
 						}
@@ -73,7 +75,8 @@ public class LocalVariableTableParameterNameResolver implements ParameterNameRes
 				}
 			}, 0);
 		} catch (Exception ex) {
-			throw new RuntimeException(ex);
+			String errorMsg = String.format("Get method parameter names error, method: %s", method.getName());
+			throw new DoradoException(errorMsg, ex);
 		}
 		return parameterNames;
 	}

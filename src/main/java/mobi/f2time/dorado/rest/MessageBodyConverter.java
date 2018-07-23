@@ -16,10 +16,8 @@
 package mobi.f2time.dorado.rest;
 
 import java.io.InputStream;
-import java.lang.reflect.Method;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.protobuf.GeneratedMessage;
 import com.google.protobuf.Message;
 
 import io.netty.util.CharsetUtil;
@@ -70,12 +68,9 @@ public interface MessageBodyConverter<T> {
 		}
 
 		@Override
-		public Message readMessageBody(InputStream in, Class<Message> clazz) {
+		public Message readMessageBody(InputStream in, Class<Message> type) {
 			try {
-				Method newBuilder = clazz.getMethod("newBuilder");
-				GeneratedMessage.Builder builder = (GeneratedMessage.Builder) newBuilder.invoke(clazz);
-
-				return builder.mergeFrom(in).build();
+				return (Message) ObjectSerializer.PROTOBUF.deserialize(in, type);
 			} catch (Throwable ex) {
 				throw new DoradoException(ex);
 			}
