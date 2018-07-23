@@ -15,12 +15,27 @@
  */
 package mobi.f2time.dorado.rest.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 
  * @author wangwp
  */
 public final class ClassUtils {
-
+	private static final Map<Class<?>,Object> primitiveDefaultHolder = new HashMap<>();
+	
+	static {
+		primitiveDefaultHolder.put(int.class, 0);
+		primitiveDefaultHolder.put(long.class, 0L);
+		primitiveDefaultHolder.put(short.class, 0);
+		primitiveDefaultHolder.put(float.class, 0.0F);
+		primitiveDefaultHolder.put(byte.class, (byte) 0);
+		primitiveDefaultHolder.put(double.class, 0.0D);
+		primitiveDefaultHolder.put(boolean.class, false);
+		primitiveDefaultHolder.put(char.class, (char) 0);
+	}
+	
 	public static boolean isPrimitive(Class<?> type) {
 		return type.isPrimitive();
 	}
@@ -43,5 +58,9 @@ public final class ClassUtils {
 				&& type != String.class
 				&& type != byte[].class
 				&& type != Byte[].class;
+	}
+
+	public static Object primitiveDefault(Class<?> parameterType) {
+		return primitiveDefaultHolder.get(parameterType);
 	}
 }

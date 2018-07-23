@@ -21,6 +21,7 @@ import java.util.List;
 
 import mobi.f2time.dorado.rest.servlet.HttpRequest;
 import mobi.f2time.dorado.rest.servlet.HttpResponse;
+import mobi.f2time.dorado.rest.util.ClassUtils;
 import mobi.f2time.dorado.rest.util.MethodDescriptor;
 import mobi.f2time.dorado.rest.util.MethodDescriptor.MethodParameter;
 import mobi.f2time.dorado.rest.util.TypeConverter;
@@ -73,12 +74,17 @@ public interface ParameterValueResolver {
 		@Override
 		public Object resolveParameterValue(HttpRequest request, HttpResponse response, MethodDescriptor desc,
 				MethodParameter methodParameter, String pathVariable) {
+			Class<?> parameterType = methodParameter.getType();
 			// 如果没有注解指定参数从何处获取的话，默认按照RequestParam->PathVariable->HeaderParam获取，如果全部没有则返回null
 			for (ParameterValueResolver valueResolver : resolverList) {
 				Object parameterValue = valueResolver.resolveParameterValue(request, response, desc, methodParameter,
 						pathVariable);
 				if (parameterValue != null)
 					return parameterValue;
+				// 如果方法参数是基本类型
+				if (parameterType.isPrimitive()) {
+					return ClassUtils.primitiveDefault(parameterType);
+				}
 			}
 			return null;
 		}
