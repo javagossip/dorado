@@ -101,6 +101,13 @@ public class HelloWorldController {
 	public byte[] bytes(@RequestParam("url") String imageUrl) {
 		return readBytesFromImageUrl(imageUrl);
 	}
+	
+	@Path("/redirect")
+	public void toIqiyi(HttpRequest request,HttpResponse response,int channelId) {
+		int channel = channelId;
+		System.out.println("to channel: "+channel);
+		response.sendRedirect("http://www.iqiyi.com");
+	}
 }
 ```
 
