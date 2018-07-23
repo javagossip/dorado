@@ -82,6 +82,5 @@ public class UriRoutingRegistry {
 		public UriRoutingController controller() {
 			return controller;
 		}
-
 	}
 }
