@@ -39,7 +39,7 @@ public interface MessageBodyConverter<T> {
 	MessageBodyConverter<? extends Object> JSON = new MessageBodyConverter<Object>() {
 		@Override
 		public byte[] writeMessageBody(Object t) {
-			return com.alibaba.fastjson.JSON.toJSONString(t).getBytes(CharsetUtil.UTF_8);
+			return com.alibaba.fastjson.JSON.toJSONBytes(t);
 		}
 
 		@SuppressWarnings({ "unchecked", "rawtypes" })
