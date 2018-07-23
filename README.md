@@ -1,6 +1,6 @@
 # Dorado
 
-Http Restful API framework implemention with Netty4 
+Http Restful server implemention with Netty4 
 
 ## Features
 
