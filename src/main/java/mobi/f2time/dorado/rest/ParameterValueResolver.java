@@ -16,10 +16,11 @@
 package mobi.f2time.dorado.rest;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import mobi.f2time.dorado.rest.servlet.HttpRequest;
 import mobi.f2time.dorado.rest.servlet.HttpResponse;
-import mobi.f2time.dorado.rest.util.ClassUtils;
 import mobi.f2time.dorado.rest.util.MethodDescriptor;
 import mobi.f2time.dorado.rest.util.MethodDescriptor.MethodParameter;
 import mobi.f2time.dorado.rest.util.TypeConverter;
@@ -55,13 +56,31 @@ public interface ParameterValueResolver {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	ParameterValueResolver REQUEST_BODY = (req, resp, methodDesc, methodParam, pathVariable) -> {
 		Class<?> parameterType = methodParam.getType();
-		if (ClassUtils.isPrimitiveOrWrapper(parameterType)) {
-			throw new IllegalArgumentException("invalid parameter type");
-		}
-
 		InputStream payload = req.getInputStream();
 		MessageBodyConverter converter = MessageBodyConverters.getMessageBodyConverter(methodDesc.consume());
 		return converter.readMessageBody(payload, parameterType);
 
+	};
+
+	ParameterValueResolver ALL = new ParameterValueResolver() {
+		List<ParameterValueResolver> resolverList = new ArrayList<>();
+		{
+			resolverList.add(REQUEST_PARAM);
+			resolverList.add(PATH_PARAM);
+			resolverList.add(HEADER_PARAM);
+		}
+
+		@Override
+		public Object resolveParameterValue(HttpRequest request, HttpResponse response, MethodDescriptor desc,
+				MethodParameter methodParameter, String pathVariable) {
+			// 如果没有注解指定参数从何处获取的话，默认按照RequestParam->PathVariable->HeaderParam获取，如果全部没有则返回null
+			for (ParameterValueResolver valueResolver : resolverList) {
+				Object parameterValue = valueResolver.resolveParameterValue(request, response, desc, methodParameter,
+						pathVariable);
+				if (parameterValue != null)
+					return parameterValue;
+			}
+			return null;
+		}
 	};
 }

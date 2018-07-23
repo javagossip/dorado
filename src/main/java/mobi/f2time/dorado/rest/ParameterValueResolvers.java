@@ -42,6 +42,15 @@ public class ParameterValueResolvers {
 	}
 
 	public static ParameterValueResolver getParameterValueResolver(Class<?> parameterAnnotationType) {
+		if (parameterAnnotationType == null) {
+			return ParameterValueResolver.ALL;
+		}
+
+		ParameterValueResolver parameterValueResolver = parameterValueResolverHolder.get(parameterAnnotationType);
+		if (parameterValueResolver == null) {
+			return ParameterValueResolver.ALL;
+		}
+
 		return parameterValueResolverHolder.get(parameterAnnotationType);
 	}
 
