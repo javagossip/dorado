@@ -28,8 +28,8 @@ import mobi.f2time.dorado.rest.annotation.Path;
 import mobi.f2time.dorado.rest.router.UriRoutingController;
 import mobi.f2time.dorado.rest.router.UriRoutingPath;
 import mobi.f2time.dorado.rest.router.UriRoutingRegistry;
-import mobi.f2time.dorado.rest.util.Constant;
 import mobi.f2time.dorado.rest.util.PackageScanner;
+import mobi.f2time.dorado.rest.util.StringUtils;
 
 /**
  * 
@@ -78,7 +78,7 @@ public class Webapp {
 			return;
 
 		Path classLevelPath = c.getAnnotation(Path.class);
-		String controllerPath = classLevelPath == null ? Constant.BLANK_STRING : classLevelPath.value();
+		String controllerPath = classLevelPath == null ? StringUtils.EMPTY : classLevelPath.value();
 
 		Method[] controllerMethods = c.getMethods();
 		for (Method controllerMethod : controllerMethods) {
@@ -88,8 +88,7 @@ public class Webapp {
 
 			Path methodLevelPath = controllerMethod.getAnnotation(Path.class);
 			HttpMethod httpMethod = getHttpMethod(controllerMethod.getAnnotations());
-
-			String methodPath = methodLevelPath == null ? Constant.BLANK_STRING : methodLevelPath.value();
+			String methodPath = methodLevelPath == null ? StringUtils.EMPTY : methodLevelPath.value();
 
 			UriRoutingPath uriRoutingPath = UriRoutingPath.create(String.format("%s%s", controllerPath, methodPath),
 					httpMethod);

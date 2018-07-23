@@ -24,19 +24,19 @@ import java.io.InputStream;
 public interface TypeConverter<F, T> {
 	T convert(F value);
 
-	TypeConverter<String, Integer> STRING_INT = s -> s == null ? null : Integer.parseInt(s);
+	TypeConverter<String, Integer> STRING_INT = s -> s == null ? null : StringUtils.toInt(s);
 
-	TypeConverter<String, Long> STRING_LONG = s -> s == null ? null : Long.parseLong(s);
+	TypeConverter<String, Long> STRING_LONG = s -> s == null ? null : StringUtils.toLong(s);
 
-	TypeConverter<String, Float> STRING_FLOAT = s -> s == null ? null : Float.parseFloat(s);
+	TypeConverter<String, Float> STRING_FLOAT = s -> s == null ? null : StringUtils.toFloat(s);
 
-	TypeConverter<String, Double> STRING_DOUBLE = s -> s == null ? null : Double.parseDouble(s);
+	TypeConverter<String, Double> STRING_DOUBLE = s -> s == null ? null : StringUtils.toDouble(s);
 
-	TypeConverter<String, Short> STRING_SHORT = s -> s == null ? null : Short.parseShort(s);
+	TypeConverter<String, Short> STRING_SHORT = s -> s == null ? null : StringUtils.toShort(s);
 
-	TypeConverter<String, Boolean> STRING_BOOL = s -> s == null ? null : Boolean.valueOf(s);
+	TypeConverter<String, Boolean> STRING_BOOL = s -> s == null ? null : StringUtils.toBoolean(s);
 
-	TypeConverter<String, Character> STRING_CHAR = s -> s == null ? null : Character.valueOf(s.toCharArray()[0]);
+	TypeConverter<String, Character> STRING_CHAR = s -> s == null ? null : StringUtils.toChar(s);
 
 	TypeConverter<String, Byte> STRING_BYTE = s -> s == null ? null : Byte.valueOf(s);
 
