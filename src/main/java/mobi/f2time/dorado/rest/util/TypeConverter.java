@@ -24,15 +24,15 @@ import java.io.InputStream;
 public interface TypeConverter<F, T> {
 	T convert(F value);
 
-	TypeConverter<String, Integer> STRING_INT = s -> Integer.parseInt(s);
+	TypeConverter<String, Integer> STRING_INT = s -> s == null ? null : Integer.parseInt(s);
 
-	TypeConverter<String, Long> STRING_LONG = s -> Long.parseLong(s);
+	TypeConverter<String, Long> STRING_LONG = s -> s == null ? null : Long.parseLong(s);
 
-	TypeConverter<String, Float> STRING_FLOAT = s -> Float.parseFloat(s);
+	TypeConverter<String, Float> STRING_FLOAT = s -> s == null ? null : Float.parseFloat(s);
 
-	TypeConverter<String, Double> STRING_DOUBLE = s -> Double.parseDouble(s);
+	TypeConverter<String, Double> STRING_DOUBLE = s -> s == null ? null : Double.parseDouble(s);
 
-	TypeConverter<String, Short> STRING_SHORT = s -> Short.parseShort(s);
+	TypeConverter<String, Short> STRING_SHORT = s -> s == null ? null : Short.parseShort(s);
 
 	TypeConverter<Object, Object> DUMMY = s -> s;
 
