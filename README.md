@@ -72,6 +72,17 @@ public class Application {
 @Path("/hello")
 public class HelloWorldController {
 
+    @Path("/{id}")
+	@GET
+	@Produce("application/json")
+	public Campaign newCampaign(int id) {
+		Campaign campaign = new Campaign();
+		campaign.setId(id);
+		campaign.setName("test campaign");
+		
+		return campaign;
+	}
+	
 	@Path("/greet/{greet}")
 	public String greet(@PathVariable("greet") String greet) {
 		return greet;
