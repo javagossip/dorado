@@ -24,18 +24,20 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MessageBodyConverters {
 	@SuppressWarnings("rawtypes")
-	private static Map<String, MessageBodyConverter> messageBodyConverterHolder = new ConcurrentHashMap<>();
+	private static Map<MediaType, MessageBodyConverter> messageBodyConverterHolder = new ConcurrentHashMap<>();
 
 	static {
-		messageBodyConverterHolder.put(MediaType.TEXT_PLAIN, MessageBodyConverter.TEXT_PLAIN);
-		messageBodyConverterHolder.put(MediaType.APPLICATION_JSON, MessageBodyConverter.JSON);
-		messageBodyConverterHolder.put(MediaType.APPLICATION_PROTOBUF, MessageBodyConverter.PROTOBUF);
-		messageBodyConverterHolder.put(MediaType.WILDCARD, MessageBodyConverter.DEFAULT);
+		messageBodyConverterHolder.put(MediaType.TEXT_HTML_TYPE, MessageBodyConverter.TEXT_WILDCARD);
+		messageBodyConverterHolder.put(MediaType.TEXT_PLAIN_TYPE, MessageBodyConverter.TEXT_WILDCARD);
+		messageBodyConverterHolder.put(MediaType.APPLICATION_JSON_TYPE, MessageBodyConverter.JSON);
+		messageBodyConverterHolder.put(MediaType.APPLICATION_PROTOBUF_TYPE, MessageBodyConverter.PROTOBUF);
+		messageBodyConverterHolder.put(MediaType.APPLICATION_OCTET_STREAM_TYPE, MessageBodyConverter.DEFAULT);
+		messageBodyConverterHolder.put(MediaType.WILDCARD_TYPE, MessageBodyConverter.DEFAULT);
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static MessageBodyConverter getMessageBodyConverter(String produce) {
-		MessageBodyConverter messageBodyConverter = messageBodyConverterHolder.get(produce);
+	public static MessageBodyConverter getMessageBodyConverter(MediaType mediaType) {
+		MessageBodyConverter messageBodyConverter = messageBodyConverterHolder.get(mediaType);
 		return messageBodyConverter == null ? MessageBodyConverter.DEFAULT : messageBodyConverter;
 	}
 }

@@ -18,12 +18,14 @@ package mobi.f2time.dorado.rest.router;
 import java.lang.reflect.Method;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
+import mobi.f2time.dorado.rest.MediaType;
 import mobi.f2time.dorado.rest.MessageBodyConverter;
 import mobi.f2time.dorado.rest.MessageBodyConverters;
 import mobi.f2time.dorado.rest.ParameterValueResolver;
 import mobi.f2time.dorado.rest.ParameterValueResolvers;
 import mobi.f2time.dorado.rest.servlet.HttpRequest;
 import mobi.f2time.dorado.rest.servlet.HttpResponse;
+import mobi.f2time.dorado.rest.util.MediaTypeUtils;
 import mobi.f2time.dorado.rest.util.MethodDescriptor;
 import mobi.f2time.dorado.rest.util.MethodDescriptor.MethodParameter;
 
@@ -53,13 +55,12 @@ public class UriRoutingController {
 			invokeMethod.invoke(methodDescriptor.getInvokeTarget(), args);
 		} else {
 			Object result = invokeMethod.invoke(methodDescriptor.getInvokeTarget(), args);
-			response.setHeader(HttpHeaderNames.CONTENT_TYPE.toString(), methodDescriptor.produce());
+			MediaType mediaType = MediaTypeUtils.defaultForType(methodDescriptor.getReturnType(),
+					methodDescriptor.produce());
 
-			MessageBodyConverter messageBodyConverter = MessageBodyConverters
-					.getMessageBodyConverter(methodDescriptor.produce());
-			if (messageBodyConverter != null) {
-				response.write(messageBodyConverter.writeMessageBody(result));
-			}
+			MessageBodyConverter messageBodyConverter = MessageBodyConverters.getMessageBodyConverter(mediaType);
+			response.setHeader(HttpHeaderNames.CONTENT_TYPE.toString(), mediaType.toString());
+			response.write(messageBodyConverter.writeMessageBody(result));
 		}
 		return null;
 	}

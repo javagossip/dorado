@@ -43,12 +43,12 @@ public interface MessageBodyConverter<T> {
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		@Override
 		public Object readMessageBody(InputStream in, Class clazz) {
-			return JSONObject.parseObject(IOUtils.toString(in, "utf-8"), clazz);
+			return JSONObject.parseObject(IOUtils.toString(in, CharsetUtil.UTF_8.name()), clazz);
 		}
 	};
 
 	@SuppressWarnings("rawtypes")
-	MessageBodyConverter TEXT_PLAIN = new MessageBodyConverter<Object>() {
+	MessageBodyConverter TEXT_WILDCARD = new MessageBodyConverter<Object>() {
 		@Override
 		public byte[] writeMessageBody(Object t) {
 			return t.toString().getBytes(CharsetUtil.UTF_8);
@@ -56,7 +56,7 @@ public interface MessageBodyConverter<T> {
 
 		@Override
 		public Object readMessageBody(InputStream in, Class<Object> clazz) {
-			return IOUtils.toString(in, "utf-8");
+			return IOUtils.toString(in, CharsetUtil.UTF_8.name());
 		}
 	};
 

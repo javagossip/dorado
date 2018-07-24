@@ -37,7 +37,6 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
-import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.timeout.IdleStateEvent;
 import mobi.f2time.dorado.rest.router.UriRoutingMatchResult;
 import mobi.f2time.dorado.rest.servlet.HttpRequest;

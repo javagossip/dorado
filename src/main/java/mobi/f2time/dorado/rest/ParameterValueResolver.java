@@ -22,6 +22,7 @@ import java.util.List;
 import mobi.f2time.dorado.rest.servlet.HttpRequest;
 import mobi.f2time.dorado.rest.servlet.HttpResponse;
 import mobi.f2time.dorado.rest.util.ClassUtils;
+import mobi.f2time.dorado.rest.util.MediaTypeUtils;
 import mobi.f2time.dorado.rest.util.MethodDescriptor;
 import mobi.f2time.dorado.rest.util.MethodDescriptor.MethodParameter;
 import mobi.f2time.dorado.rest.util.TypeConverter;
@@ -58,7 +59,8 @@ public interface ParameterValueResolver {
 	ParameterValueResolver REQUEST_BODY = (req, resp, methodDesc, methodParam, pathVariable) -> {
 		Class<?> parameterType = methodParam.getType();
 		InputStream payload = req.getInputStream();
-		MessageBodyConverter converter = MessageBodyConverters.getMessageBodyConverter(methodDesc.consume());
+		MessageBodyConverter converter = MessageBodyConverters
+				.getMessageBodyConverter(MediaTypeUtils.defaultForType(parameterType, methodDesc.consume()));
 		return converter.readMessageBody(payload, parameterType);
 
 	};
