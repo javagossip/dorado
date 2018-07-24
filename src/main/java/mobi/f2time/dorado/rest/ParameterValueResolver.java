@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import mobi.f2time.dorado.rest.servlet.Cookie;
 import mobi.f2time.dorado.rest.servlet.HttpRequest;
 import mobi.f2time.dorado.rest.servlet.HttpResponse;
 import mobi.f2time.dorado.rest.util.ClassUtils;
@@ -55,6 +56,18 @@ public interface ParameterValueResolver {
 	ParameterValueResolver HTTP_RESPONSE = (req, resp, methodDesc, methodParam, pathVariable) -> TypeConverter.DUMMY
 			.convert(resp);
 
+	@SuppressWarnings("unchecked")
+	ParameterValueResolver COOKIE_PARAM = (req, resp, methodDesc, methodParam, pathVariable) -> {
+		Cookie[] cookies = req.getCookies();
+		for (Cookie cookie : cookies) {
+			if (methodParam.getName().equalsIgnoreCase(cookie.name())) {
+				return TypeConverters.resolveConverter(methodParam.getType()).convert(cookie.value());
+			}
+		}
+		Class<?> parameterType = methodParam.getType();
+		return parameterType.isPrimitive() ? ClassUtils.primitiveDefault(parameterType) : null;
+	};
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	ParameterValueResolver REQUEST_BODY = (req, resp, methodDesc, methodParam, pathVariable) -> {
 		Class<?> parameterType = methodParam.getType();
@@ -83,7 +96,7 @@ public interface ParameterValueResolver {
 						pathVariable);
 				if (parameterValue != null)
 					return parameterValue;
-				// 如果方法参数是基本类型
+				// 如果方法参数是基本类型则必须给定默认值
 				if (parameterType.isPrimitive()) {
 					return ClassUtils.primitiveDefault(parameterType);
 				}

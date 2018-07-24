@@ -17,6 +17,7 @@ package mobi.f2time.dorado.rest.util;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * 
@@ -63,4 +64,15 @@ public final class ClassUtils {
 	public static Object primitiveDefault(Class<?> parameterType) {
 		return primitiveDefaultHolder.get(parameterType);
 	}
+	
+	
+	public static void main(String[] args) throws Exception {
+		String pattern = "^//*$";
+		
+		String path = "/";
+		
+		Pattern p = Pattern.compile(pattern);
+		System.out.println(p.matcher(path).matches());
+	}
 }
+

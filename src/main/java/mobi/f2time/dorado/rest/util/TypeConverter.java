@@ -17,6 +17,8 @@ package mobi.f2time.dorado.rest.util;
 
 import java.io.InputStream;
 
+import io.netty.util.CharsetUtil;
+
 /**
  * 
  * @author wangwp
@@ -36,13 +38,37 @@ public interface TypeConverter<F, T> {
 
 	TypeConverter<String, Boolean> STRING_BOOL = s -> s == null ? null : StringUtils.toBoolean(s);
 
-	TypeConverter<String, Character> STRING_CHAR = s -> s == null ? null : StringUtils.toChar(s);
+	TypeConverter<String, Character> STRING_CHAR = s -> {
+		throw new UnsupportedOperationException("unsupport convert string to char");
+	};
 
-	TypeConverter<String, Byte> STRING_BYTE = s -> s == null ? null : Byte.valueOf(s);
+	TypeConverter<String, Byte> STRING_BYTE = s -> {
+		throw new UnsupportedOperationException("unsupport convert string to byte");
+	};
 
 	TypeConverter<Object, Object> DUMMY = s -> s;
 
 	TypeConverter<InputStream, InputStream> INPUTSTREAM = s -> s;
 
-	TypeConverter<InputStream, String> STRING_UTF8 = s -> IOUtils.toString(s, "UTF-8");
+	TypeConverter<InputStream, String> STRING_UTF8 = s -> IOUtils.toString(s, CharsetUtil.UTF_8.name());
+
+	TypeConverter<String, Float> STRING_FLOAT_WRAPPER = s -> s == null ? null : Float.valueOf(s);
+
+	TypeConverter<String, Integer> STRING_INT_WRAPPER = s -> s == null ? null : Integer.valueOf(s);
+
+	TypeConverter<String, Long> STRING_LONG_WRAPPER = s -> s == null ? null : Long.valueOf(s);
+
+	TypeConverter<String, Double> STRING_DOUBLE_WRAPPER = s -> s == null ? null : Double.valueOf(s);
+
+	TypeConverter<String, Short> STRING_SHORT_WRAPPER = s -> s == null ? null : Short.valueOf(s);
+
+	TypeConverter<String, Boolean> STRING_BOOL_WRAPPER = s -> s == null ? null : Boolean.valueOf(s);
+
+	TypeConverter<String, Character> STRING_CHAR_WRAPPER = s -> {
+		throw new UnsupportedOperationException("unsupport convert string to character");
+	};
+
+	TypeConverter<String, Byte> STRING_BYTE_WRAPPER = s -> {
+		throw new UnsupportedOperationException("unsupport convert string to byte");
+	};
 }

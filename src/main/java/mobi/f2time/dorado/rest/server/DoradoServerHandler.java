@@ -39,8 +39,10 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.timeout.IdleStateEvent;
 import mobi.f2time.dorado.rest.router.UriRoutingMatchResult;
+import mobi.f2time.dorado.rest.servlet.FilterChain;
 import mobi.f2time.dorado.rest.servlet.HttpRequest;
 import mobi.f2time.dorado.rest.servlet.HttpResponse;
+import mobi.f2time.dorado.rest.servlet.impl.FilterManager;
 import mobi.f2time.dorado.rest.servlet.impl.HttpRequestImpl;
 import mobi.f2time.dorado.rest.servlet.impl.HttpResponseImpl;
 import mobi.f2time.dorado.rest.servlet.impl.Webapp;
@@ -96,6 +98,9 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 				ByteBufUtil.writeUtf8(response.content(), String.format("resource not found,url: %s, http_method:%s",
 						request.uri(), _request.getMethod()));
 			} else {
+				FilterChain filterChain = FilterManager.getInstance().filter(_request.getRequestURI());
+				filterChain.doFilter(_request, _response);
+				
 				String[] pathVariables = uriRouting.pathVariables();
 				try {
 					uriRouting.controller().invoke(_request, _response, pathVariables);

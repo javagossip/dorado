@@ -35,14 +35,14 @@ public class TypeConverters {
 		converters.put(char.class, TypeConverter.STRING_CHAR);
 		converters.put(byte.class, TypeConverter.STRING_BYTE);
 
-		converters.put(Float.class, TypeConverter.STRING_FLOAT);
-		converters.put(Integer.class, TypeConverter.STRING_INT);
-		converters.put(Long.class, TypeConverter.STRING_LONG);
-		converters.put(Double.class, TypeConverter.STRING_DOUBLE);
-		converters.put(Short.class, TypeConverter.STRING_SHORT);
-		converters.put(Boolean.class, TypeConverter.STRING_BOOL);
-		converters.put(Character.class, TypeConverter.STRING_CHAR);
-		converters.put(Byte.class, TypeConverter.STRING_BYTE);
+		converters.put(Float.class, TypeConverter.STRING_FLOAT_WRAPPER);
+		converters.put(Integer.class, TypeConverter.STRING_INT_WRAPPER);
+		converters.put(Long.class, TypeConverter.STRING_LONG_WRAPPER);
+		converters.put(Double.class, TypeConverter.STRING_DOUBLE_WRAPPER);
+		converters.put(Short.class, TypeConverter.STRING_SHORT_WRAPPER);
+		converters.put(Boolean.class, TypeConverter.STRING_BOOL_WRAPPER);
+		converters.put(Character.class, TypeConverter.STRING_CHAR_WRAPPER);
+		converters.put(Byte.class, TypeConverter.STRING_BYTE_WRAPPER);
 	}
 
 	@SuppressWarnings("rawtypes")

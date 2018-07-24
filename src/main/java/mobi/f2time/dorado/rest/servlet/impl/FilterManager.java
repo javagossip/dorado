@@ -17,6 +17,7 @@ package mobi.f2time.dorado.rest.servlet.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import mobi.f2time.dorado.rest.servlet.FilterChain;
 
@@ -25,12 +26,16 @@ import mobi.f2time.dorado.rest.servlet.FilterChain;
  * @author wangwp
  */
 public class FilterManager {
+	private static final String EXCLUDE_URL_PATTERN = "^//*$";
+	
 	private List<FilterConfiguration> doradoFilters;
+	private Pattern excludePattern;
 
 	private static final FilterManager INSTANCE = new FilterManager();
 
 	private FilterManager() {
 		this.doradoFilters = new ArrayList<>();
+		excludePattern = Pattern.compile(EXCLUDE_URL_PATTERN);
 	}
 
 	public static FilterManager getInstance() {
@@ -43,6 +48,10 @@ public class FilterManager {
 
 	public FilterChain filter(String uri) {
 		FilterChainImpl filterChain = new FilterChainImpl();
+		if (excludePattern.matcher(uri).matches()) {
+			return filterChain;
+		}
+		
 		doradoFilters.stream().filter(filter -> filter.getUrlPattern().matcher(uri).matches())
 				.forEachOrdered(filter -> filterChain.addFilter(filter.getFilter()));
 

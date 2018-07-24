@@ -28,6 +28,8 @@ import mobi.f2time.dorado.rest.annotation.Path;
 import mobi.f2time.dorado.rest.router.UriRoutingController;
 import mobi.f2time.dorado.rest.router.UriRoutingPath;
 import mobi.f2time.dorado.rest.router.UriRoutingRegistry;
+import mobi.f2time.dorado.rest.servlet.Filter;
+import mobi.f2time.dorado.rest.util.ClassLoaderUtils;
 import mobi.f2time.dorado.rest.util.PackageScanner;
 import mobi.f2time.dorado.rest.util.StringUtils;
 
@@ -37,6 +39,7 @@ import mobi.f2time.dorado.rest.util.StringUtils;
  */
 public class Webapp {
 	private static Webapp webapp;
+	private static final String FILTER_URL_PATTERN_ALL = "^/.*";
 
 	private final String[] packages;
 
@@ -62,17 +65,29 @@ public class Webapp {
 			for (String scanPackage : packages) {
 				classes.addAll(PackageScanner.scan(scanPackage));
 			}
-			classes.forEach(clazz -> initializeUriRouting(clazz));
+			classes.forEach(clazz -> {
+				initializeUriRouting(clazz);
+				initializeWebFilters(clazz);
+			});
 		} catch (Exception ex) {
 			throw new DoradoException(ex);
 		}
+	};
+
+	private void initializeWebFilters(Class<?> clazz) {
+		if (!Filter.class.isAssignableFrom(clazz)) {
+			return;
+		}
+
+		Path filterPath = clazz.getAnnotation(Path.class);
+		String urlPattern = filterPath == null ? null : filterPath.value();
+		urlPattern = StringUtils.defaultString(urlPattern, FILTER_URL_PATTERN_ALL);
+
+		getFilterManager().addFilter(new FilterConfiguration(urlPattern, 
+				(Filter) ClassLoaderUtils.newInstance(clazz)));
 	}
 
-	private void initializeUriRouting(Class<?> clazz) {
-		initUriRoutingController(clazz);
-	}
-
-	private void initUriRoutingController(Class<?> c) {
+	private void initializeUriRouting(Class<?> c) {
 		Controller controller = c.getAnnotation(Controller.class);
 		if (controller == null)
 			return;
