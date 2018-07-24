@@ -27,10 +27,10 @@ public class MessageBodyConverters {
 	private static Map<String, MessageBodyConverter> messageBodyConverterHolder = new ConcurrentHashMap<>();
 
 	static {
-		messageBodyConverterHolder.put(MimeTypes.TEXT_PLAIN, MessageBodyConverter.TEXT_PLAIN);
-		messageBodyConverterHolder.put(MimeTypes.APPLICATION_JSON, MessageBodyConverter.JSON);
-		messageBodyConverterHolder.put(MimeTypes.APPLICATION_PROTOBUF, MessageBodyConverter.PROTOBUF);
-		messageBodyConverterHolder.put(MimeTypes.ALL, MessageBodyConverter.DEFAULT);
+		messageBodyConverterHolder.put(MediaType.TEXT_PLAIN, MessageBodyConverter.TEXT_PLAIN);
+		messageBodyConverterHolder.put(MediaType.APPLICATION_JSON, MessageBodyConverter.JSON);
+		messageBodyConverterHolder.put(MediaType.APPLICATION_PROTOBUF, MessageBodyConverter.PROTOBUF);
+		messageBodyConverterHolder.put(MediaType.WILDCARD, MessageBodyConverter.DEFAULT);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -38,5 +38,4 @@ public class MessageBodyConverters {
 		MessageBodyConverter messageBodyConverter = messageBodyConverterHolder.get(produce);
 		return messageBodyConverter == null ? MessageBodyConverter.DEFAULT : messageBodyConverter;
 	}
-
 }

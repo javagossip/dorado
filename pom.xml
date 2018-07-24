@@ -18,6 +18,7 @@
 		<protobuf-java.version>2.6.1</protobuf-java.version>
 		<asm.version>6.2</asm.version>
 		<fastjson.version>1.2.47</fastjson.version>
+		<kryo.version>5.0.0-RC1</kryo.version>
 	</properties>
 
 	<build>
@@ -40,25 +41,25 @@
 			<artifactId>netty-transport</artifactId>
 			<version>${netty.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-codec-http</artifactId>
 			<version>${netty.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-handler</artifactId>
 			<version>${netty.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>${slf4j.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm</artifactId>
@@ -70,7 +71,7 @@
 			<artifactId>fastjson</artifactId>
 			<version>${fastjson.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.google.protobuf</groupId>
 			<artifactId>protobuf-java</artifactId>
