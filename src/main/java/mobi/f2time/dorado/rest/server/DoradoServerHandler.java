@@ -18,10 +18,7 @@ package mobi.f2time.dorado.rest.server;
 import static mobi.f2time.dorado.rest.servlet.impl.ChannelHolder.set;
 import static mobi.f2time.dorado.rest.servlet.impl.ChannelHolder.unset;
 
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,17 +51,12 @@ import mobi.f2time.dorado.rest.servlet.impl.Webapp;
 public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 	private static final Logger LOG = LoggerFactory.getLogger(DoradoServerHandler.class);
 
-	private static ExecutorService asyncExecutor;
+	private final ExecutorService asyncExecutor;
 	private final Webapp webapp;
 
 	private DoradoServerHandler(DoradoServerBuilder builder) {
 		this.webapp = Webapp.get();
-
-		synchronized (DoradoServerHandler.class) {
-			asyncExecutor = new ThreadPoolExecutor(builder.getMinWorkers(), builder.getMaxWorkers(), 120,
-					TimeUnit.SECONDS, new ArrayBlockingQueue<>(builder.getMaxPendingRequest()),
-					new ThreadPoolExecutor.AbortPolicy());
-		}
+		asyncExecutor = builder.executor();
 	}
 
 	public static DoradoServerHandler create(DoradoServerBuilder builder) {
@@ -73,6 +65,11 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+		if (asyncExecutor == null) {
+			handleHttpRequest(ctx, msg);
+			return;
+		}
+		
 		asyncExecutor.execute(() -> {
 			handleHttpRequest(ctx, msg);
 		});
@@ -100,7 +97,7 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 			} else {
 				FilterChain filterChain = FilterManager.getInstance().filter(_request.getRequestURI());
 				filterChain.doFilter(_request, _response);
-				
+
 				String[] pathVariables = uriRouting.pathVariables();
 				try {
 					uriRouting.controller().invoke(_request, _response, pathVariables);

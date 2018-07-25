@@ -15,6 +15,11 @@
  */
 package mobi.f2time.dorado.rest.server;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import mobi.f2time.dorado.rest.util.Constant;
 
 /**
@@ -39,6 +44,7 @@ public final class DoradoServerBuilder {
 
 	private int maxPacketLength = Constant.DEFAULT_MAX_PACKET_LENGTH;
 	private String[] scanPackages;
+	private ExecutorService executor;
 
 	private final int port;
 
@@ -158,6 +164,10 @@ public final class DoradoServerBuilder {
 		return this.scanPackages;
 	}
 
+	public ExecutorService executor() {
+		return this.executor;
+	}
+
 	public int getPort() {
 		return port;
 	}
@@ -165,6 +175,11 @@ public final class DoradoServerBuilder {
 	public DoradoServer build() {
 		if (scanPackages == null || scanPackages.length == 0) {
 			throw new IllegalArgumentException("scanPackage should not be null");
+		}
+
+		if (minWorkers > 0 && maxWorkers > 0 && (maxWorkers >= minWorkers) && maxPendingRequest > 0) {
+			executor = new ThreadPoolExecutor(minWorkers, maxWorkers, 5, TimeUnit.MINUTES,
+					new LinkedBlockingQueue<>(maxPendingRequest), new ThreadPoolExecutor.DiscardPolicy());
 		}
 		return new DoradoServer(this);
 	}
