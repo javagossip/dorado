@@ -32,7 +32,9 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.timeout.IdleStateHandler;
 import mobi.f2time.dorado.rest.servlet.impl.Webapp;
+import mobi.f2time.dorado.rest.util.ClassLoaderUtils;
 import mobi.f2time.dorado.rest.util.Constant;
+import mobi.f2time.dorado.rest.util.IOUtils;
 
 /**
  * 
@@ -54,6 +56,8 @@ public class DoradoServer {
 
 		ServerBootstrap bootstrap = null;
 		try {
+
+			// Tomcat initialized with port(s): 8080 (http)
 			bootstrap = new ServerBootstrap().group(acceptor, worker).channel(NioServerSocketChannel.class)
 					.childHandler(new ChannelInitializer<Channel>() {
 						@Override
@@ -74,7 +78,11 @@ public class DoradoServer {
 			bootstrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
 
 			ChannelFuture f = bootstrap.bind(builder.getPort()).sync();
-			LOG.info("dorado server start, listen: {}", builder.getPort());
+
+			// print dorado ascii-art logo
+			String doradoAscii = IOUtils.toString(ClassLoaderUtils.getStream("dorado-ascii"));
+			System.out.println(doradoAscii);
+			LOG.info(String.format("Dorado initialized with port(s): %d (http)", builder.getPort()));
 
 			f.channel().closeFuture().sync();
 		} catch (Throwable ex) {
