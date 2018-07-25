@@ -42,12 +42,24 @@ public class LocalVariableTableParameterNameResolver implements ParameterNameRes
 		final Class<?>[] parameterTypes = method.getParameterTypes();
 		final String[] parameterNames = new String[parameterTypes.length];
 
-		if (parameterTypes == null || parameterTypes.length == 0)
+		if (parameterTypes == null || parameterTypes.length == 0) {
 			return null;
+		}
+
+		boolean isStatic = Modifier.isStatic(method.getModifiers());
 
 		final Type[] types = new Type[parameterTypes.length];
+		final int[] lvtSlotIndex = new int[types.length];
+		int nextIndex = (isStatic ? 0 : 1);
+
 		for (int i = 0; i < types.length; i++) {
 			types[i] = Type.getType(parameterTypes[i]);
+			lvtSlotIndex[i] = nextIndex;
+			if (types[i] == Type.LONG_TYPE || types[i] == Type.DOUBLE_TYPE) {
+				nextIndex += 2;
+			} else {
+				nextIndex++;
+			}
 		}
 
 		try {
@@ -65,10 +77,10 @@ public class LocalVariableTableParameterNameResolver implements ParameterNameRes
 						@Override
 						public void visitLocalVariable(String name, String descriptor, String signature, Label start,
 								Label end, int index) {
-							if (Modifier.isStatic(method.getModifiers())) {
-								parameterNames[index] = name;
-							} else if (index > 0 && index <= parameterNames.length) {
-								parameterNames[index - 1] = name;
+							for (int i = 0; i < lvtSlotIndex.length; i++) {
+								if (lvtSlotIndex[i] == index) {
+									parameterNames[i] = name;
+								}
 							}
 						}
 					};
