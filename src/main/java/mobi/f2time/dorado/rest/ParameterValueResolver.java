@@ -96,10 +96,10 @@ public interface ParameterValueResolver {
 						pathVariable);
 				if (parameterValue != null)
 					return parameterValue;
-				// 如果方法参数是基本类型则必须给定默认值
-				if (parameterType.isPrimitive()) {
-					return ClassUtils.primitiveDefault(parameterType);
-				}
+			}
+			// 如果方法参数是基本类型则必须给定默认值
+			if (parameterType.isPrimitive()) {
+				return ClassUtils.primitiveDefault(parameterType);
 			}
 			return null;
 		}
