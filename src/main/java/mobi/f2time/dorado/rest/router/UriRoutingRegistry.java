@@ -16,6 +16,7 @@
 package mobi.f2time.dorado.rest.router;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 
@@ -57,6 +58,10 @@ public class UriRoutingRegistry {
 		return null;
 	}
 
+	public List<UriRouting> uriRoutings() {
+		return Collections.unmodifiableList(uriRoutingRegistry);
+	}
+
 	@Override
 	public String toString() {
 		return "UriRoutingRegistry [uriRouteMappingRegistry=" + uriRoutingRegistry + "]";
@@ -81,6 +86,11 @@ public class UriRoutingRegistry {
 
 		public UriRoutingController controller() {
 			return controller;
+		}
+
+		@Override
+		public String toString() {
+			return "UriRouting [path=" + path + ", controller=" + controller + "]";
 		}
 	}
 }

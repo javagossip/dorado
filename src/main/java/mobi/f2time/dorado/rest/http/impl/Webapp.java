@@ -21,11 +21,13 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import mobi.f2time.dorado.exception.DoradoException;
 import mobi.f2time.dorado.rest.annotation.Controller;
 import mobi.f2time.dorado.rest.annotation.HttpMethod;
 import mobi.f2time.dorado.rest.annotation.Path;
-import mobi.f2time.dorado.rest.controller.RootController;
 import mobi.f2time.dorado.rest.http.Filter;
 import mobi.f2time.dorado.rest.router.UriRoutingController;
 import mobi.f2time.dorado.rest.router.UriRoutingPath;
@@ -39,6 +41,8 @@ import mobi.f2time.dorado.rest.util.StringUtils;
  * @author wangwp
  */
 public class Webapp {
+	private static final Logger LOG = LoggerFactory.getLogger(Webapp.class);
+
 	private static Webapp webapp;
 	private static final String FILTER_URL_PATTERN_ALL = "^/.*";
 
@@ -66,13 +70,15 @@ public class Webapp {
 			for (String scanPackage : packages) {
 				classes.addAll(PackageScanner.scan(scanPackage));
 			}
-			
-			initializeUriRouting(RootController.class);
 
 			classes.forEach(clazz -> {
 				initializeUriRouting(clazz);
 				initializeWebFilters(clazz);
 			});
+			UriRoutingRegistry registry = getUriRoutingRegistry();
+			if (registry.uriRoutings().isEmpty()) {
+				LOG.warn("No Controller are registered, please check first");
+			}
 		} catch (Exception ex) {
 			throw new DoradoException(ex);
 		}

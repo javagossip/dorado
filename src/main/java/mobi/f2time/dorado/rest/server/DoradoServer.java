@@ -50,7 +50,6 @@ public class DoradoServer {
 	}
 
 	public void start() {
-		Webapp.create(builder.scanPackages());
 		EventLoopGroup acceptor = new NioEventLoopGroup(builder.getAcceptors());
 		EventLoopGroup worker = new NioEventLoopGroup(builder.getIoWorkers());
 
@@ -83,6 +82,7 @@ public class DoradoServer {
 			String doradoAscii = IOUtils.toString(ClassLoaderUtils.getStream("dorado-ascii"));
 			System.out.println(doradoAscii);
 			System.out.println();
+			Webapp.create(builder.scanPackages());
 			LOG.info(String.format("Dorado Application initialized with port(s): %d (http)", builder.getPort()));
 
 			f.channel().closeFuture().sync();
