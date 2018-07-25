@@ -25,6 +25,7 @@ import mobi.f2time.dorado.exception.DoradoException;
 import mobi.f2time.dorado.rest.annotation.Controller;
 import mobi.f2time.dorado.rest.annotation.HttpMethod;
 import mobi.f2time.dorado.rest.annotation.Path;
+import mobi.f2time.dorado.rest.controller.RootController;
 import mobi.f2time.dorado.rest.router.UriRoutingController;
 import mobi.f2time.dorado.rest.router.UriRoutingPath;
 import mobi.f2time.dorado.rest.router.UriRoutingRegistry;
@@ -65,6 +66,9 @@ public class Webapp {
 			for (String scanPackage : packages) {
 				classes.addAll(PackageScanner.scan(scanPackage));
 			}
+			
+			initializeUriRouting(RootController.class);
+
 			classes.forEach(clazz -> {
 				initializeUriRouting(clazz);
 				initializeWebFilters(clazz);
@@ -83,8 +87,7 @@ public class Webapp {
 		String urlPattern = filterPath == null ? null : filterPath.value();
 		urlPattern = StringUtils.defaultString(urlPattern, FILTER_URL_PATTERN_ALL);
 
-		getFilterManager().addFilter(new FilterConfiguration(urlPattern, 
-				(Filter) ClassLoaderUtils.newInstance(clazz)));
+		getFilterManager().addFilter(new FilterConfiguration(urlPattern, (Filter) ClassLoaderUtils.newInstance(clazz)));
 	}
 
 	private void initializeUriRouting(Class<?> c) {
@@ -95,19 +98,20 @@ public class Webapp {
 		Path classLevelPath = c.getAnnotation(Path.class);
 		String controllerPath = classLevelPath == null ? StringUtils.EMPTY : classLevelPath.value();
 
-		Method[] controllerMethods = c.getMethods();
-		for (Method controllerMethod : controllerMethods) {
-			if (Modifier.isStatic(controllerMethod.getModifiers()) || controllerMethod.getAnnotations().length == 0) {
+		Method[] controllerMethods = c.getDeclaredMethods();
+		for (Method method : controllerMethods) {
+			if (Modifier.isStatic(method.getModifiers()) || method.getAnnotations().length == 0
+					|| !Modifier.isPublic(method.getModifiers())) {
 				continue;
 			}
 
-			Path methodLevelPath = controllerMethod.getAnnotation(Path.class);
-			HttpMethod httpMethod = getHttpMethod(controllerMethod.getAnnotations());
+			Path methodLevelPath = method.getAnnotation(Path.class);
+			HttpMethod httpMethod = getHttpMethod(method.getAnnotations());
 			String methodPath = methodLevelPath == null ? StringUtils.EMPTY : methodLevelPath.value();
 
 			UriRoutingPath uriRoutingPath = UriRoutingPath.create(String.format("%s%s", controllerPath, methodPath),
 					httpMethod);
-			UriRoutingController routeController = UriRoutingController.create(uriRoutingPath, c, controllerMethod);
+			UriRoutingController routeController = UriRoutingController.create(uriRoutingPath, c, method);
 			getUriRoutingRegistry().register(uriRoutingPath, routeController);
 		}
 	}

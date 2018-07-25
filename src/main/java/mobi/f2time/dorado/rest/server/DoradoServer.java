@@ -82,6 +82,7 @@ public class DoradoServer {
 			// print dorado ascii-art logo
 			String doradoAscii = IOUtils.toString(ClassLoaderUtils.getStream("dorado-ascii"));
 			System.out.println(doradoAscii);
+			System.out.println();
 			LOG.info(String.format("Dorado initialized with port(s): %d (http)", builder.getPort()));
 
 			f.channel().closeFuture().sync();
