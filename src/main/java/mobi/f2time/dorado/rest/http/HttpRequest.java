@@ -13,29 +13,36 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package mobi.f2time.dorado.rest.servlet.impl;
+package mobi.f2time.dorado.rest.http;
 
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 
  * @author wangwp
  */
-public class PrintWriterImpl extends PrintWriter {
-	private boolean flushed;
-	
-	public PrintWriterImpl(OutputStream out) {
-		super(out);
-	}
+public interface HttpRequest {
+	String getParameter(String name);
 
-	@Override
-	public void flush() {
-		super.flush();
-		this.flushed = true;
-	}
+	String[] getParameterValues(String name);
 
-	public boolean isFlushed() {
-		return flushed;
-	}
+	Map<String, List<String>> getParameters();
+
+	String getRemoteAddr();
+
+	Cookie[] getCookies();
+
+	String getHeader(String name);
+
+	String[] getHeaders(String name);
+
+	String getMethod();
+
+	String getQueryString();
+
+	String getRequestURI();
+
+	InputStream getInputStream();
 }

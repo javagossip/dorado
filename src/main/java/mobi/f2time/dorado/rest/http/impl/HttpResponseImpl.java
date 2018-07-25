@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package mobi.f2time.dorado.rest.servlet.impl;
+package mobi.f2time.dorado.rest.http.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +24,7 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import mobi.f2time.dorado.exception.DoradoException;
-import mobi.f2time.dorado.rest.servlet.HttpResponse;
+import mobi.f2time.dorado.rest.http.HttpResponse;
 
 /**
  * 

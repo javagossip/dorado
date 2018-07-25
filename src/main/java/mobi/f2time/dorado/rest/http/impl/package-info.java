@@ -13,28 +13,8 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package mobi.f2time.dorado.rest.servlet.impl;
-
-import java.io.IOException;
-import java.io.InputStream;
-
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.handler.codec.http.FullHttpRequest;
-
 /**
  * 
  * @author wangwp
  */
-public class InputStreamImpl extends InputStream {
-
-	private final ByteBufInputStream in;
-
-	public InputStreamImpl(FullHttpRequest originalHttpRequest) {
-		this.in = new ByteBufInputStream(originalHttpRequest.content());
-	}
-
-	@Override
-	public int read() throws IOException {
-		return this.in.read();
-	}
-}
+package mobi.f2time.dorado.rest.http.impl;

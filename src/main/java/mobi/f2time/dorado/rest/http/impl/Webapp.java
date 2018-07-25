@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package mobi.f2time.dorado.rest.servlet.impl;
+package mobi.f2time.dorado.rest.http.impl;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -26,10 +26,10 @@ import mobi.f2time.dorado.rest.annotation.Controller;
 import mobi.f2time.dorado.rest.annotation.HttpMethod;
 import mobi.f2time.dorado.rest.annotation.Path;
 import mobi.f2time.dorado.rest.controller.RootController;
+import mobi.f2time.dorado.rest.http.Filter;
 import mobi.f2time.dorado.rest.router.UriRoutingController;
 import mobi.f2time.dorado.rest.router.UriRoutingPath;
 import mobi.f2time.dorado.rest.router.UriRoutingRegistry;
-import mobi.f2time.dorado.rest.servlet.Filter;
 import mobi.f2time.dorado.rest.util.ClassLoaderUtils;
 import mobi.f2time.dorado.rest.util.PackageScanner;
 import mobi.f2time.dorado.rest.util.StringUtils;

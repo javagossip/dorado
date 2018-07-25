@@ -13,8 +13,40 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
+package mobi.f2time.dorado.rest.http.impl;
+
 /**
  * 
  * @author wangwp
  */
-package mobi.f2time.dorado.rest.servlet.impl;
+public class URIParser {
+	private String requestUri;
+
+	private String queryString;
+
+	public URIParser() {
+	}
+
+	public void parse(String uri) {
+		int indx = uri.indexOf('?');
+
+		if (indx != -1) {
+			this.queryString = uri.substring(indx + 1);
+			this.requestUri = uri.substring(0, indx);
+		} else {
+			this.requestUri = uri;
+		}
+
+		if (this.requestUri.endsWith("/"))
+			this.requestUri.substring(0, this.requestUri.length() - 1);
+
+	}
+
+	public String getQueryString() {
+		return queryString;
+	}
+
+	public String getRequestUri() {
+		return requestUri;
+	}
+}

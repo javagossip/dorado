@@ -15,8 +15,8 @@
  */
 package mobi.f2time.dorado.rest.server;
 
-import static mobi.f2time.dorado.rest.servlet.impl.ChannelHolder.set;
-import static mobi.f2time.dorado.rest.servlet.impl.ChannelHolder.unset;
+import static mobi.f2time.dorado.rest.http.impl.ChannelHolder.set;
+import static mobi.f2time.dorado.rest.http.impl.ChannelHolder.unset;
 
 import java.util.concurrent.ExecutorService;
 
@@ -35,14 +35,14 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.timeout.IdleStateEvent;
+import mobi.f2time.dorado.rest.http.FilterChain;
+import mobi.f2time.dorado.rest.http.HttpRequest;
+import mobi.f2time.dorado.rest.http.HttpResponse;
+import mobi.f2time.dorado.rest.http.impl.FilterManager;
+import mobi.f2time.dorado.rest.http.impl.HttpRequestImpl;
+import mobi.f2time.dorado.rest.http.impl.HttpResponseImpl;
+import mobi.f2time.dorado.rest.http.impl.Webapp;
 import mobi.f2time.dorado.rest.router.UriRoutingMatchResult;
-import mobi.f2time.dorado.rest.servlet.FilterChain;
-import mobi.f2time.dorado.rest.servlet.HttpRequest;
-import mobi.f2time.dorado.rest.servlet.HttpResponse;
-import mobi.f2time.dorado.rest.servlet.impl.FilterManager;
-import mobi.f2time.dorado.rest.servlet.impl.HttpRequestImpl;
-import mobi.f2time.dorado.rest.servlet.impl.HttpResponseImpl;
-import mobi.f2time.dorado.rest.servlet.impl.Webapp;
 
 /**
  * 

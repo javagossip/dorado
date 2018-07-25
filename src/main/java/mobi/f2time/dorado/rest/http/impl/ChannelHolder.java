@@ -13,43 +13,25 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package mobi.f2time.dorado.rest.servlet;
 
-/**
- * 
- * @author wangwp
- */
-public interface Cookie {
+package mobi.f2time.dorado.rest.http.impl;
 
-	long UNDEFINED_MAX_AGE = Long.MIN_VALUE;
+import io.netty.channel.Channel;
 
-	String name();
+public class ChannelHolder {
 
-	String value();
+	public static final ThreadLocal<Channel> _channelHolder = new ThreadLocal<Channel>();
 
-	void setValue(String value);
+	public static void set(Channel channel) {
+		_channelHolder.set(channel);
+	}
 
-	boolean wrap();
+	public static void unset() {
+		_channelHolder.remove();
+	}
 
-	void setWrap(boolean wrap);
+	public static Channel get() {
+		return _channelHolder.get();
+	}
 
-	String domain();
-
-	void setDomain(String domain);
-
-	String path();
-
-	void setPath(String path);
-
-	long maxAge();
-
-	void setMaxAge(long maxAge);
-
-	boolean isSecure();
-
-	void setSecure(boolean secure);
-
-	boolean isHttpOnly();
-
-	void setHttpOnly(boolean httpOnly);
 }

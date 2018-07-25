@@ -24,8 +24,8 @@ import mobi.f2time.dorado.rest.DefaultParameterNameResolver;
 import mobi.f2time.dorado.rest.ParameterNameResolver;
 import mobi.f2time.dorado.rest.annotation.Consume;
 import mobi.f2time.dorado.rest.annotation.Produce;
-import mobi.f2time.dorado.rest.servlet.HttpRequest;
-import mobi.f2time.dorado.rest.servlet.HttpResponse;
+import mobi.f2time.dorado.rest.http.HttpRequest;
+import mobi.f2time.dorado.rest.http.HttpResponse;
 
 import static mobi.f2time.dorado.rest.util.ProtobufMessageDescriptors.*;
 

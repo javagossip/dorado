@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package mobi.f2time.dorado.rest.servlet;
+package mobi.f2time.dorado.rest.http;
 
 import java.io.IOException;
 

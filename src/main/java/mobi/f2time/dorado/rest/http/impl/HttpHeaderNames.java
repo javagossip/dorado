@@ -13,25 +13,16 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
+package mobi.f2time.dorado.rest.http.impl;
 
-package mobi.f2time.dorado.rest.servlet.impl;
+/**
+ * 
+ * @author wangwp
+ */
+public class HttpHeaderNames {
+	public static final String CONTENT_TYPE = "content-type";
 
-import io.netty.channel.Channel;
+	public static final String ACCEPT = "accept";
 
-public class ChannelHolder {
-
-	public static final ThreadLocal<Channel> _channelHolder = new ThreadLocal<Channel>();
-
-	public static void set(Channel channel) {
-		_channelHolder.set(channel);
-	}
-
-	public static void unset() {
-		_channelHolder.remove();
-	}
-
-	public static Channel get() {
-		return _channelHolder.get();
-	}
-
+	public static final String CONTENT_LENGTH = "content-length";
 }

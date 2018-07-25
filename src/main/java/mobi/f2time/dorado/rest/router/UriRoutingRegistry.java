@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
-import mobi.f2time.dorado.rest.servlet.HttpRequest;
+import mobi.f2time.dorado.rest.http.HttpRequest;
 
 /**
  * 

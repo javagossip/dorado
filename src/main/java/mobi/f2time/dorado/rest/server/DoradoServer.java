@@ -31,7 +31,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.timeout.IdleStateHandler;
-import mobi.f2time.dorado.rest.servlet.impl.Webapp;
+import mobi.f2time.dorado.rest.http.impl.Webapp;
 import mobi.f2time.dorado.rest.util.ClassLoaderUtils;
 import mobi.f2time.dorado.rest.util.Constant;
 import mobi.f2time.dorado.rest.util.IOUtils;

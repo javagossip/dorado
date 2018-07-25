@@ -13,40 +13,29 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package mobi.f2time.dorado.rest.servlet.impl;
+package mobi.f2time.dorado.rest.http.impl;
+
+import java.io.OutputStream;
+import java.io.PrintWriter;
 
 /**
  * 
  * @author wangwp
  */
-public class URIParser {
-	private String requestUri;
-
-	private String queryString;
-
-	public URIParser() {
+public class PrintWriterImpl extends PrintWriter {
+	private boolean flushed;
+	
+	public PrintWriterImpl(OutputStream out) {
+		super(out);
 	}
 
-	public void parse(String uri) {
-		int indx = uri.indexOf('?');
-
-		if (indx != -1) {
-			this.queryString = uri.substring(indx + 1);
-			this.requestUri = uri.substring(0, indx);
-		} else {
-			this.requestUri = uri;
-		}
-
-		if (this.requestUri.endsWith("/"))
-			this.requestUri.substring(0, this.requestUri.length() - 1);
-
+	@Override
+	public void flush() {
+		super.flush();
+		this.flushed = true;
 	}
 
-	public String getQueryString() {
-		return queryString;
-	}
-
-	public String getRequestUri() {
-		return requestUri;
+	public boolean isFlushed() {
+		return flushed;
 	}
 }

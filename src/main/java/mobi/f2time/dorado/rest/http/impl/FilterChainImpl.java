@@ -13,27 +13,37 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package mobi.f2time.dorado.rest.servlet.impl;
+package mobi.f2time.dorado.rest.http.impl;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.util.LinkedList;
 
-import io.netty.buffer.ByteBufOutputStream;
-import io.netty.handler.codec.http.FullHttpResponse;
+import mobi.f2time.dorado.rest.http.Filter;
+import mobi.f2time.dorado.rest.http.FilterChain;
+import mobi.f2time.dorado.rest.http.HttpRequest;
+import mobi.f2time.dorado.rest.http.HttpResponse;
 
 /**
  * 
  * @author wangwp
  */
-public class OutputStreamImpl extends OutputStream {
-	private ByteBufOutputStream out;
-	
-	public OutputStreamImpl(FullHttpResponse response) {
-		this.out = new ByteBufOutputStream(response.content());
+public class FilterChainImpl implements FilterChain {
+	private LinkedList<Filter> filters = new LinkedList<>();
+
+	public void addFilter(Filter filter) {
+		filters.add(filter);
 	}
-	
+
 	@Override
-	public void write(int b) throws IOException {
-		this.out.write(b);
+	public void doFilter(HttpRequest request, HttpResponse response) throws IOException {
+		if (filters.isEmpty()) {
+			return;
+		}
+
+		try {
+			filters.poll().doFilter(request, response, this);
+		} catch (IOException ex) {
+			throw ex;
+		}
 	}
 }

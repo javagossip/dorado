@@ -17,4 +17,4 @@
  * 
  * @author wangwp
  */
-package mobi.f2time.dorado.rest.servlet;
+package mobi.f2time.dorado.rest.http;

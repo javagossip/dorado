@@ -13,36 +13,31 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package mobi.f2time.dorado.rest.servlet;
+package mobi.f2time.dorado.rest.http.impl;
 
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
+import java.util.regex.Pattern;
+
+import mobi.f2time.dorado.rest.http.Filter;
 
 /**
  * 
  * @author wangwp
  */
-public interface HttpRequest {
-	String getParameter(String name);
+public class FilterConfiguration {
+	private Filter filter;
 
-	String[] getParameterValues(String name);
+	private Pattern urlPattern;
 
-	Map<String, List<String>> getParameters();
+	public FilterConfiguration(String pattern, Filter filter) {
+		this.filter = filter;
+		this.urlPattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
+	}
 
-	String getRemoteAddr();
+	public Filter getFilter() {
+		return filter;
+	}
 
-	Cookie[] getCookies();
-
-	String getHeader(String name);
-
-	String[] getHeaders(String name);
-
-	String getMethod();
-
-	String getQueryString();
-
-	String getRequestURI();
-
-	InputStream getInputStream();
+	public Pattern getUrlPattern() {
+		return urlPattern;
+	}
 }

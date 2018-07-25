@@ -13,16 +13,14 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package mobi.f2time.dorado.rest.servlet.impl;
+package mobi.f2time.dorado.rest.http;
+
+import java.io.IOException;
 
 /**
  * 
  * @author wangwp
  */
-public class HttpHeaderNames {
-	public static final String CONTENT_TYPE = "content-type";
-
-	public static final String ACCEPT = "accept";
-
-	public static final String CONTENT_LENGTH = "content-length";
+public interface FilterChain {
+	void doFilter (HttpRequest request, HttpResponse response ) throws IOException;
 }

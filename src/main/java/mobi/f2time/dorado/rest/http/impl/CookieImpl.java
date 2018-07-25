@@ -13,9 +13,9 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package mobi.f2time.dorado.rest.servlet.impl;
+package mobi.f2time.dorado.rest.http.impl;
 
-import mobi.f2time.dorado.rest.servlet.Cookie;
+import mobi.f2time.dorado.rest.http.Cookie;
 
 /**
  * 

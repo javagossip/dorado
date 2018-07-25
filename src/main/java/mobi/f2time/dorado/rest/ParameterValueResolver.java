@@ -19,9 +19,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import mobi.f2time.dorado.rest.servlet.Cookie;
-import mobi.f2time.dorado.rest.servlet.HttpRequest;
-import mobi.f2time.dorado.rest.servlet.HttpResponse;
+import mobi.f2time.dorado.rest.http.Cookie;
+import mobi.f2time.dorado.rest.http.HttpRequest;
+import mobi.f2time.dorado.rest.http.HttpResponse;
 import mobi.f2time.dorado.rest.util.ClassUtils;
 import mobi.f2time.dorado.rest.util.MediaTypeUtils;
 import mobi.f2time.dorado.rest.util.MethodDescriptor;

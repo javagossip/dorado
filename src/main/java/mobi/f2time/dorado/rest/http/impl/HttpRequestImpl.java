@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package mobi.f2time.dorado.rest.servlet.impl;
+package mobi.f2time.dorado.rest.http.impl;
 
 import java.io.InputStream;
 import java.net.InetSocketAddress;
@@ -31,7 +31,7 @@ import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import io.netty.util.CharsetUtil;
-import mobi.f2time.dorado.rest.servlet.HttpRequest;
+import mobi.f2time.dorado.rest.http.HttpRequest;
 
 /**
  * 
@@ -98,7 +98,7 @@ public class HttpRequestImpl implements HttpRequest {
 	}
 
 	@Override
-	public mobi.f2time.dorado.rest.servlet.Cookie[] getCookies() {
+	public mobi.f2time.dorado.rest.http.Cookie[] getCookies() {
 		String cookieString = this.originalRequest.headers().get(HttpHeaderNames.COOKIE);
 		if (cookieString != null) {
 			Set<Cookie> cookies = ServerCookieDecoder.LAX.decode(cookieString);

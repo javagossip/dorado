@@ -13,14 +13,43 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package mobi.f2time.dorado.rest.servlet;
-
-import java.io.IOException;
+package mobi.f2time.dorado.rest.http;
 
 /**
  * 
  * @author wangwp
  */
-public interface FilterChain {
-	void doFilter (HttpRequest request, HttpResponse response ) throws IOException;
+public interface Cookie {
+
+	long UNDEFINED_MAX_AGE = Long.MIN_VALUE;
+
+	String name();
+
+	String value();
+
+	void setValue(String value);
+
+	boolean wrap();
+
+	void setWrap(boolean wrap);
+
+	String domain();
+
+	void setDomain(String domain);
+
+	String path();
+
+	void setPath(String path);
+
+	long maxAge();
+
+	void setMaxAge(long maxAge);
+
+	boolean isSecure();
+
+	void setSecure(boolean secure);
+
+	boolean isHttpOnly();
+
+	void setHttpOnly(boolean httpOnly);
 }

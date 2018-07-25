@@ -22,8 +22,8 @@ import mobi.f2time.dorado.rest.annotation.HeaderParam;
 import mobi.f2time.dorado.rest.annotation.PathVariable;
 import mobi.f2time.dorado.rest.annotation.RequestBody;
 import mobi.f2time.dorado.rest.annotation.RequestParam;
-import mobi.f2time.dorado.rest.servlet.HttpRequest;
-import mobi.f2time.dorado.rest.servlet.HttpResponse;
+import mobi.f2time.dorado.rest.http.HttpRequest;
+import mobi.f2time.dorado.rest.http.HttpResponse;
 
 /**
  * 

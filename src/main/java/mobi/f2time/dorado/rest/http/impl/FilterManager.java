@@ -13,13 +13,13 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package mobi.f2time.dorado.rest.servlet.impl;
+package mobi.f2time.dorado.rest.http.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import mobi.f2time.dorado.rest.servlet.FilterChain;
+import mobi.f2time.dorado.rest.http.FilterChain;
 
 /**
  * 

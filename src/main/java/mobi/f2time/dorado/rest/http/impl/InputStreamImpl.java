@@ -13,31 +13,28 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package mobi.f2time.dorado.rest.servlet.impl;
+package mobi.f2time.dorado.rest.http.impl;
 
-import java.util.regex.Pattern;
+import java.io.IOException;
+import java.io.InputStream;
 
-import mobi.f2time.dorado.rest.servlet.Filter;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.handler.codec.http.FullHttpRequest;
 
 /**
  * 
  * @author wangwp
  */
-public class FilterConfiguration {
-	private Filter filter;
+public class InputStreamImpl extends InputStream {
 
-	private Pattern urlPattern;
+	private final ByteBufInputStream in;
 
-	public FilterConfiguration(String pattern, Filter filter) {
-		this.filter = filter;
-		this.urlPattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
+	public InputStreamImpl(FullHttpRequest originalHttpRequest) {
+		this.in = new ByteBufInputStream(originalHttpRequest.content());
 	}
 
-	public Filter getFilter() {
-		return filter;
-	}
-
-	public Pattern getUrlPattern() {
-		return urlPattern;
+	@Override
+	public int read() throws IOException {
+		return this.in.read();
 	}
 }
