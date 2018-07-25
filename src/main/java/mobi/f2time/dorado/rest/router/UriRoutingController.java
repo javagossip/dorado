@@ -17,7 +17,8 @@ package mobi.f2time.dorado.rest.router;
 
 import java.lang.reflect.Method;
 
-import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpMethod;
+import mobi.f2time.dorado.exception.DoradoException;
 import mobi.f2time.dorado.rest.MediaType;
 import mobi.f2time.dorado.rest.MessageBodyConverter;
 import mobi.f2time.dorado.rest.MessageBodyConverters;
@@ -25,6 +26,7 @@ import mobi.f2time.dorado.rest.ParameterValueResolver;
 import mobi.f2time.dorado.rest.ParameterValueResolvers;
 import mobi.f2time.dorado.rest.servlet.HttpRequest;
 import mobi.f2time.dorado.rest.servlet.HttpResponse;
+import mobi.f2time.dorado.rest.servlet.impl.HttpHeaderNames;
 import mobi.f2time.dorado.rest.util.MediaTypeUtils;
 import mobi.f2time.dorado.rest.util.MethodDescriptor;
 import mobi.f2time.dorado.rest.util.MethodDescriptor.MethodParameter;
@@ -49,6 +51,19 @@ public class UriRoutingController {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Object invoke(HttpRequest request, HttpResponse response, String[] pathVariables) throws Exception {
 		Method invokeMethod = methodDescriptor.getMethod();
+		MediaType expectedMediaType = MediaType.valueOf(methodDescriptor.consume());
+
+		if (!HttpMethod.GET.name().equals(request.getMethod()) && !HttpMethod.DELETE.name().equals(request.getMethod())
+				&& (!expectedMediaType.isWildcardType())) {
+			String contentType = request.getHeader(HttpHeaderNames.CONTENT_TYPE);
+			MediaType requestMediaType = MediaType.valueOf(contentType);
+
+			if (!requestMediaType.isCompatible(expectedMediaType) || requestMediaType == null) {
+				throw new DoradoException(String.format("Invalid request content_type, expected: [%s], actual: [%s]",
+						methodDescriptor.consume(), contentType));
+			}
+		}
+
 		Object[] args = resolveParameters(request, response, pathVariables);
 
 		if (methodDescriptor.getReturnType() == void.class) {

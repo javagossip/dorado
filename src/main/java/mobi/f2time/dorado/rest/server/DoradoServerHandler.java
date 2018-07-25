@@ -69,7 +69,7 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 			handleHttpRequest(ctx, msg);
 			return;
 		}
-		
+
 		asyncExecutor.execute(() -> {
 			handleHttpRequest(ctx, msg);
 		});
@@ -81,6 +81,7 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 
 		boolean isKeepAlive = HttpUtil.isKeepAlive(request);
 		HttpUtil.setKeepAlive(response, isKeepAlive);
+		response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html;charset=UTF-8");
 		response.headers().set(HttpHeaderNames.SERVER, "dorado_1.x");
 
 		ChannelFuture channelFuture = null;
@@ -99,23 +100,18 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 				filterChain.doFilter(_request, _response);
 
 				String[] pathVariables = uriRouting.pathVariables();
-				try {
-					uriRouting.controller().invoke(_request, _response, pathVariables);
-				} catch (Exception ex) {
-					response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
-					ByteBufUtil.writeUtf8(response.content(), "500 Internal Server Error");
-					throw ex;
-				}
+				uriRouting.controller().invoke(_request, _response, pathVariables);
 			}
-
+		} catch (Throwable ex) {
+			LOG.error("handle http request error", ex);
+			response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
+			ByteBufUtil.writeUtf8(response.content(), "500 Internal Server Error");
 			if (isKeepAlive) {
 				HttpUtil.setContentLength(response, response.content().readableBytes());
 			}
-			channelFuture = ctx.channel().writeAndFlush(response);
-		} catch (Throwable ex) {
-			LOG.error("handle http request error", ex);
 		} finally {
 			unset();
+			channelFuture = ctx.channel().writeAndFlush(response);
 			if (!isKeepAlive && channelFuture != null) {
 				channelFuture.addListener(ChannelFutureListener.CLOSE);
 			}

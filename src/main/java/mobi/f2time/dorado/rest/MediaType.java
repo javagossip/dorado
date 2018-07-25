@@ -21,6 +21,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import mobi.f2time.dorado.rest.util.StringUtils;
+
 /**
  * copy from javax.ws.rs.core.MediaType
  * 
@@ -332,6 +334,10 @@ public class MediaType {
 	}
 
 	public static MediaType valueOf(String mediaType) {
+		if (StringUtils.isBlank(mediaType)) {
+			return null;
+		}
+
 		String[] parts = mediaType.split(";");
 
 		String fullType = parts[0].trim();

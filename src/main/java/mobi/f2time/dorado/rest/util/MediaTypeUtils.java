@@ -31,7 +31,8 @@ import mobi.f2time.dorado.rest.MediaType;
 public final class MediaTypeUtils {
 
 	public static MediaType forType(Class<?> type) {
-		if (ClassUtils.isPrimitiveOrWrapper(type) || String.class == type || BigDecimal.class == type
+		if (ClassUtils.isPrimitiveOrWrapper(type) || String.class == type 
+				|| BigDecimal.class == type
 				|| BigInteger.class == type) {
 			return MediaType.TEXT_HTML_TYPE.withCharset(CharsetUtil.UTF_8.name());
 		}
@@ -43,7 +44,8 @@ public final class MediaTypeUtils {
 		if (Message.class.isAssignableFrom(type)) {
 			return MediaType.APPLICATION_PROTOBUF_TYPE;
 		}
-		return MediaType.WILDCARD_TYPE;
+
+		return MediaType.APPLICATION_JSON_TYPE.withCharset(CharsetUtil.UTF_8.name());
 	}
 
 	public static MediaType defaultForType(Class<?> type, String defaultType) {
