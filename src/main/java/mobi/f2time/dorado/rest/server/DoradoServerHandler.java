@@ -106,11 +106,11 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 			LOG.error("handle http request error", ex);
 			response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
 			ByteBufUtil.writeUtf8(response.content(), "500 Internal Server Error");
+		} finally {
+			unset();
 			if (isKeepAlive) {
 				HttpUtil.setContentLength(response, response.content().readableBytes());
 			}
-		} finally {
-			unset();
 			channelFuture = ctx.channel().writeAndFlush(response);
 			if (!isKeepAlive && channelFuture != null) {
 				channelFuture.addListener(ChannelFutureListener.CLOSE);
