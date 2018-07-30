@@ -15,8 +15,15 @@
  */
 package mobi.f2time.dorado.rest.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import mobi.f2time.dorado.rest.annotation.Controller;
 import mobi.f2time.dorado.rest.annotation.Path;
+import mobi.f2time.dorado.rest.router.UriRoutingPath;
+import mobi.f2time.dorado.rest.router.UriRoutingRegistry;
+import mobi.f2time.dorado.rest.router.UriRoutingRegistry.UriRouting;
+import mobi.f2time.dorado.rest.util.StringUtils;
 
 /**
  * 
@@ -25,10 +32,31 @@ import mobi.f2time.dorado.rest.annotation.Path;
 @Controller
 @Path("/")
 public class RootController {
-	private static final String DORADO_WELCOME = "Welcome to DORADO!";
+	private static final String DORADO_WELCOME = "Welcome to dorado!";
 
 	@Path
 	public String index() {
 		return DORADO_WELCOME;
+	}
+
+	@Path("status")
+	public DoradoStatus status() {
+		return DoradoStatus.get();
+	}
+
+	@Path("services")
+	public List<RestService> services() {
+		List<RestService> serviceList = new ArrayList<>();
+
+		List<UriRouting> uriRoutings = UriRoutingRegistry.getInstance().uriRoutings();
+		for (UriRouting uriRouting : uriRoutings) {
+			UriRoutingPath routingPath = uriRouting.uriRoutingPath();
+
+			String path = routingPath.routingPath();
+			String httpMethod = StringUtils.defaultString(routingPath.httpMethod(), "*");
+
+			serviceList.add(RestService.builder().withPath(path).withHttpMethod(httpMethod).build());
+		}
+		return serviceList;
 	}
 }

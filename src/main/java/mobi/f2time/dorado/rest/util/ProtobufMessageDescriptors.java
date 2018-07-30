@@ -18,8 +18,8 @@ package mobi.f2time.dorado.rest.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
@@ -31,7 +31,7 @@ import mobi.f2time.dorado.exception.DoradoException;
  * @author wangwp
  */
 public class ProtobufMessageDescriptors {
-	private static final Map<Class<?>, ProtobufMessageDescriptor> messageDescriptorHolder = new HashMap<>();
+	private static final Map<Class<?>, ProtobufMessageDescriptor> messageDescriptorHolder = new ConcurrentHashMap<>();
 
 	public static void registerMessageDescriptor(ProtobufMessageDescriptor messageDescriptor) {
 		messageDescriptorHolder.put(messageDescriptor.messageType, messageDescriptor);

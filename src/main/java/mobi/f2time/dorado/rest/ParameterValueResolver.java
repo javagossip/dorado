@@ -101,7 +101,8 @@ public interface ParameterValueResolver {
 			if (parameterType.isPrimitive()) {
 				return ClassUtils.primitiveDefault(parameterType);
 			}
-			return null;
+			// 如果从请求参数、路径参数、请求头部参数都无法获取到且非基本类型的话尝试从请求体中获取
+			return REQUEST_BODY.resolveParameterValue(request, response, desc, methodParameter, pathVariable);
 		}
 	};
 }

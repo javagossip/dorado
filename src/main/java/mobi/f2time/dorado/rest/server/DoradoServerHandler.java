@@ -35,6 +35,7 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.timeout.IdleStateEvent;
+import mobi.f2time.dorado.rest.controller.DoradoStatus;
 import mobi.f2time.dorado.rest.http.FilterChain;
 import mobi.f2time.dorado.rest.http.HttpRequest;
 import mobi.f2time.dorado.rest.http.HttpResponse;
@@ -53,10 +54,12 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 
 	private final ExecutorService asyncExecutor;
 	private final Webapp webapp;
+	private final DoradoStatus status;
 
 	private DoradoServerHandler(DoradoServerBuilder builder) {
 		this.webapp = Webapp.get();
-		asyncExecutor = builder.executor();
+		this.asyncExecutor = builder.executor();
+		this.status = DoradoStatus.get();
 	}
 
 	public static DoradoServerHandler create(DoradoServerBuilder builder) {
@@ -65,6 +68,8 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+		status.totalRequestsIncrement();
+
 		if (asyncExecutor == null) {
 			handleHttpRequest(ctx, msg);
 			return;
@@ -93,8 +98,8 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 			UriRoutingMatchResult uriRouting = webapp.getUriRoutingRegistry().findRouteController(_request);
 			if (uriRouting == null) {
 				response.setStatus(HttpResponseStatus.NOT_FOUND);
-				ByteBufUtil.writeUtf8(response.content(), String.format("resource not found,url: %s, http_method:%s",
-						request.uri(), _request.getMethod()));
+				ByteBufUtil.writeUtf8(response.content(), String.format(
+						"Resource not found, url: [%s], http_method: [%s]", request.uri(), _request.getMethod()));
 			} else {
 				FilterChain filterChain = FilterManager.getInstance().filter(_request.getRequestURI());
 				filterChain.doFilter(_request, _response);
@@ -115,6 +120,7 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 			if (!isKeepAlive && channelFuture != null) {
 				channelFuture.addListener(ChannelFutureListener.CLOSE);
 			}
+			status.handledRequestsIncrement();
 		}
 	}
 
@@ -127,6 +133,16 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 			}
 		}
 		super.userEventTriggered(ctx, evt);
+	}
+
+	@Override
+	public void channelActive(ChannelHandlerContext ctx) throws Exception {
+		DoradoStatus.get().connectionIncrement();
+	}
+
+	@Override
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+		DoradoStatus.get().connectionDecrement();
 	}
 
 	@Override

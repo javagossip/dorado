@@ -67,7 +67,7 @@ public class UriRoutingRegistry {
 		return "UriRoutingRegistry [uriRouteMappingRegistry=" + uriRoutingRegistry + "]";
 	}
 
-	static class UriRouting {
+	public static class UriRouting {
 		private final UriRoutingPath path;
 		private final UriRoutingController controller;
 
