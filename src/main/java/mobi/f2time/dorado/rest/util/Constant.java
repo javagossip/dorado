@@ -15,8 +15,6 @@
  */
 package mobi.f2time.dorado.rest.util;
 
-import io.netty.util.NetUtil;
-
 /**
  * 
  * @author wangwp
@@ -42,7 +40,7 @@ public final class Constant {
 
 	public static final int DEFAULT_MAX_WORKER_THREAD = 100;
 
-	public static final int DEFAULT_BACKLOG = NetUtil.SOMAXCONN;
+	public static final int DEFAULT_BACKLOG = 512;
 
 	public static final int DEFAULT_MAX_PENDING_REQUEST = 10000;
 

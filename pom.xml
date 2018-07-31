@@ -5,7 +5,8 @@
 	<artifactId>dorado</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>dorado</name>
-	<description>the rest server based netty framework</description>
+	<description>The restful server based netty4&amp;jdk8</description>
+	<url>https://github.com/javagossip/dorado</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -13,12 +14,36 @@
 		<maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
 		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
 		<maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
+		<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+
 		<netty.version>4.1.25.Final</netty.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<protobuf-java.version>2.6.1</protobuf-java.version>
 		<asm.version>6.2</asm.version>
 		<fastjson.version>1.2.47</fastjson.version>
 	</properties>
+
+	<licenses>
+		<license>
+			<name>The Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>javagossip</name>
+			<email>javagossip@gmail.com</email>
+			<organization>f2time</organization>
+			<organizationUrl>http://www.f2time.com</organizationUrl>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:https://github.com/javagossip/dorado.git</connection>
+		<developerConnection>scm:git:https://github.com/javagossip/dorado.git</developerConnection>
+		<url>https://github.com/javagossip/dorado</url>
+	</scm>
 
 	<build>
 		<pluginManagement>
@@ -33,7 +58,24 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
+
+		<plugins>
+			<plugin>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>${maven-gpg-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 	</build>
+
 	<dependencies>
 		<dependency>
 			<groupId>io.netty</groupId>
@@ -77,4 +119,15 @@
 			<version>${protobuf-java.version}</version>
 		</dependency>
 	</dependencies>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 </project>

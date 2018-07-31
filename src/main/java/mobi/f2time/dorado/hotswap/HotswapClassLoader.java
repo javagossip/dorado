@@ -16,8 +16,14 @@
 package mobi.f2time.dorado.hotswap;
 
 /**
+ * 自定义类加载器，用来加载应用程序中用户编写的类
  * 
  * @author wangwp
  */
 public class HotswapClassLoader extends ClassLoader {
+
+	@Override
+	protected Class<?> findClass(String name) throws ClassNotFoundException {
+		return super.findClass(name);
+	}
 }

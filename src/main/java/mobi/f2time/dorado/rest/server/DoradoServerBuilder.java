@@ -21,6 +21,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import mobi.f2time.dorado.rest.util.Constant;
+import mobi.f2time.dorado.rest.util.PackageScanner;
 
 /**
  * 
@@ -182,5 +183,9 @@ public final class DoradoServerBuilder {
 					new LinkedBlockingQueue<>(maxPendingRequest), new ThreadPoolExecutor.DiscardPolicy());
 		}
 		return new DoradoServer(this);
+	}
+
+	public static void main(String[] args) throws Exception {
+		PackageScanner.scan("");
 	}
 }

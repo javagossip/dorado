@@ -116,7 +116,6 @@ public class HelloWorldController {
 ```java
 //TODO
 ```
-
 * More examples 
 
 Please visit https://github.com/javagossip/dorado/wiki/More-Examples
