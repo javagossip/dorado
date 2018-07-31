@@ -98,6 +98,35 @@ public class CampaignController {
 * More examples 
 
 Please visit https://github.com/javagossip/dorado-examples
+## Support annotations
+* class level
+
+| Annotation type  | description  | 
+|:-------------: |:---------------|
+| Controller    | Indicates that an annotated class is a "Controller" (e.g. a web controller). | 
+| Path      | Identifies the URI path that a resource class or class method will serve requests for |
+
+* method level
+
+| Annotation type  | description  | 
+|:-------------: |:---------------|
+| Path      | Identifies the URI path that a resource class or class method will serve requests for |
+|GET|Indicates that the annotated method responds to HTTP GET requests|
+|POST|Indicates that the annotated method responds to HTTP POST requests|
+|PUT|Indicates that the annotated method responds to HTTP PUT requests|
+|DELETE|Indicates that the annotated method responds to HTTP DELETE requests|
+|Consume | Defines the media type that the methods of a resource class can accept|
+|Produce | Defines the media type that the methods of a resource class can produce|
+
+* parameter level
+
+| Annotation type  | description  | 
+|:-------------: |:---------------|
+|RequestParam|Query or Form parameter|
+|PathVariable|Uri path variable, example: {var}|
+|HeaderParam|Request header value|
+|CookieParam|Request cookie value|
+|RequestBody|Http request body|
 
 ## Performance
 TODO
