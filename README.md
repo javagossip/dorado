@@ -99,14 +99,14 @@ public class CampaignController {
 
 Please visit https://github.com/javagossip/dorado-examples
 ## Support annotations
-* class level
+### class level
 
 | Annotation type  | description  | 
 |:-------------: |:---------------|
 | Controller    | Indicates that an annotated class is a "Controller" (e.g. a web controller). | 
 | Path      | Identifies the URI path that a resource class or class method will serve requests for |
 
-* method level
+### method level
 
 | Annotation type  | description  | 
 |:-------------: |:---------------|
@@ -118,7 +118,7 @@ Please visit https://github.com/javagossip/dorado-examples
 |Consume | Defines the media type that the methods of a resource class can accept|
 |Produce | Defines the media type that the methods of a resource class can produce|
 
-* parameter level
+### parameter level
 
 | Annotation type  | description  | 
 |:-------------: |:---------------|
