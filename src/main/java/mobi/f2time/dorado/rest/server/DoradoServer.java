@@ -83,7 +83,7 @@ public class DoradoServer {
 			System.out.println(doradoAscii);
 			System.out.println();
 			Webapp.create(builder.scanPackages());
-			LOG.info(String.format("Dorado Application initialized with port(s): %d (http)", builder.getPort()));
+			LOG.info(String.format("Dorado application initialized with port(s): %d (http)", builder.getPort()));
 
 			f.channel().closeFuture().sync();
 		} catch (Throwable ex) {

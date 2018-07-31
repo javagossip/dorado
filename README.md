@@ -1,57 +1,44 @@
 # Dorado
-
-Http Restful server implemention with Netty4 
+Simple,Fast,Lightweight http restful server implemention with Netty4 and JDK1.8+
 
 ## Features
 
 * HTTP/1.1 and HTTP/1.0 protocol support 
-* Http Long-connection supported (also Connection: keep-alive)
-* Http Restful serialized
-* Http Short Connection on async mode by default
+* Http Long-connection supported (also Connection: Keep-Alive)
+* Http Restful serialized supported (JSON and google Protobuf)
 * Http Uri route mapping support
 
-Annotation | From 
---- | --- 
-@HeaderParam |  http header 
-@RequestParam | http url query string or http body key value pairs 
-@PathVariable | http uri path vairable with {pathVariable} 
-@RequestBody | http body 
+## Maven
 
-* Http request mapping method params type support
+```xml
+<dependency>
+    <groupId>mobi.f2time</groupId>
+    <artifactId>dorado</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+</dependency>
+```
 
-Class Type | Default value | Description
---- | --- | --- 
-int,short,long | 0 | primitive
-float,double | 0.0d | primitive
-Integer,Short,Long,Float,Double| null | wrapper class
-String | null | string value
-byte[] | null | http body bytes
-InputStream | null | http body stream
-Class | null | from http body serializer parsed
+## Quick start
 
-## Usage
-
-* 一个简单的Http server
+* Simplest rest server
 
 ```java
 public class Application {
+
 	public static void main(String[] args) throws Exception {
 		// create simple rest server
-		DoradoServerBuilder.forPort(18888).
-		scanPackages("com.rtbstack.demo.controller", 
-				"com.rtbstack.demo.controller1")
-				.build().start();
+		DoradoServerBuilder.forPort(18888).build().start();
 	}
 }
 ```
 
-* 更多定制参数的Http server
+* Rest server with more config parameters
 
 ```java
 
 public class Application {
+
 	public static void main(String[] args) throws Exception {
-		// create simple rest server
 		DoradoServerBuilder.forPort(18888).acceptors(2).ioWorkers(4)
 				.minWorkers(10).maxWorkers(100)
 				.backlog(1024)
@@ -60,7 +47,7 @@ public class Application {
 				.recvBuffer(256 * 1024)
 				.scanPackages("com.rtbstack.demo.controller",
 						"com.rtbstack.demo.controller1")
-		   .build().start();
+		       .build().start();
 	}
 }
 ```
@@ -69,55 +56,48 @@ public class Application {
 
 ```java
 @Controller
-@Path("/hello")
-public class HelloWorldController {
+@Path("/campaign")
+public class CampaignController {
 
-    @Path("/{id}")
+	@Path("/{id:[0-9]+}")
 	@GET
-	@Produce("application/json")
 	public Campaign newCampaign(int id) {
 		Campaign campaign = new Campaign();
 		campaign.setId(id);
 		campaign.setName("test campaign");
-		
+
 		return campaign;
 	}
-	
-	@Path("/greet/{greet}")
-	public String greet(@PathVariable("greet") String greet) {
-		return greet;
+
+	@Path("/name")
+	public String campaignName() {
+		return String.format("hello_campaign", "");
+	}
+
+	@POST
+	public Campaign save(Campaign campaign) {
+		System.out.println(campaign);
+		return campaign;
+	}
+
+	@Path("/{id}")
+	@DELETE
+	public void deleteCampaign(int id) {
+		System.out.println("delete campaign, id: " + id);
 	}
 
 	@GET
-	@Path("/channel")
-	public void bidding(HttpRequest request, HttpResponse response) {
-		String channel = request.getParameter("channel");
-		response.writeStringUtf8(channel);
-	}
-
-	@GET
-	@Path("/image")
-	//访问地址：/hello/image?url=xxxx
-	public byte[] bytes(@RequestParam("url") String imageUrl) {
-		return readBytesFromImageUrl(imageUrl);
-	}
-	
-	@Path("/redirect")
-	public void toIqiyi(HttpRequest request,HttpResponse response,int channelId) {
-		int channel = channelId;
-		System.out.println("to channel: "+channel);
-		response.sendRedirect("http://www.iqiyi.com");
+	@Path("/{id}")
+	public Campaign getCampaign(int id) {
+		return Campaign.builder().withId(12)
+				.withName("网易考拉推广计划")
+				.build();
 	}
 }
 ```
-
-* Filter
-
-```java
-//TODO
-```
 * More examples 
 
-Please visit https://github.com/javagossip/dorado/wiki/More-Examples
+Please visit https://github.com/javagossip/dorado-examples
 
 ## Performance
+TODO

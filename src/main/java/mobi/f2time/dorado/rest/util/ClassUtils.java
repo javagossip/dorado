@@ -17,7 +17,8 @@ package mobi.f2time.dorado.rest.util;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
+
+import com.google.protobuf.Message;
 
 /**
  * 
@@ -65,14 +66,13 @@ public final class ClassUtils {
 		return primitiveDefaultHolder.get(parameterType);
 	}
 	
-	
-	public static void main(String[] args) throws Exception {
-		String pattern = "^//*$";
-		
-		String path = "/";
-		
-		Pattern p = Pattern.compile(pattern);
-		System.out.println(p.matcher(path).matches());
+	public static boolean isProtobufMessage(Class<?> type) {
+		try {
+			return Message.class.isAssignableFrom(type);
+		} catch (Throwable ex) {
+			// do nothing
+		}
+		return false;
 	}
 }
 

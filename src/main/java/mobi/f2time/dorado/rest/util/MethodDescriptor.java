@@ -73,9 +73,17 @@ public class MethodDescriptor {
 			String name = parameterNames[i];
 
 			methodParameters[i] = MethodParameter.create(name, type, annotation);
-			if (Message.class.isAssignableFrom(type)) {
+			registerMessageDescriptorForTypeIfNeed(type);
+		}
+	}
+
+	private void registerMessageDescriptorForTypeIfNeed(Class<?> type) {
+		try {
+			if(Message.class.isAssignableFrom(type)) {
 				registerMessageDescriptorForType(type);
 			}
+		}catch(Throwable ex) {
+			//ignore this ex
 		}
 	}
 

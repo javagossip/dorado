@@ -19,8 +19,6 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import com.google.protobuf.Message;
-
 import io.netty.util.CharsetUtil;
 import mobi.f2time.dorado.rest.MediaType;
 
@@ -41,7 +39,7 @@ public final class MediaTypeUtils {
 			return MediaType.APPLICATION_OCTET_STREAM_TYPE;
 		}
 
-		if (Message.class.isAssignableFrom(type)) {
+		if (ClassUtils.isProtobufMessage(type)) {
 			return MediaType.APPLICATION_PROTOBUF_TYPE;
 		}
 
