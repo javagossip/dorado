@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,6 +32,19 @@ import java.util.jar.JarInputStream;
  * @author wangwp
  */
 public class PackageScanner {
+
+	public static List<Class<?>> scanClassesWithClasspath(String classpath) throws Exception {
+		ClassLoader cl = Thread.currentThread().getContextClassLoader();
+
+		List<Class<?>> allClasses = new ArrayList<>();
+		List<File> allClassFiles = FileUtils.listFiles(new File(classpath), ".class", true);
+		for (File classFile : allClassFiles) {
+			String className = classFile.getAbsolutePath().substring(classpath.length()).replace('/', '.');
+			allClasses.add(loadClass(cl, className));
+		}
+		return allClasses;
+	}
+
 	public static List<Class<?>> scan(String packageName) throws ClassNotFoundException {
 
 		List<Class<?>> classes = new LinkedList<>();

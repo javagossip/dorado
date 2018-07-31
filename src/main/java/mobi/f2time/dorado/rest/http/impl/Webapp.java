@@ -68,10 +68,14 @@ public class Webapp {
 	public void initialize() {
 		List<Class<?>> classes = new ArrayList<>();
 		try {
-			for (String scanPackage : packages) {
-				classes.addAll(PackageScanner.scan(scanPackage));
+			if (packages == null) {
+				String classpath = ClassLoaderUtils.getPath("");
+				classes.addAll(PackageScanner.scanClassesWithClasspath(classpath));
+			} else {
+				for (String scanPackage : packages) {
+					classes.addAll(PackageScanner.scan(scanPackage));
+				}
 			}
-
 			initializeUriRouting(RootController.class);
 			classes.forEach(clazz -> {
 				initializeUriRouting(clazz);

@@ -174,10 +174,6 @@ public final class DoradoServerBuilder {
 	}
 
 	public DoradoServer build() {
-		if (scanPackages == null || scanPackages.length == 0) {
-			throw new IllegalArgumentException("scanPackage should not be null");
-		}
-
 		if (minWorkers > 0 && maxWorkers > 0 && (maxWorkers >= minWorkers) && maxPendingRequest > 0) {
 			executor = new ThreadPoolExecutor(minWorkers, maxWorkers, 5, TimeUnit.MINUTES,
 					new LinkedBlockingQueue<>(maxPendingRequest), new ThreadPoolExecutor.DiscardPolicy());
