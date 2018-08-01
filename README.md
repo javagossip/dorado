@@ -132,3 +132,5 @@ Please visit https://github.com/javagossip/dorado-examples
 
 ## Performance
 TODO
+
+## 适用场景

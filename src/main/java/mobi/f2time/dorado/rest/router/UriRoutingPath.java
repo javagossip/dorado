@@ -15,7 +15,9 @@
  */
 package mobi.f2time.dorado.rest.router;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -116,8 +118,8 @@ public class UriRoutingPath implements Comparable<UriRoutingPath> {
 
 	@Override
 	public String toString() {
-		return "RouteMapping [routePattern=" + routingPathPattern + ", httpMethod=" + httpMethod
-				+ ", pathVariableIndexHolder=" + pathVariableIndexHolder + "]";
+		return "UriRoutingPath [routingPath=" + routingPath + ", routingPathPattern=" + routingPathPattern
+				+ ", httpMethod=" + httpMethod + ", pathVariableIndexHolder=" + pathVariableIndexHolder + "]";
 	}
 
 	@Override
@@ -125,6 +127,10 @@ public class UriRoutingPath implements Comparable<UriRoutingPath> {
 		int targetPathSegments = o.routingPath.split("/").length;
 		int thisPathSegments = routingPath.split("/").length;
 
-		return targetPathSegments - thisPathSegments;
+		if (targetPathSegments != thisPathSegments) {
+			return targetPathSegments - thisPathSegments;
+		}
+
+		return pathVariableIndexHolder.size() - o.pathVariableIndexHolder.size();
 	}
 }
