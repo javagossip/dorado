@@ -7,6 +7,7 @@ Simple,Fast,Lightweight http restful server implemention with Netty4 and JDK1.8+
 * Http Long-connection supported (also Connection: Keep-Alive)
 * Http Restful serialized supported (JSON and google Protobuf)
 * Http Uri route mapping support
+* Hot deployment supported in dev mode
 * Unsupported multipart/form-data request
 * Unsupported HTTPS request
 
@@ -128,7 +129,7 @@ Please visit https://github.com/javagossip/dorado-examples
 |PathVariable|Uri path variable, example: {var}|primitive type&wrapper class,String|
 |HeaderParam|Request header value|primitive type&wrapper class,String|
 |CookieParam|Request cookie value|primitive type&wrapper class,String|
-|RequestBody|Http request body|String,byte[],InputStream or any serializable type|
+|RequestBody|Http request body|String, byte[],InputStream or any serializable type|
 
 ## Performance
 TODO
