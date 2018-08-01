@@ -7,6 +7,8 @@ Simple,Fast,Lightweight http restful server implemention with Netty4 and JDK1.8+
 * Http Long-connection supported (also Connection: Keep-Alive)
 * Http Restful serialized supported (JSON and google Protobuf)
 * Http Uri route mapping support
+* Unsupported multipart/form-data request
+* Unsupported HTTPS request
 
 ## Maven
 
