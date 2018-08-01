@@ -117,8 +117,8 @@ Please visit https://github.com/javagossip/dorado-examples
 |POST|Indicates that the annotated method responds to HTTP POST requests|
 |PUT|Indicates that the annotated method responds to HTTP PUT requests|
 |DELETE|Indicates that the annotated method responds to HTTP DELETE requests|
-|Consume | Defines the media type that the methods of a resource class can accept|
-|Produce | Defines the media type that the methods of a resource class can produce|
+|Consume | Defines the media type that the methods of a controller class can accept|
+|Produce | Defines the media type that the methods of a controller class can produce|
 
 ### parameter level
 
