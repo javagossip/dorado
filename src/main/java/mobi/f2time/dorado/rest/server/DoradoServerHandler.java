@@ -137,12 +137,12 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		DoradoStatus.get().connectionIncrement();
+		status.connectionIncrement();
 	}
 
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-		DoradoStatus.get().connectionDecrement();
+		status.connectionDecrement();
 	}
 
 	@Override
