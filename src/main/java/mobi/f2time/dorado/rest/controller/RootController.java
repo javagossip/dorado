@@ -55,7 +55,8 @@ public class RootController {
 			String path = routingPath.routingPath();
 			String httpMethod = StringUtils.defaultString(routingPath.httpMethod(), "*");
 
-			serviceList.add(RestService.builder().withPath(path).withHttpMethod(httpMethod).build());
+			serviceList.add(RestService.builder().withPath(path)
+					.withHttpMethod(httpMethod).build());
 		}
 		return serviceList;
 	}
