@@ -29,7 +29,7 @@ import mobi.f2time.dorado.rest.MediaType;
 public final class MediaTypeUtils {
 
 	public static MediaType forType(Class<?> type) {
-		if (ClassUtils.isPrimitiveOrWrapper(type) || String.class == type 
+		if (TypeUtils.isPrimitiveOrWrapper(type) || String.class == type 
 				|| BigDecimal.class == type
 				|| BigInteger.class == type) {
 			return MediaType.TEXT_HTML_TYPE.withCharset(CharsetUtil.UTF_8.name());
@@ -39,7 +39,7 @@ public final class MediaTypeUtils {
 			return MediaType.APPLICATION_OCTET_STREAM_TYPE;
 		}
 
-		if (ClassUtils.isProtobufMessage(type)) {
+		if (TypeUtils.isProtobufMessage(type)) {
 			return MediaType.APPLICATION_PROTOBUF_TYPE;
 		}
 

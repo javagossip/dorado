@@ -22,7 +22,7 @@ import java.util.List;
 import mobi.f2time.dorado.rest.http.Cookie;
 import mobi.f2time.dorado.rest.http.HttpRequest;
 import mobi.f2time.dorado.rest.http.HttpResponse;
-import mobi.f2time.dorado.rest.util.ClassUtils;
+import mobi.f2time.dorado.rest.util.TypeUtils;
 import mobi.f2time.dorado.rest.util.MediaTypeUtils;
 import mobi.f2time.dorado.rest.util.MethodDescriptor;
 import mobi.f2time.dorado.rest.util.MethodDescriptor.MethodParameter;
@@ -65,7 +65,7 @@ public interface ParameterValueResolver {
 			}
 		}
 		Class<?> parameterType = methodParam.getType();
-		return parameterType.isPrimitive() ? ClassUtils.primitiveDefault(parameterType) : null;
+		return parameterType.isPrimitive() ? TypeUtils.primitiveDefault(parameterType) : null;
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -99,7 +99,7 @@ public interface ParameterValueResolver {
 			}
 			// 如果方法参数是基本类型则必须给定默认值
 			if (parameterType.isPrimitive()) {
-				return ClassUtils.primitiveDefault(parameterType);
+				return TypeUtils.primitiveDefault(parameterType);
 			}
 			// 如果从请求参数、路径参数、请求头部参数都无法获取到且非基本类型的话尝试从请求体中获取
 			return REQUEST_BODY.resolveParameterValue(request, response, desc, methodParameter, pathVariable);

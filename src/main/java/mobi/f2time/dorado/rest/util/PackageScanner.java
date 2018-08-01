@@ -48,7 +48,6 @@ public class PackageScanner {
 	public static List<Class<?>> scan(String packageName) throws ClassNotFoundException {
 
 		List<Class<?>> classes = new LinkedList<>();
-
 		try {
 			ClassLoader loader = Thread.currentThread().getContextClassLoader();
 			Enumeration<URL> urls = loader.getResources(packageName.replace('.', '/'));

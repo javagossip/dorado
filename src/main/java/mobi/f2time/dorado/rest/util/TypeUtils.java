@@ -24,7 +24,7 @@ import com.google.protobuf.Message;
  * 
  * @author wangwp
  */
-public final class ClassUtils {
+public final class TypeUtils {
 	private static final Map<Class<?>,Object> primitiveDefaultHolder = new HashMap<>();
 	
 	static {
