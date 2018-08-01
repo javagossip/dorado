@@ -122,13 +122,13 @@ Please visit https://github.com/javagossip/dorado-examples
 
 ### parameter level
 
-| Annotation type  | description  | 
-|:-------------: |:---------------|
-|RequestParam|Query or Form parameter|
-|PathVariable|Uri path variable, example: {var}|
-|HeaderParam|Request header value|
-|CookieParam|Request cookie value|
-|RequestBody|Http request body|
+| annotation type  | description  |supported data type|
+|:-------------: |:---------------|:------------:|
+|RequestParam|Query or Form parameter|primitive type&wrapper class,String|
+|PathVariable|Uri path variable, example: {var}|primitive type&wrapper class,String|
+|HeaderParam|Request header value|primitive type&wrapper class,String|
+|CookieParam|Request cookie value|primitive type&wrapper class,String|
+|RequestBody|Http request body|String,byte[],InputStream or any serializable type|
 
 ## Performance
 TODO
