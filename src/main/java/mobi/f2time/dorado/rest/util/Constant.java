@@ -57,4 +57,8 @@ public final class Constant {
 	public static final String BLANK_STRING = "";
 
 	public static final int DEFAULT_LISTEN_PORT = 8080;
+
+	public static final String CLASS_SUFFIX = ".class";
+
+	public static final int CLASS_SUFFIX_LENGTH = 6;
 }

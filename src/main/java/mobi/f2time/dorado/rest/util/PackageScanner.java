@@ -37,7 +37,7 @@ public class PackageScanner {
 		ClassLoader cl = Thread.currentThread().getContextClassLoader();
 
 		List<Class<?>> allClasses = new ArrayList<>();
-		List<File> allClassFiles = FileUtils.listFiles(new File(classpath), ".class", true);
+		List<File> allClassFiles = FileUtils.listFiles(new File(classpath), Constant.CLASS_SUFFIX, true);
 		for (File classFile : allClassFiles) {
 			String className = classFile.getAbsolutePath().substring(classpath.length()).replace('/', '.');
 			allClasses.add(loadClass(cl, className));
@@ -83,7 +83,7 @@ public class PackageScanner {
 		File[] files = directory.listFiles();
 		if (directory.isDirectory() && files != null) {
 			for (File classFile : files) {
-				if (!classFile.isDirectory() && classFile.getName().endsWith(".class")
+				if (!classFile.isDirectory() && classFile.getName().endsWith(Constant.CLASS_SUFFIX)
 						&& !classFile.getName().contains("$")) {
 					String className = String.format("%s.%s", packageName, classFile.getName());
 					classes.add(loadClass(loader, className));
@@ -103,7 +103,7 @@ public class PackageScanner {
 			jarReader = new JarInputStream(new URL(jar).openStream());
 			while ((e = jarReader.getNextJarEntry()) != null) {
 				String className = e.getName();
-				if (!e.isDirectory() && className.startsWith(parent) && className.endsWith(".class")
+				if (!e.isDirectory() && className.startsWith(parent) && className.endsWith(Constant.CLASS_SUFFIX)
 						&& !className.contains("$")) {
 					className = className.replace('/', '.');
 					classes.add(loadClass(loader, className));

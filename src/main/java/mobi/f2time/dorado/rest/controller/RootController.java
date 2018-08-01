@@ -53,10 +53,10 @@ public class RootController {
 			UriRoutingPath routingPath = uriRouting.uriRoutingPath();
 
 			String path = routingPath.routingPath();
-			String httpMethod = StringUtils.defaultString(routingPath.httpMethod(), "*");
+			String method = StringUtils.defaultString(routingPath.httpMethod(), "*");
 
 			serviceList.add(RestService.builder().withPath(path)
-					.withHttpMethod(httpMethod).build());
+					.withMethod(method).build());
 		}
 		return serviceList;
 	}

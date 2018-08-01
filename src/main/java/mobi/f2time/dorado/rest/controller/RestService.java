@@ -23,7 +23,7 @@ import javax.annotation.Generated;
  */
 public class RestService {
 	private String path;
-	private String httpMethod;
+	private String method;
 	private String desc;
 
 	public RestService() {
@@ -32,7 +32,7 @@ public class RestService {
 	@Generated("SparkTools")
 	private RestService(Builder builder) {
 		this.path = builder.path;
-		this.httpMethod = builder.httpMethod;
+		this.method = builder.method;
 		this.desc = builder.desc;
 	}
 
@@ -50,8 +50,8 @@ public class RestService {
 		return path;
 	}
 
-	public String getHttpMethod() {
-		return httpMethod;
+	public String getMethod() {
+		return method;
 	}
 
 	public String getDesc() {
@@ -64,7 +64,7 @@ public class RestService {
 	@Generated("SparkTools")
 	public static final class Builder {
 		private String path;
-		private String httpMethod;
+		private String method;
 		private String desc;
 
 		private Builder() {
@@ -75,8 +75,8 @@ public class RestService {
 			return this;
 		}
 
-		public Builder withHttpMethod(String httpMethod) {
-			this.httpMethod = httpMethod;
+		public Builder withMethod(String method) {
+			this.method = method;
 			return this;
 		}
 
