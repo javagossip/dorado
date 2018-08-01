@@ -28,7 +28,7 @@ import mobi.f2time.dorado.rest.util.PackageScanner;
  * @author wangwp
  */
 public final class DoradoServerBuilder {
-	private static DoradoServerBuilder serverConfig = null;
+	private static DoradoServerBuilder serverConfig;
 
 	private int backlog = Constant.DEFAULT_BACKLOG;
 	private int acceptors = Constant.DEFAULT_ACCEPTOR_COUNT;
@@ -46,7 +46,10 @@ public final class DoradoServerBuilder {
 	private int recvBuffer = Constant.DEFAULT_RECV_BUFFER_SIZE;
 
 	private int maxPacketLength = Constant.DEFAULT_MAX_PACKET_LENGTH;
+
 	private String[] scanPackages;
+	private boolean devMode;
+
 	private ExecutorService executor;
 
 	private final int port;
@@ -119,6 +122,11 @@ public final class DoradoServerBuilder {
 		return this;
 	}
 
+	public DoradoServerBuilder devMode(boolean devMode) {
+		this.devMode = devMode;
+		return this;
+	}
+
 	public int getBacklog() {
 		return backlog;
 	}
@@ -145,6 +153,10 @@ public final class DoradoServerBuilder {
 
 	public int getMaxPendingRequest() {
 		return maxPendingRequest;
+	}
+
+	public boolean isDevMode() {
+		return devMode;
 	}
 
 	public int getMaxIdleTime() {

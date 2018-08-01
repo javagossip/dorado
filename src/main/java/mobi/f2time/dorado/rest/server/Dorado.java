@@ -13,17 +13,16 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package mobi.f2time.dorado.hotswap;
+package mobi.f2time.dorado.rest.server;
 
 /**
- * 自定义类加载器，用来加载应用程序中用户编写的类
  * 
  * @author wangwp
  */
-public class HotswapClassLoader extends ClassLoader {
+public final class Dorado {
+	public static ClassLoader classLoader;
 
-	@Override
-	protected Class<?> findClass(String name) throws ClassNotFoundException {
-		return super.findClass(name);
+	static {
+		classLoader = Thread.currentThread().getContextClassLoader();
 	}
 }

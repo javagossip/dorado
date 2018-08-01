@@ -15,8 +15,7 @@
  */
 package mobi.f2time.dorado.rest.server;
 
-import static mobi.f2time.dorado.rest.http.impl.ChannelHolder.set;
-import static mobi.f2time.dorado.rest.http.impl.ChannelHolder.unset;
+import static mobi.f2time.dorado.rest.http.impl.ChannelHolder.*;
 
 import java.util.concurrent.ExecutorService;
 
@@ -55,11 +54,13 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 	private final ExecutorService asyncExecutor;
 	private final Webapp webapp;
 	private final DoradoStatus status;
+	private final boolean isDevMode;
 
 	private DoradoServerHandler(DoradoServerBuilder builder) {
 		this.webapp = Webapp.get();
 		this.asyncExecutor = builder.executor();
 		this.status = DoradoStatus.get();
+		this.isDevMode = builder.isDevMode();
 	}
 
 	public static DoradoServerHandler create(DoradoServerBuilder builder) {
@@ -81,6 +82,10 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 	}
 
 	private void handleHttpRequest(ChannelHandlerContext ctx, Object msg) {
+		if (isDevMode) {
+			Thread.currentThread().setContextClassLoader(Dorado.classLoader);
+		}
+
 		FullHttpRequest request = (FullHttpRequest) msg;
 		FullHttpResponse response = new DefaultFullHttpResponse(request.protocolVersion(), HttpResponseStatus.OK);
 

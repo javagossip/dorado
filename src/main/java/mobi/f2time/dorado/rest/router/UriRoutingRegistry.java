@@ -93,4 +93,8 @@ public class UriRoutingRegistry {
 			return "UriRouting [path=" + path + ", controller=" + controller + "]";
 		}
 	}
+
+	public void clear() {
+		uriRoutingRegistry.clear();
+	}
 }

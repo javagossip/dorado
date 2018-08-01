@@ -33,6 +33,7 @@ import mobi.f2time.dorado.rest.http.Filter;
 import mobi.f2time.dorado.rest.router.UriRoutingController;
 import mobi.f2time.dorado.rest.router.UriRoutingPath;
 import mobi.f2time.dorado.rest.router.UriRoutingRegistry;
+import mobi.f2time.dorado.rest.server.Dorado;
 import mobi.f2time.dorado.rest.util.ClassLoaderUtils;
 import mobi.f2time.dorado.rest.util.PackageScanner;
 import mobi.f2time.dorado.rest.util.StringUtils;
@@ -63,6 +64,16 @@ public class Webapp {
 			throw new IllegalStateException("webapp not initialized, please create it first");
 		}
 		return webapp;
+	}
+
+	public synchronized void reload() {
+		Thread.currentThread().setContextClassLoader(Dorado.classLoader);
+		webapp.destroy();
+		webapp.initialize();
+	}
+
+	private void destroy() {
+		UriRoutingRegistry.getInstance().clear();
 	}
 
 	public void initialize() {

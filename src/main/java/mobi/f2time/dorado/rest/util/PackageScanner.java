@@ -121,4 +121,17 @@ public class PackageScanner {
 			}
 		}
 	}
+
+	public static List<String> listAllClassNames(String classpath) {
+		List<String> classNames = new ArrayList<>();
+
+		List<File> allClassFiles = FileUtils.listFiles(new File(classpath), Constant.CLASS_SUFFIX, true);
+		for (File classFile : allClassFiles) {
+			String className = classFile.getAbsolutePath().substring(classpath.length()).replace('/', '.');
+			className = className.substring(0, className.length() - 6);
+			classNames.add(className);
+		}
+
+		return classNames;
+	}
 }
