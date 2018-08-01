@@ -55,8 +55,6 @@ public class DoradoServer {
 
 		ServerBootstrap bootstrap = null;
 		try {
-
-			// Tomcat initialized with port(s): 8080 (http)
 			bootstrap = new ServerBootstrap().group(acceptor, worker).channel(NioServerSocketChannel.class)
 					.childHandler(new ChannelInitializer<Channel>() {
 						@Override
@@ -78,7 +76,7 @@ public class DoradoServer {
 
 			ChannelFuture f = bootstrap.bind(builder.getPort()).sync();
 
-			// print dorado ascii-art logo
+			// print dorado ascii-art logo,use figlet generate ascii-art logo
 			String doradoAscii = IOUtils.toString(ClassLoaderUtils.getStream("dorado-ascii"));
 			System.out.println(doradoAscii);
 			System.out.println();

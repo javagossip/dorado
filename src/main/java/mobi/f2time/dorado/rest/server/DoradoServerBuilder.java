@@ -28,6 +28,8 @@ import mobi.f2time.dorado.rest.util.PackageScanner;
  * @author wangwp
  */
 public final class DoradoServerBuilder {
+	private static DoradoServerBuilder serverConfig = null;
+
 	private int backlog = Constant.DEFAULT_BACKLOG;
 	private int acceptors = Constant.DEFAULT_ACCEPTOR_COUNT;
 	private int ioWorkers = Constant.DEFAULT_IO_WORKER_COUNT;
@@ -178,10 +180,15 @@ public final class DoradoServerBuilder {
 			executor = new ThreadPoolExecutor(minWorkers, maxWorkers, 5, TimeUnit.MINUTES,
 					new LinkedBlockingQueue<>(maxPendingRequest), new ThreadPoolExecutor.DiscardPolicy());
 		}
+		serverConfig = this;
 		return new DoradoServer(this);
 	}
 
 	public static void main(String[] args) throws Exception {
 		PackageScanner.scan("");
+	}
+
+	public static DoradoServerBuilder get() {
+		return serverConfig;
 	}
 }

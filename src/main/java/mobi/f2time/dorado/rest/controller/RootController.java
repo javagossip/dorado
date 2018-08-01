@@ -23,6 +23,7 @@ import mobi.f2time.dorado.rest.annotation.Path;
 import mobi.f2time.dorado.rest.router.UriRoutingPath;
 import mobi.f2time.dorado.rest.router.UriRoutingRegistry;
 import mobi.f2time.dorado.rest.router.UriRoutingRegistry.UriRouting;
+import mobi.f2time.dorado.rest.server.DoradoServerBuilder;
 import mobi.f2time.dorado.rest.util.StringUtils;
 
 /**
@@ -59,5 +60,10 @@ public class RootController {
 					.withMethod(method).build());
 		}
 		return serviceList;
+	}
+	
+	@Path("config")
+	public DoradoServerBuilder config() {
+		return DoradoServerBuilder.get();
 	}
 }
