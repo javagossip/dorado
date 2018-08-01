@@ -31,6 +31,9 @@ public class Application {
 	public static void main(String[] args) throws Exception {
 		// create simple rest server
 		DoradoServerBuilder.forPort(18888).build().start();
+		//create rest server with dev mode
+		//dev mode support hot deployment
+		//DoradoServerBuilder.forPort(18888).devMode(true).build().start();
 	}
 }
 ```

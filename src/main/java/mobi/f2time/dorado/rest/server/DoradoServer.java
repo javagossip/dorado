@@ -27,6 +27,7 @@ import java.nio.file.WatchService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -136,19 +137,25 @@ public class DoradoServer {
 		while (!Thread.currentThread().isInterrupted()) {
 			try {
 				WatchKey watchKey = classFilesWatcher.poll(10, TimeUnit.MILLISECONDS);
-				if (watchKey != null) {
-					List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
-					watchEvents.stream().forEach(event -> {
-						Path fileName = (Path) event.context();
-						try {
-							LOG.info("File {} changed in classpath, reload webapp", fileName.toString());
-							Dorado.classLoader = new DoradoClassLoader();
-							Webapp.get().reload();
-						} catch (Exception ex) {
-							LOG.error("watching file changed error", ex);
-						}
-					});
-					watchKey.reset();
+				if (watchKey == null)
+					continue;
+
+				final AtomicBoolean isNeedReload = new AtomicBoolean(false);
+
+				List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
+				watchEvents.stream().forEach(event -> {
+					Path watchedPath = (Path) event.context();
+					try {
+						LOG.info("File {} changed in classpath, reload webapp", watchedPath.toString());
+						isNeedReload.compareAndSet(false, true);
+					} catch (Exception ex) {
+						LOG.error("watching file changed error", ex);
+					}
+				});
+				watchKey.reset();
+				if (isNeedReload.get()) {
+					Dorado.classLoader = new DoradoClassLoader();
+					Webapp.get().reload();
 				}
 			} catch (InterruptedException ex) {
 				ex.printStackTrace();
