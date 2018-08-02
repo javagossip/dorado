@@ -15,13 +15,11 @@
  */
 package mobi.f2time.dorado.rest.server;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import mobi.f2time.dorado.rest.util.Constant;
 import mobi.f2time.dorado.rest.util.PackageScanner;
+import mobi.f2time.dorado.rest.util.TracingThreadPoolExecutor;
 
 /**
  * 
@@ -50,7 +48,7 @@ public final class DoradoServerBuilder {
 	private String[] scanPackages;
 	private boolean devMode;
 
-	private ExecutorService executor;
+	private TracingThreadPoolExecutor executor;
 
 	private final int port;
 
@@ -179,7 +177,7 @@ public final class DoradoServerBuilder {
 		return this.scanPackages;
 	}
 
-	public ExecutorService executor() {
+	public TracingThreadPoolExecutor executor() {
 		return this.executor;
 	}
 
@@ -188,10 +186,19 @@ public final class DoradoServerBuilder {
 	}
 
 	public DoradoServer build() {
-		if (minWorkers > 0 && maxWorkers > 0 && (maxWorkers >= minWorkers) && maxPendingRequest > 0) {
-			executor = new ThreadPoolExecutor(minWorkers, maxWorkers, 5, TimeUnit.MINUTES,
-					new LinkedBlockingQueue<>(maxPendingRequest), new ThreadPoolExecutor.DiscardPolicy());
+		if (minWorkers > maxWorkers) {
+			throw new IllegalArgumentException("minWorkers is greater than maxWorkers");
 		}
+
+		if (maxPendingRequest <= 0) {
+			throw new IllegalArgumentException("maxPendingRequest must be greater than 0");
+		}
+
+		executor = new TracingThreadPoolExecutor(minWorkers, maxWorkers, new LinkedBlockingQueue<>(maxPendingRequest));
+		if (!devMode) {
+			executor.prestartAllCoreThreads();
+		}
+
 		serverConfig = this;
 		return new DoradoServer(this);
 	}

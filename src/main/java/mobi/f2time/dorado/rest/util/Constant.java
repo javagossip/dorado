@@ -20,7 +20,7 @@ package mobi.f2time.dorado.rest.util;
  * @author wangwp
  */
 public final class Constant {
-	public static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
+	public static final int NCPU = Runtime.getRuntime().availableProcessors();
 
 	public static final int DEFAULT_SEND_BUFFER_SIZE = 256 * 1024;
 
@@ -28,9 +28,9 @@ public final class Constant {
 
 	public static final int DEFAULT_CONNECTION_SIZE = 1;
 
-	public static final int DEFAULT_ACCEPTOR_COUNT = CPU_COUNT * 2;
+	public static final int DEFAULT_ACCEPTOR_COUNT = NCPU * 2;
 
-	public static final int DEFAULT_IO_WORKER_COUNT = CPU_COUNT * 2;
+	public static final int DEFAULT_IO_WORKER_COUNT = NCPU * 2;
 
 	public static final int DEFAULT_CONNECT_TIMEOUT = 3000;
 

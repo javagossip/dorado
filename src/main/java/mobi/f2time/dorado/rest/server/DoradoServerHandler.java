@@ -17,8 +17,6 @@ package mobi.f2time.dorado.rest.server;
 
 import static mobi.f2time.dorado.rest.http.impl.ChannelHolder.*;
 
-import java.util.concurrent.ExecutorService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +41,7 @@ import mobi.f2time.dorado.rest.http.impl.HttpRequestImpl;
 import mobi.f2time.dorado.rest.http.impl.HttpResponseImpl;
 import mobi.f2time.dorado.rest.http.impl.Webapp;
 import mobi.f2time.dorado.rest.router.UriRoutingMatchResult;
+import mobi.f2time.dorado.rest.util.TracingThreadPoolExecutor;
 
 /**
  * 
@@ -51,14 +50,14 @@ import mobi.f2time.dorado.rest.router.UriRoutingMatchResult;
 public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 	private static final Logger LOG = LoggerFactory.getLogger(DoradoServerHandler.class);
 
-	private final ExecutorService asyncExecutor;
+	private final TracingThreadPoolExecutor asyncExecutor;
 	private final Webapp webapp;
 	private final DoradoStatus status;
 	private final boolean isDevMode;
 
 	private DoradoServerHandler(DoradoServerBuilder builder) {
 		this.webapp = Webapp.get();
-		this.asyncExecutor = builder.executor();
+		this.asyncExecutor = (TracingThreadPoolExecutor) builder.executor();
 		this.status = DoradoStatus.get();
 		this.isDevMode = builder.isDevMode();
 	}

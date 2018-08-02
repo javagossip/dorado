@@ -18,6 +18,10 @@ package mobi.f2time.dorado.rest.controller;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
+import mobi.f2time.dorado.rest.util.TracingThreadPoolExecutor;
+
 /**
  * 
  * @author wangwp
@@ -29,6 +33,11 @@ public class DoradoStatus {
 	private AtomicInteger pendingRequests = new AtomicInteger(0);
 	private AtomicLong totalRequests = new AtomicLong(0);
 	private AtomicLong handledRequests = new AtomicLong(0);
+	private int workerPoolSize;
+	private int activePoolSize;
+
+	@JSONField(serialize = false)
+	private TracingThreadPoolExecutor workerPool;
 
 	private DoradoStatus() {
 	}
@@ -81,5 +90,19 @@ public class DoradoStatus {
 
 	public long getHandledRequests() {
 		return handledRequests.get();
+	}
+
+	public int getWorkerPoolSize() {
+		this.workerPoolSize = workerPool.getPoolSize();
+		return workerPoolSize;
+	}
+
+	public int getActivePoolSize() {
+		this.activePoolSize = workerPool.getActiveCount();
+		return activePoolSize;
+	}
+
+	public void workerPool(TracingThreadPoolExecutor workerPool) {
+		this.workerPool = workerPool;
 	}
 }
