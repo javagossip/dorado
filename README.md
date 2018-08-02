@@ -136,9 +136,9 @@ Please visit https://github.com/javagossip/dorado-examples
 
 ## Built-in Services
 
-* Get Server configuration: **http://ip:port/config**
-* Get Server status: **http://ip:port/status**
-* List All services: **http://ip:port/services**
+* Get Server configuration: **http://{ip}:{port}/config**
+* Get Server status: **http://{ip}:{port}/status**
+* List All services: **http://{ip}:{port}/services**
 
 
 ## Performance
