@@ -110,7 +110,7 @@ Please visit https://github.com/javagossip/dorado-examples
 | Annotation type  | description  | 
 |:-------------: |:---------------|
 | Controller    | Indicates that an annotated class is a "Controller" (e.g. a web controller). | 
-| Path      | Identifies the URI path that a resource class or class method will serve requests for |
+| Path      | Identifies the URI path that a controller class or class method will serve requests for |
 
 ### method level
 
@@ -140,8 +140,7 @@ Please visit https://github.com/javagossip/dorado-examples
 * Get Server status: **[http://{ip}:{port}/status]()**
 * List All services: **[http://{ip}:{port}/services]()**
 
+## Best Practices
 
 ## Performance
-TODO
 
-## 适用场景
