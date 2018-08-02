@@ -1,6 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<groupId>ai.houyi</groupId>
 	<artifactId>dorado</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>dorado</name>
@@ -58,21 +59,9 @@
 			</plugins>
 		</pluginManagement>
 
-		<!-- <plugins>
-			<plugin>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<version>${maven-gpg-plugin.version}</version>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins> -->
+		<!-- <plugins> <plugin> <artifactId>maven-gpg-plugin</artifactId> <version>${maven-gpg-plugin.version}</version> 
+			<executions> <execution> <id>sign-artifacts</id> <phase>verify</phase> <goals> 
+			<goal>sign</goal> </goals> </execution> </executions> </plugin> </plugins> -->
 	</build>
 
 	<dependencies>
@@ -130,5 +119,4 @@
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
-	<groupId>io.github.dorado</groupId>
 </project>
