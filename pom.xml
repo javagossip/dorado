@@ -58,29 +58,13 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-
-		<!-- <plugins> <plugin> <artifactId>maven-gpg-plugin</artifactId> <version>${maven-gpg-plugin.version}</version> 
-			<executions> <execution> <id>sign-artifacts</id> <phase>verify</phase> <goals> 
-			<goal>sign</goal> </goals> </execution> </executions> </plugin> </plugins> -->
 	</build>
 
 	<dependencies>
 		<dependency>
 			<groupId>io.netty</groupId>
-			<artifactId>netty-transport</artifactId>
-			<version>${netty.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty-codec-http</artifactId>
-			<version>${netty.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty-handler</artifactId>
-			<version>${netty.version}</version>
+			<artifactId>netty-all</artifactId>
+			<version>4.1.27.Final</version>
 		</dependency>
 
 		<dependency>
@@ -109,13 +93,49 @@
 		</dependency>
 	</dependencies>
 
+	<profiles>
+		<profile>
+			<id>release</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-release-plugin</artifactId>
+						<version>${maven-release-plugin.version}</version>
+						<configuration>
+							<username>wangweiping</username>
+							<password>wangweiping</password>
+							<tagNameFormat>v@{project.version}</tagNameFormat>
+							<autoVersionSubmodules>true</autoVersionSubmodules>
+						</configuration>
+					</plugin>
+					<plugin>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>${maven-gpg-plugin.version}</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 	<distributionManagement>
 		<snapshotRepository>
-			<id>ossrh</id>
+			<id>oss</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
 		<repository>
-			<id>ossrh</id>
+			<id>oss</id>
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
