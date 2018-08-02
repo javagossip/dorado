@@ -15,7 +15,8 @@
  */
 package mobi.f2time.dorado.rest.server;
 
-import static mobi.f2time.dorado.rest.http.impl.ChannelHolder.*;
+import static mobi.f2time.dorado.rest.http.impl.ChannelHolder.set;
+import static mobi.f2time.dorado.rest.http.impl.ChannelHolder.unset;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,7 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
@@ -47,7 +48,7 @@ import mobi.f2time.dorado.rest.util.TracingThreadPoolExecutor;
  * 
  * @author wangwp
  */
-public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
+public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 	private static final Logger LOG = LoggerFactory.getLogger(DoradoServerHandler.class);
 
 	private final TracingThreadPoolExecutor asyncExecutor;
@@ -67,7 +68,7 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 	}
 
 	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+	protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
 		status.totalRequestsIncrement();
 
 		if (asyncExecutor == null) {
@@ -154,5 +155,4 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 		LOG.error(cause.getMessage(), cause);
 		ctx.channel().close();
 	}
-
 }
