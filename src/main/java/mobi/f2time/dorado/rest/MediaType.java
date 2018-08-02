@@ -374,26 +374,6 @@ public class MediaType {
 		return new MediaType(type, subtype, parameters);
 	}
 	
-	/**
-	 * Compares {@code obj} to this media type to see if they are the same by
-	 * comparing type, subtype and parameters. Note that the case-sensitivity of
-	 * parameter values is dependent on the semantics of the parameter name, see
-	 * {@link <a href=
-	 * "http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.7">HTTP/1.1</a>}.
-	 * This method assumes that values are case-sensitive.
-	 * <p/>
-	 * Note that the {@code equals(...)} implementation does not perform a class
-	 * equality check ({@code this.getClass() == obj.getClass()}). Therefore any
-	 * class that extends from {@code MediaType} class and needs to override one of
-	 * the {@code equals(...)} and {@link #hashCode()} methods must always override
-	 * both methods to ensure the contract between
-	 * {@link Object#equals(java.lang.Object)} and {@link Object#hashCode()} does
-	 * not break.
-	 *
-	 * @param obj
-	 *            the object to compare to.
-	 * @return true if the two media types are the same, false otherwise.
-	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof MediaType)) {
@@ -404,19 +384,7 @@ public class MediaType {
 		return (this.type.equalsIgnoreCase(other.type) && this.subtype.equalsIgnoreCase(other.subtype));
 	}
 
-	/**
-	 * Generate a hash code from the type, subtype and parameters.
-	 * <p/>
-	 * Note that the {@link #equals(java.lang.Object)} implementation does not
-	 * perform a class equality check ({@code this.getClass() == obj.getClass()}).
-	 * Therefore any class that extends from {@code MediaType} class and needs to
-	 * override one of the {@link #equals(Object)} and {@code hashCode()} methods
-	 * must always override both methods to ensure the contract between
-	 * {@link Object#equals(java.lang.Object)} and {@link Object#hashCode()} does
-	 * not break.
-	 *
-	 * @return a generated hash code.
-	 */
+	
 	@Override
 	public int hashCode() {
 		return (this.type.toLowerCase() + this.subtype.toLowerCase()).hashCode();
