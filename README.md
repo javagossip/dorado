@@ -134,6 +134,13 @@ Please visit https://github.com/javagossip/dorado-examples
 |CookieParam|Request cookie value|primitive type&wrapper class,String|
 |RequestBody|Http request body|String, byte[],InputStream or any serializable type|
 
+## Built-in Services
+
+* Get Server configuration: **http://ip:port/config**
+* Get Server status: **http://ip:port/status**
+* List All services: **http://ip:port/services**
+
+
 ## Performance
 TODO
 
