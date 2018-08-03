@@ -18,18 +18,10 @@ package mobi.f2time.dorado.rest.http.impl;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.nio.file.FileSystems;
-import java.nio.file.Paths;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import mobi.f2time.dorado.exception.DoradoException;
-import mobi.f2time.dorado.hotswap.DoradoClassLoader;
 import mobi.f2time.dorado.rest.annotation.Controller;
 import mobi.f2time.dorado.rest.annotation.HttpMethod;
 import mobi.f2time.dorado.rest.annotation.Path;
@@ -40,7 +32,6 @@ import mobi.f2time.dorado.rest.router.UriRoutingPath;
 import mobi.f2time.dorado.rest.router.UriRoutingRegistry;
 import mobi.f2time.dorado.rest.server.Dorado;
 import mobi.f2time.dorado.rest.util.ClassLoaderUtils;
-import mobi.f2time.dorado.rest.util.FileUtils;
 import mobi.f2time.dorado.rest.util.LogUtils;
 import mobi.f2time.dorado.rest.util.PackageScanner;
 import mobi.f2time.dorado.rest.util.StringUtils;
@@ -69,10 +60,6 @@ public class Webapp {
 		Thread.currentThread().setContextClassLoader(Dorado.classLoader);
 		webapp = new Webapp(packages, reloadable);
 		webapp.initialize();
-
-		if (reloadable) {
-			webapp.watching();
-		}
 	}
 
 	public static Webapp get() {
@@ -119,59 +106,6 @@ public class Webapp {
 			throw new DoradoException(ex);
 		}
 	};
-
-	private void watching() {
-		new Thread(() -> {
-			try {
-				reloadWebappIfNeed(ClassLoaderUtils.getPath(StringUtils.EMPTY));
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}).start();
-		;
-	}
-
-	private void reloadWebappIfNeed(String classpath) throws Exception {
-		WatchService classFilesWatcher = FileSystems.getDefault().newWatchService();
-		java.nio.file.Path rootPath = Paths.get(classpath);
-
-		List<java.nio.file.Path> allWatchDirs = FileUtils.recurseListDirs(rootPath);
-		for (java.nio.file.Path watchDir : allWatchDirs) {
-			watchDir.register(classFilesWatcher, StandardWatchEventKinds.ENTRY_MODIFY,
-					StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE);
-		}
-
-		for (;;) {
-			try {
-				final AtomicBoolean isNeedReload = new AtomicBoolean(false);
-				WatchKey watchKey = classFilesWatcher.take();
-				List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
-
-				watchEvents.stream().forEach(event -> {
-					java.nio.file.Path watchedPath = (java.nio.file.Path) event.context();
-					try {
-						LogUtils.info("File {} changed in classpath, need reload webapp", watchedPath.toString());
-						isNeedReload.compareAndSet(false, true);
-					} catch (Exception ex) {
-						LogUtils.error("watching file changed error", ex);
-					}
-				});
-
-				boolean valid = watchKey.reset();
-				if (!valid) {
-					break;
-				}
-
-				if (isNeedReload.get()) {
-					LogUtils.info("Classes changed, reload Webapp!");
-					Dorado.classLoader = new DoradoClassLoader();
-					reload();
-				}
-			} catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
-		}
-	}
 
 	private void initializeWebFilters(Class<?> clazz) {
 		if (!Filter.class.isAssignableFrom(clazz)) {

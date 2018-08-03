@@ -16,7 +16,6 @@
 package mobi.f2time.dorado.rest.server;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -30,7 +29,6 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.timeout.IdleStateHandler;
 import mobi.f2time.dorado.rest.http.impl.Webapp;
 import mobi.f2time.dorado.rest.util.ClassLoaderUtils;
-import mobi.f2time.dorado.rest.util.IOUtils;
 import mobi.f2time.dorado.rest.util.LogUtils;
 
 /**
@@ -46,6 +44,11 @@ public class DoradoServer {
 	}
 
 	public void start() {
+		System.out.println(ClassLoaderUtils.getResoureAsString("dorado-ascii"));
+		System.out.println();
+		
+		Webapp.create(builder.scanPackages(), builder.isDevMode());
+		
 		EventLoopGroup acceptor = new NioEventLoopGroup(builder.getAcceptors());
 		EventLoopGroup worker = new NioEventLoopGroup(builder.getIoWorkers());
 
@@ -68,16 +71,10 @@ public class DoradoServer {
 			bootstrap.childOption(ChannelOption.TCP_NODELAY, true);
 			bootstrap.childOption(ChannelOption.SO_SNDBUF, builder.getSendBuffer());
 			bootstrap.childOption(ChannelOption.SO_RCVBUF, builder.getRecvBuffer());
-			bootstrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
 
 			ChannelFuture f = bootstrap.bind(builder.getPort()).sync();
 
 			// print dorado ascii-art logo,use figlet generate ascii-art logo
-			String doradoAscii = IOUtils.toString(ClassLoaderUtils.getStream("dorado-ascii"));
-			System.out.println(doradoAscii);
-			System.out.println();
-
-			Webapp.create(builder.scanPackages(), builder.isDevMode());
 			LogUtils.info(String.format("Dorado application initialized with port: %d (http)", builder.getPort()));
 			f.channel().closeFuture().sync();
 		} catch (Throwable ex) {

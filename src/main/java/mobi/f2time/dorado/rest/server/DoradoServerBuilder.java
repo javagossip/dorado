@@ -18,7 +18,6 @@ package mobi.f2time.dorado.rest.server;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import mobi.f2time.dorado.rest.util.Constant;
-import mobi.f2time.dorado.rest.util.PackageScanner;
 import mobi.f2time.dorado.rest.util.TracingThreadPoolExecutor;
 
 /**
@@ -201,10 +200,6 @@ public final class DoradoServerBuilder {
 
 		serverConfig = this;
 		return new DoradoServer(this);
-	}
-
-	public static void main(String[] args) throws Exception {
-		PackageScanner.scan("");
 	}
 
 	public static DoradoServerBuilder get() {

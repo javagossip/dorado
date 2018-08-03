@@ -180,8 +180,8 @@ public abstract class ClassLoaderUtils {
 		}
 		return list;
 	}
-	
-	public static void main(String[] args) {
-		System.out.println(ClassLoaderUtils.getPath(""));
+
+	public static String getResoureAsString(String resource) {
+		return IOUtils.toString(getStream(resource));
 	}
 }
