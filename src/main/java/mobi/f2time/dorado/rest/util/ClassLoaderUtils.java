@@ -31,7 +31,8 @@ public abstract class ClassLoaderUtils {
 	 * @return
 	 */
 	public static String getPath(String resource) {
-		return getURL(resource).getPath();
+		String path = getURL(resource).getPath();
+		return path.replace("file:/", StringUtils.EMPTY);
 	}
 
 	public static URL getURL(String resource) {
