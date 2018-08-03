@@ -20,9 +20,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.List;
 
+import mobi.f2time.dorado.rest.util.ClassLoaderUtils;
 import mobi.f2time.dorado.rest.util.Constant;
 import mobi.f2time.dorado.rest.util.IOUtils;
 import mobi.f2time.dorado.rest.util.PackageScanner;
+import mobi.f2time.dorado.rest.util.StringUtils;
 
 /**
  * hotswap classloader, for dev mode
@@ -32,17 +34,18 @@ import mobi.f2time.dorado.rest.util.PackageScanner;
 public class DoradoClassLoader extends ClassLoader {
 	private final List<String> hotswappedClassNames;
 	private static ClassLoader parent;
+	private static String classpath;
 
 	static {
 		try {
 			parent = DoradoClassLoader.class.getClassLoader();
+			classpath = new File(parent.getResource(StringUtils.EMPTY).toURI()).getAbsolutePath();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
 
 	public DoradoClassLoader() {
-		String classpath = parent.getResource("").getPath();
 		this.hotswappedClassNames = PackageScanner.listAllClassNames(classpath);
 	}
 
@@ -51,10 +54,9 @@ public class DoradoClassLoader extends ClassLoader {
 		Class<?> c = findLoadedClass(name);
 		if (c != null)
 			return c;
-		
+
 		if (hotswappedClassNames.contains(name)) {
-			String file = parent.getResource("").getPath() + File.separator + name.replace('.', '/')
-					+ Constant.CLASS_SUFFIX;
+			String file = classpath + File.separator + name.replace('.', File.separatorChar) + Constant.CLASS_SUFFIX;
 			byte[] data = readBytesFromFile(file);
 			return defineClass(name, data, 0, data.length);
 		} else {
