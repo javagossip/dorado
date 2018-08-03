@@ -48,6 +48,10 @@ public class DoradoClassLoader extends ClassLoader {
 
 	@Override
 	public Class<?> loadClass(String name) throws ClassNotFoundException {
+		Class<?> c = findLoadedClass(name);
+		if (c != null)
+			return c;
+		
 		if (hotswappedClassNames.contains(name)) {
 			String file = parent.getResource("").getPath() + File.separator + name.replace('.', '/')
 					+ Constant.CLASS_SUFFIX;

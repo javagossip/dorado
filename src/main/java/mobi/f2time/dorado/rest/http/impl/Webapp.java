@@ -26,7 +26,6 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import mobi.f2time.dorado.exception.DoradoException;
@@ -63,13 +62,15 @@ public class Webapp {
 	}
 
 	public static synchronized void create(String[] packages) {
-		webapp = new Webapp(packages, false);
-		webapp.initialize();
+		create(packages, false);
 	}
 
 	public static synchronized void create(String[] packages, boolean reloadable) {
 		webapp = new Webapp(packages, reloadable);
 		webapp.initialize();
+		if (reloadable) {
+			webapp.watching();
+		}
 	}
 
 	public static Webapp get() {
@@ -84,8 +85,8 @@ public class Webapp {
 			return;
 		}
 		Thread.currentThread().setContextClassLoader(Dorado.classLoader);
-		webapp.destroy();
-		webapp.initialize();
+		destroy();
+		initialize();
 	}
 
 	private void destroy() {
@@ -93,10 +94,6 @@ public class Webapp {
 	}
 
 	public void initialize() {
-		if (reloadable) {
-			watching();
-		}
-
 		List<Class<?>> classes = new ArrayList<>();
 		try {
 			if (packages == null) {
@@ -142,15 +139,12 @@ public class Webapp {
 					StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE);
 		}
 
-		while (!Thread.currentThread().isInterrupted()) {
+		for (;;) {
 			try {
-				WatchKey watchKey = classFilesWatcher.poll(10, TimeUnit.MILLISECONDS);
-				if (watchKey == null)
-					continue;
-
 				final AtomicBoolean isNeedReload = new AtomicBoolean(false);
-
+				WatchKey watchKey = classFilesWatcher.take();
 				List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
+
 				watchEvents.stream().forEach(event -> {
 					java.nio.file.Path watchedPath = (java.nio.file.Path) event.context();
 					try {
@@ -160,8 +154,14 @@ public class Webapp {
 						LogUtils.error("watching file changed error", ex);
 					}
 				});
-				watchKey.reset();
+
+				boolean valid = watchKey.reset();
+				if (!valid) {
+					break;
+				}
+
 				if (isNeedReload.get()) {
+					LogUtils.info("Classes changed, reload Webapp!");
 					Dorado.classLoader = new DoradoClassLoader();
 					reload();
 				}
