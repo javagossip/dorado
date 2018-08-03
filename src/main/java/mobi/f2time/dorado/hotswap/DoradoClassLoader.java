@@ -18,10 +18,13 @@ package mobi.f2time.dorado.hotswap;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 
 import mobi.f2time.dorado.rest.util.Constant;
 import mobi.f2time.dorado.rest.util.IOUtils;
+import mobi.f2time.dorado.rest.util.LogUtils;
 import mobi.f2time.dorado.rest.util.PackageScanner;
 import mobi.f2time.dorado.rest.util.StringUtils;
 
@@ -54,13 +57,25 @@ public class DoradoClassLoader extends ClassLoader {
 		if (c != null)
 			return c;
 
+		if (name.startsWith("mobi.f2time.dorado")) {
+			LogUtils.info("load dorado framework class: {}", name);
+			byte[] data = readClassBytesFromJar(name);
+			return defineClass(name, data, 0, data.length);
+		}
+		
 		if (hotswappedClassNames.contains(name)) {
 			String file = classpath + File.separator + name.replace('.', File.separatorChar) + Constant.CLASS_SUFFIX;
 			byte[] data = readBytesFromFile(file);
 			return defineClass(name, data, 0, data.length);
 		} else {
-			return super.loadClass(name);
+			return parent.loadClass(name);
 		}
+	}
+
+	private byte[] readClassBytesFromJar(String name) {
+		InputStream classStream = parent.getResourceAsStream(name.replace('.', '/')+Constant.CLASS_SUFFIX);
+		byte[] classBytes = IOUtils.readBytes(classStream);
+		return classBytes;
 	}
 
 	private byte[] readBytesFromFile(String file) {
