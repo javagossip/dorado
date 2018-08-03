@@ -73,7 +73,7 @@ public class Webapp {
 		webapp = new Webapp(packages, reloadable);
 		webapp.initialize();
 		if (reloadable) {
-			webapp.watching(ClassLoaderUtils.getPath(StringUtils.EMPTY));
+			webapp.watching();
 		}
 	}
 
@@ -97,12 +97,11 @@ public class Webapp {
 		UriRoutingRegistry.getInstance().clear();
 	}
 
-	private void initialize() {
-		String classpath = ClassLoaderUtils.getPath(StringUtils.EMPTY);
+	public void initialize() {
 		List<Class<?>> classes = new ArrayList<>();
 		try {
 			if (packages == null) {
-				classes.addAll(PackageScanner.scanClassesWithClasspath(classpath));
+				classes.addAll(PackageScanner.scanClassesWithClasspath(ClassLoaderUtils.getPath(StringUtils.EMPTY)));
 			} else {
 				for (String scanPackage : packages) {
 					classes.addAll(PackageScanner.scan(scanPackage));
@@ -122,10 +121,10 @@ public class Webapp {
 		}
 	};
 
-	private void watching(final String classpath) {
+	private void watching() {
 		new Thread(() -> {
 			try {
-				reloadWebappIfNeed(classpath);
+				reloadWebappIfNeed(ClassLoaderUtils.getPath(StringUtils.EMPTY));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -164,6 +163,7 @@ public class Webapp {
 				if (!valid) {
 					break;
 				}
+
 				if (isNeedReload.get()) {
 					LOG.info("Classes changed, reload Webapp!");
 					Dorado.classLoader = new DoradoClassLoader();
