@@ -4,6 +4,7 @@
 package mobi.f2time.dorado.rest.util;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,8 +32,11 @@ public abstract class ClassLoaderUtils {
 	 * @return
 	 */
 	public static String getPath(String resource) {
-		String path = getURL(resource).getPath();
-		return path.replace("file:/", StringUtils.EMPTY);
+		try {
+			return new File(getClassLoader().getResource(resource).toURI()).getPath();
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	public static URL getURL(String resource) {
@@ -175,5 +179,9 @@ public abstract class ClassLoaderUtils {
 				}
 		}
 		return list;
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(ClassLoaderUtils.getPath(""));
 	}
 }
