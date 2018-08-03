@@ -29,9 +29,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import mobi.f2time.dorado.exception.DoradoException;
 import mobi.f2time.dorado.hotswap.DoradoClassLoader;
 import mobi.f2time.dorado.rest.annotation.Controller;
@@ -45,6 +42,7 @@ import mobi.f2time.dorado.rest.router.UriRoutingRegistry;
 import mobi.f2time.dorado.rest.server.Dorado;
 import mobi.f2time.dorado.rest.util.ClassLoaderUtils;
 import mobi.f2time.dorado.rest.util.FileUtils;
+import mobi.f2time.dorado.rest.util.LogUtils;
 import mobi.f2time.dorado.rest.util.PackageScanner;
 import mobi.f2time.dorado.rest.util.StringUtils;
 
@@ -53,8 +51,6 @@ import mobi.f2time.dorado.rest.util.StringUtils;
  * @author wangwp
  */
 public class Webapp {
-	private static final Logger LOG = LoggerFactory.getLogger(Webapp.class);
-
 	private static Webapp webapp;
 	private static final String FILTER_URL_PATTERN_ALL = "^/.*";
 
@@ -115,9 +111,10 @@ public class Webapp {
 				initializeUriRouting(clazz);
 				initializeWebFilters(clazz);
 			});
+
 			UriRoutingRegistry registry = getUriRoutingRegistry();
 			if (registry.uriRoutings().isEmpty()) {
-				LOG.warn("No Controller are registered, please check first");
+				LogUtils.warn("No Controller are registered, please check first");
 			}
 		} catch (Exception ex) {
 			throw new DoradoException(ex);
@@ -157,20 +154,18 @@ public class Webapp {
 				watchEvents.stream().forEach(event -> {
 					java.nio.file.Path watchedPath = (java.nio.file.Path) event.context();
 					try {
-						LOG.info("File {} changed in classpath, need reload webapp", watchedPath.toString());
+						LogUtils.info("File {} changed in classpath, need reload webapp", watchedPath.toString());
 						isNeedReload.compareAndSet(false, true);
 					} catch (Exception ex) {
-						LOG.error("watching file changed error", ex);
+						LogUtils.error("watching file changed error", ex);
 					}
 				});
-
 				watchKey.reset();
 				if (isNeedReload.get()) {
 					Dorado.classLoader = new DoradoClassLoader();
 					reload();
 				}
 			} catch (InterruptedException ex) {
-				ex.printStackTrace();
 				Thread.currentThread().interrupt();
 			}
 		}

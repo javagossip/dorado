@@ -13,16 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * 
  * @author wangweiping
  *
  */
 public abstract class ClassLoaderUtils {
-	private static final Logger logger = LoggerFactory.getLogger(ClassLoaderUtils.class);
 	private static final Properties EMPTY_PROPERTIES = new Properties();
 
 	private static ClassLoader classLoader;
@@ -109,7 +105,7 @@ public abstract class ClassLoaderUtils {
 		try {
 			return getClassLoader().getResource(resource).openStream();
 		} catch (IOException ex) {
-			logger.error("", ex);
+			LogUtils.error("", ex);
 		}
 		return null;
 	}
@@ -168,13 +164,13 @@ public abstract class ClassLoaderUtils {
 				list.add(line);
 			}
 		} catch (IOException ex) {
-			logger.error("将资源文件转化为list出现异常", ex);
+			LogUtils.error("将资源文件转化为list出现异常", ex);
 		} finally {
 			if (reader != null)
 				try {
 					reader.close();
 				} catch (IOException ex) {
-					logger.warn(ex.getMessage());
+					LogUtils.warn(ex.getMessage());
 				}
 		}
 		return list;

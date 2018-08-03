@@ -15,11 +15,7 @@
  */
 package mobi.f2time.dorado.rest.server;
 
-import static mobi.f2time.dorado.rest.http.impl.ChannelHolder.set;
-import static mobi.f2time.dorado.rest.http.impl.ChannelHolder.unset;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static mobi.f2time.dorado.rest.http.impl.ChannelHolder.*;
 
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelFuture;
@@ -42,6 +38,7 @@ import mobi.f2time.dorado.rest.http.impl.HttpRequestImpl;
 import mobi.f2time.dorado.rest.http.impl.HttpResponseImpl;
 import mobi.f2time.dorado.rest.http.impl.Webapp;
 import mobi.f2time.dorado.rest.router.UriRoutingMatchResult;
+import mobi.f2time.dorado.rest.util.LogUtils;
 import mobi.f2time.dorado.rest.util.TracingThreadPoolExecutor;
 
 /**
@@ -49,8 +46,6 @@ import mobi.f2time.dorado.rest.util.TracingThreadPoolExecutor;
  * @author wangwp
  */
 public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
-	private static final Logger LOG = LoggerFactory.getLogger(DoradoServerHandler.class);
-
 	private final TracingThreadPoolExecutor asyncExecutor;
 	private final Webapp webapp;
 	private final DoradoStatus status;
@@ -113,7 +108,7 @@ public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpReq
 				uriRouting.controller().invoke(_request, _response, pathVariables);
 			}
 		} catch (Throwable ex) {
-			LOG.error("handle http request error", ex);
+			LogUtils.error("handle http request error", ex);
 			response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
 			ByteBufUtil.writeUtf8(response.content(), "500 Internal Server Error");
 		} finally {
@@ -152,7 +147,7 @@ public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpReq
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		LOG.error(cause.getMessage(), cause);
+		LogUtils.error(cause.getMessage(), cause);
 		ctx.channel().close();
 	}
 }

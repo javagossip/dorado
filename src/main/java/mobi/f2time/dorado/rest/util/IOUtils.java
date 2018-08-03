@@ -1,9 +1,17 @@
 /*
- * This is  a part of the Video Resource System(VRS).
- * Copyright (C) 2010-2011 iqiyi.com Corporation
- * All rights reserved.
+ * Copyright 2017 The OpenDSP Project
  *
- * Licensed under the iqiyi.com private License.
+ * The OpenDSP Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
  */
 package mobi.f2time.dorado.rest.util;
 
@@ -16,9 +24,6 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * I/O操作实用工具类
  * 
@@ -26,7 +31,6 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class IOUtils {
-	private static final Logger logger = LoggerFactory.getLogger(IOUtils.class);
 	/**
 	 * The default buffer size to use.
 	 */
@@ -42,7 +46,7 @@ public class IOUtils {
 			copyLarge(inputStreamReader, writer);
 			return writer.toString();
 		} catch (IOException ex) {
-			logger.error("", ex);
+			LogUtils.error("", ex);
 		} finally {
 			closeQuietly(inputStreamReader);
 		}
@@ -60,7 +64,7 @@ public class IOUtils {
 			copyLarge(reader, writer);
 			return writer.toString();
 		} catch (IOException ex) {
-			logger.error("", ex);
+			LogUtils.error("", ex);
 		} finally {
 			closeQuietly(reader);
 		}

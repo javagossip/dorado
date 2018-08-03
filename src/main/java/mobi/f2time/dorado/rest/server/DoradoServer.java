@@ -15,9 +15,6 @@
  */
 package mobi.f2time.dorado.rest.server;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
@@ -33,15 +30,14 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.timeout.IdleStateHandler;
 import mobi.f2time.dorado.rest.http.impl.Webapp;
 import mobi.f2time.dorado.rest.util.ClassLoaderUtils;
-import mobi.f2time.dorado.rest.util.Constant;
 import mobi.f2time.dorado.rest.util.IOUtils;
+import mobi.f2time.dorado.rest.util.LogUtils;
 
 /**
  * 
  * @author wangwp
  */
 public class DoradoServer {
-	private static final Logger LOG = LoggerFactory.getLogger(Constant.SERVER_NAME);
 
 	private final DoradoServerBuilder builder;
 
@@ -82,10 +78,10 @@ public class DoradoServer {
 			System.out.println();
 
 			Webapp.create(builder.scanPackages(), builder.isDevMode());
-			LOG.info(String.format("Dorado application initialized with port: %d (http)", builder.getPort()));
+			LogUtils.info(String.format("Dorado application initialized with port: %d (http)", builder.getPort()));
 			f.channel().closeFuture().sync();
 		} catch (Throwable ex) {
-			LOG.error("Start dorado application failed, cause: " + ex.getMessage(), ex);
+			LogUtils.error("Start dorado application failed, cause: " + ex.getMessage(), ex);
 		} finally {
 			worker.shutdownGracefully();
 			acceptor.shutdownGracefully();
