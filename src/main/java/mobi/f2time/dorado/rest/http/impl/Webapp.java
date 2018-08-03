@@ -30,7 +30,6 @@ import mobi.f2time.dorado.rest.http.Filter;
 import mobi.f2time.dorado.rest.router.UriRoutingController;
 import mobi.f2time.dorado.rest.router.UriRoutingPath;
 import mobi.f2time.dorado.rest.router.UriRoutingRegistry;
-import mobi.f2time.dorado.rest.server.Dorado;
 import mobi.f2time.dorado.rest.util.ClassLoaderUtils;
 import mobi.f2time.dorado.rest.util.LogUtils;
 import mobi.f2time.dorado.rest.util.PackageScanner;
@@ -45,11 +44,9 @@ public class Webapp {
 	private static final String FILTER_URL_PATTERN_ALL = "^/.*";
 
 	private final String[] packages;
-	private final boolean reloadable;
 
 	private Webapp(String[] packages, boolean reloadable) {
 		this.packages = packages;
-		this.reloadable = reloadable;
 	}
 
 	public static synchronized void create(String[] packages) {
@@ -57,7 +54,6 @@ public class Webapp {
 	}
 
 	public static synchronized void create(String[] packages, boolean reloadable) {
-		Thread.currentThread().setContextClassLoader(Dorado.classLoader);
 		webapp = new Webapp(packages, reloadable);
 		webapp.initialize();
 	}
@@ -67,19 +63,6 @@ public class Webapp {
 			throw new IllegalStateException("webapp not initialized, please create it first");
 		}
 		return webapp;
-	}
-
-	public synchronized void reload() {
-		if (!reloadable) {
-			return;
-		}
-		Thread.currentThread().setContextClassLoader(Dorado.classLoader);
-		destroy();
-		initialize();
-	}
-
-	private void destroy() {
-		UriRoutingRegistry.getInstance().clear();
 	}
 
 	public void initialize() {

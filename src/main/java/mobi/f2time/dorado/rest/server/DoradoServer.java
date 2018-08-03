@@ -44,6 +44,7 @@ public class DoradoServer {
 	}
 
 	public void start() {
+		// print dorado ascii-art logo,use figlet generate ascii-art logo
 		System.out.println(ClassLoaderUtils.getResoureAsString("dorado-ascii"));
 		System.out.println();
 		
@@ -73,8 +74,6 @@ public class DoradoServer {
 			bootstrap.childOption(ChannelOption.SO_RCVBUF, builder.getRecvBuffer());
 
 			ChannelFuture f = bootstrap.bind(builder.getPort()).sync();
-
-			// print dorado ascii-art logo,use figlet generate ascii-art logo
 			LogUtils.info(String.format("Dorado application initialized with port: %d (http)", builder.getPort()));
 			f.channel().closeFuture().sync();
 		} catch (Throwable ex) {
