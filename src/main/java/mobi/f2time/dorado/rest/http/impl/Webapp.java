@@ -15,12 +15,10 @@
  */
 package mobi.f2time.dorado.rest.http.impl;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
@@ -30,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +44,7 @@ import mobi.f2time.dorado.rest.router.UriRoutingPath;
 import mobi.f2time.dorado.rest.router.UriRoutingRegistry;
 import mobi.f2time.dorado.rest.server.Dorado;
 import mobi.f2time.dorado.rest.util.ClassLoaderUtils;
+import mobi.f2time.dorado.rest.util.FileUtils;
 import mobi.f2time.dorado.rest.util.PackageScanner;
 import mobi.f2time.dorado.rest.util.StringUtils;
 
@@ -141,9 +139,8 @@ public class Webapp {
 	private void reloadWebappIfNeed(String classpath) throws Exception {
 		WatchService classFilesWatcher = FileSystems.getDefault().newWatchService();
 		java.nio.file.Path rootPath = Paths.get(classpath);
-		rootPath.register(classFilesWatcher, StandardWatchEventKinds.ENTRY_MODIFY);
 
-		List<java.nio.file.Path> allWatchDirs = recurseListFiles(rootPath);
+		List<java.nio.file.Path> allWatchDirs = FileUtils.recurseListDirs(rootPath);
 		for (java.nio.file.Path watchDir : allWatchDirs) {
 			watchDir.register(classFilesWatcher, StandardWatchEventKinds.ENTRY_MODIFY,
 					StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE);
@@ -161,34 +158,23 @@ public class Webapp {
 				watchEvents.stream().forEach(event -> {
 					java.nio.file.Path watchedPath = (java.nio.file.Path) event.context();
 					try {
-						LOG.info("File {} changed in classpath, reload webapp", watchedPath.toString());
+						LOG.info("File {} changed in classpath, need reload webapp", watchedPath.toString());
 						isNeedReload.compareAndSet(false, true);
 					} catch (Exception ex) {
 						LOG.error("watching file changed error", ex);
 					}
 				});
+				
 				watchKey.reset();
 				if (isNeedReload.get()) {
 					Dorado.classLoader = new DoradoClassLoader();
-					Webapp.get().reload();
+					reload();
 				}
 			} catch (InterruptedException ex) {
 				ex.printStackTrace();
 				Thread.currentThread().interrupt();
 			}
 		}
-	}
-
-	private static List<java.nio.file.Path> recurseListFiles(java.nio.file.Path root) throws IOException {
-		List<java.nio.file.Path> results = new ArrayList<>();
-		List<java.nio.file.Path> pathList = Files.list(root).filter(p -> p.toFile().isDirectory())
-				.collect(Collectors.toList());
-
-		for (java.nio.file.Path p : pathList) {
-			results.add(p);
-			results.addAll(recurseListFiles(p));
-		}
-		return results;
 	}
 
 	private void initializeWebFilters(Class<?> clazz) {

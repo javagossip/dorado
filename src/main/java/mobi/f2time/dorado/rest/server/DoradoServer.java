@@ -82,10 +82,10 @@ public class DoradoServer {
 			System.out.println();
 
 			Webapp.create(builder.scanPackages(), builder.isDevMode());
-			LOG.info(String.format("Dorado application initialized with port(s): %d (http)", builder.getPort()));
+			LOG.info(String.format("Dorado application initialized with port: %d (http)", builder.getPort()));
 			f.channel().closeFuture().sync();
 		} catch (Throwable ex) {
-			LOG.error("start dorado server failed, cause: ", ex);
+			LOG.error("Start dorado application failed, cause: " + ex.getMessage(), ex);
 		} finally {
 			worker.shutdownGracefully();
 			acceptor.shutdownGracefully();

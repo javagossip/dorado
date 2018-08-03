@@ -16,8 +16,13 @@
 package mobi.f2time.dorado.rest.util;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * 
@@ -38,5 +43,20 @@ public final class FileUtils {
 			files.addAll(listFiles(childFile, suffix, recursive));
 		}
 		return files;
+	}
+
+	public static List<Path> recurseListDirs(Path root) throws IOException {
+		final List<java.nio.file.Path> results = new ArrayList<>();
+
+		try (Stream<java.nio.file.Path> pathStream = Files.walk(root)) {
+			pathStream.filter(p -> p.toFile().isDirectory()).forEach(p -> results.add(p));
+		} catch (IOException ex) {
+			throw ex;
+		}
+		return results;
+	}
+
+	public static void main(String[] args) throws Exception {
+		System.out.println(recurseListDirs(Paths.get(ClassLoaderUtils.getPath(""))));
 	}
 }
