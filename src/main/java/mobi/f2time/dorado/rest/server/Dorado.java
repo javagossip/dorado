@@ -15,8 +15,6 @@
  */
 package mobi.f2time.dorado.rest.server;
 
-import mobi.f2time.dorado.hotswap.DoradoClassLoader;
-
 /**
  * 
  * @author wangwp
@@ -25,10 +23,6 @@ public final class Dorado {
 	public static ClassLoader classLoader;
 
 	static {
-		classLoader = new DoradoClassLoader();
-	}
-
-	public static void resetClassLoader() {
-		classLoader = new DoradoClassLoader();
+		classLoader = Thread.currentThread().getContextClassLoader();
 	}
 }
