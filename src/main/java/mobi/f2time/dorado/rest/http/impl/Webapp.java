@@ -97,15 +97,14 @@ public class Webapp {
 	}
 
 	public void initialize() {
-		String classpath = ClassLoaderUtils.getPath(StringUtils.EMPTY);
 		if (reloadable) {
-			watching(classpath);
+			watching();
 		}
 
 		List<Class<?>> classes = new ArrayList<>();
 		try {
 			if (packages == null) {
-				classes.addAll(PackageScanner.scanClassesWithClasspath(classpath));
+				classes.addAll(PackageScanner.scanClassesWithClasspath(ClassLoaderUtils.getPath(StringUtils.EMPTY)));
 			} else {
 				for (String scanPackage : packages) {
 					classes.addAll(PackageScanner.scan(scanPackage));
@@ -125,10 +124,10 @@ public class Webapp {
 		}
 	};
 
-	private void watching(final String classpath) {
+	private void watching() {
 		new Thread(() -> {
 			try {
-				reloadWebappIfNeed(classpath);
+				reloadWebappIfNeed(ClassLoaderUtils.getPath(StringUtils.EMPTY));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -164,7 +163,7 @@ public class Webapp {
 						LOG.error("watching file changed error", ex);
 					}
 				});
-				
+
 				watchKey.reset();
 				if (isNeedReload.get()) {
 					Dorado.classLoader = new DoradoClassLoader();
