@@ -15,9 +15,9 @@ Simple,Fast,Lightweight http restful server implemention with Netty4 and JDK1.8+
 
 ```xml
 <dependency>
-    <groupId>mobi.f2time</groupId>
+    <groupId>ai.houyi</groupId>
     <artifactId>dorado</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
 </dependency>
 ```
 
@@ -128,10 +128,10 @@ Please visit https://github.com/javagossip/dorado-examples
 
 | Annotation type  | description  |supported data type|
 |:-------------: |:---------------:|:------------:|
-|RequestParam|Query or Form parameter|primitive type&wrapper class,String|
-|PathVariable|Uri path variable, example: {var}|primitive type&wrapper class,String|
-|HeaderParam|Request header value|primitive type&wrapper class,String|
-|CookieParam|Request cookie value|primitive type&wrapper class,String|
+|RequestParam|Query or Form parameter|Primitive type&wrapper class,String|
+|PathVariable|Uri path variable, example: {var}|Primitive type&wrapper class,String|
+|HeaderParam|Request header value|Primitive type&wrapper class,String|
+|CookieParam|Request cookie value|Primitive type&wrapper class,String|
 |RequestBody|Http request body|String, byte[],InputStream or any serializable type|
 
 ## Built-in Services
