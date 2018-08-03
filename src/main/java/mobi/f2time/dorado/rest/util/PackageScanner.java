@@ -37,16 +37,18 @@ public class PackageScanner {
 		ClassLoader cl = Thread.currentThread().getContextClassLoader();
 
 		List<Class<?>> allClasses = new ArrayList<>();
+
+		int index = classpath.endsWith(File.separator) ? classpath.length() : classpath.length() + 1;
 		List<File> allClassFiles = FileUtils.listFiles(new File(classpath), Constant.CLASS_SUFFIX, true);
+
 		for (File classFile : allClassFiles) {
-			String className = classFile.getAbsolutePath().substring(classpath.length()).replace('/', '.');
+			String className = classFile.getAbsolutePath().substring(index).replace(File.separatorChar, '.');
 			allClasses.add(loadClass(cl, className));
 		}
 		return allClasses;
 	}
 
 	public static List<Class<?>> scan(String packageName) throws ClassNotFoundException {
-
 		List<Class<?>> classes = new LinkedList<>();
 		try {
 			ClassLoader loader = Thread.currentThread().getContextClassLoader();
@@ -126,8 +128,10 @@ public class PackageScanner {
 		List<String> classNames = new ArrayList<>();
 
 		List<File> allClassFiles = FileUtils.listFiles(new File(classpath), Constant.CLASS_SUFFIX, true);
+		int index = classpath.endsWith(File.separator) ? classpath.length() : classpath.length() + 1;
+
 		for (File classFile : allClassFiles) {
-			String className = classFile.getAbsolutePath().substring(classpath.length()).replace('/', '.');
+			String className = classFile.getAbsolutePath().substring(index).replace(File.separatorChar, '.');
 			className = className.substring(0, className.length() - 6);
 			classNames.add(className);
 		}
