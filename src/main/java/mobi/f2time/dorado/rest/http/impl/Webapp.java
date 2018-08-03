@@ -67,6 +67,9 @@ public class Webapp {
 
 	public static synchronized void create(String[] packages, boolean reloadable) {
 		webapp = new Webapp(packages, reloadable);
+		Dorado.classLoader = new DoradoClassLoader();
+		Thread.currentThread().setContextClassLoader(Dorado.classLoader);
+		
 		webapp.initialize();
 		if (reloadable) {
 			webapp.watching();
