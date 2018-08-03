@@ -15,16 +15,28 @@
  */
 package mobi.f2time.dorado.rest.http.impl;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import mobi.f2time.dorado.exception.DoradoException;
+import mobi.f2time.dorado.hotswap.DoradoClassLoader;
 import mobi.f2time.dorado.rest.annotation.Controller;
 import mobi.f2time.dorado.rest.annotation.HttpMethod;
 import mobi.f2time.dorado.rest.annotation.Path;
@@ -49,13 +61,20 @@ public class Webapp {
 	private static final String FILTER_URL_PATTERN_ALL = "^/.*";
 
 	private final String[] packages;
+	private final boolean reloadable;
 
-	private Webapp(String[] packages) {
+	private Webapp(String[] packages, boolean reloadable) {
 		this.packages = packages;
+		this.reloadable = reloadable;
 	}
 
 	public static synchronized void create(String[] packages) {
-		webapp = new Webapp(packages);
+		webapp = new Webapp(packages, false);
+		webapp.initialize();
+	}
+
+	public static synchronized void create(String[] packages, boolean reloadable) {
+		webapp = new Webapp(packages, reloadable);
 		webapp.initialize();
 	}
 
@@ -67,6 +86,9 @@ public class Webapp {
 	}
 
 	public synchronized void reload() {
+		if (!reloadable) {
+			return;
+		}
 		Thread.currentThread().setContextClassLoader(Dorado.classLoader);
 		webapp.destroy();
 		webapp.initialize();
@@ -77,10 +99,14 @@ public class Webapp {
 	}
 
 	public void initialize() {
+		String classpath = ClassLoaderUtils.getPath(StringUtils.EMPTY);
+		if (reloadable) {
+			watching(classpath);
+		}
+
 		List<Class<?>> classes = new ArrayList<>();
 		try {
 			if (packages == null) {
-				String classpath = ClassLoaderUtils.getPath("");
 				classes.addAll(PackageScanner.scanClassesWithClasspath(classpath));
 			} else {
 				for (String scanPackage : packages) {
@@ -100,6 +126,70 @@ public class Webapp {
 			throw new DoradoException(ex);
 		}
 	};
+
+	private void watching(final String classpath) {
+		new Thread(() -> {
+			try {
+				reloadWebappIfNeed(classpath);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}).start();
+		;
+	}
+
+	private void reloadWebappIfNeed(String classpath) throws Exception {
+		WatchService classFilesWatcher = FileSystems.getDefault().newWatchService();
+		java.nio.file.Path rootPath = Paths.get(classpath);
+		rootPath.register(classFilesWatcher, StandardWatchEventKinds.ENTRY_MODIFY);
+
+		List<java.nio.file.Path> allWatchDirs = recurseListFiles(rootPath);
+		for (java.nio.file.Path watchDir : allWatchDirs) {
+			watchDir.register(classFilesWatcher, StandardWatchEventKinds.ENTRY_MODIFY,
+					StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE);
+		}
+
+		while (!Thread.currentThread().isInterrupted()) {
+			try {
+				WatchKey watchKey = classFilesWatcher.poll(10, TimeUnit.MILLISECONDS);
+				if (watchKey == null)
+					continue;
+
+				final AtomicBoolean isNeedReload = new AtomicBoolean(false);
+
+				List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
+				watchEvents.stream().forEach(event -> {
+					java.nio.file.Path watchedPath = (java.nio.file.Path) event.context();
+					try {
+						LOG.info("File {} changed in classpath, reload webapp", watchedPath.toString());
+						isNeedReload.compareAndSet(false, true);
+					} catch (Exception ex) {
+						LOG.error("watching file changed error", ex);
+					}
+				});
+				watchKey.reset();
+				if (isNeedReload.get()) {
+					Dorado.classLoader = new DoradoClassLoader();
+					Webapp.get().reload();
+				}
+			} catch (InterruptedException ex) {
+				ex.printStackTrace();
+				Thread.currentThread().interrupt();
+			}
+		}
+	}
+
+	private static List<java.nio.file.Path> recurseListFiles(java.nio.file.Path root) throws IOException {
+		List<java.nio.file.Path> results = new ArrayList<>();
+		List<java.nio.file.Path> pathList = Files.list(root).filter(p -> p.toFile().isDirectory())
+				.collect(Collectors.toList());
+
+		for (java.nio.file.Path p : pathList) {
+			results.add(p);
+			results.addAll(recurseListFiles(p));
+		}
+		return results;
+	}
 
 	private void initializeWebFilters(Class<?> clazz) {
 		if (!Filter.class.isAssignableFrom(clazz)) {

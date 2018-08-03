@@ -15,21 +15,6 @@
  */
 package mobi.f2time.dorado.rest.server;
 
-import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +31,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.timeout.IdleStateHandler;
-import mobi.f2time.dorado.hotswap.DoradoClassLoader;
 import mobi.f2time.dorado.rest.http.impl.Webapp;
 import mobi.f2time.dorado.rest.util.ClassLoaderUtils;
 import mobi.f2time.dorado.rest.util.Constant;
@@ -97,10 +81,7 @@ public class DoradoServer {
 			System.out.println(doradoAscii);
 			System.out.println();
 
-			Webapp.create(builder.scanPackages());
-			if (builder.isDevMode()) {
-				reloadWebappIfNeed();
-			}
+			Webapp.create(builder.scanPackages(), builder.isDevMode());
 			LOG.info(String.format("Dorado application initialized with port(s): %d (http)", builder.getPort()));
 			f.channel().closeFuture().sync();
 		} catch (Throwable ex) {
@@ -109,69 +90,5 @@ public class DoradoServer {
 			worker.shutdownGracefully();
 			acceptor.shutdownGracefully();
 		}
-	}
-
-	private void reloadWebappIfNeed() {
-		final String watchingClasspath = ClassLoaderUtils.getPath("");
-		// 启动一个监控类文件变化的线程，如果类文件发现变化则重新加载
-		new Thread(() -> {
-			try {
-				reloadClassesIfNeed(watchingClasspath);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}).start();
-	}
-
-	private void reloadClassesIfNeed(String classpath) throws Exception {
-		WatchService classFilesWatcher = FileSystems.getDefault().newWatchService();
-		Path rootPath = Paths.get(classpath);
-		rootPath.register(classFilesWatcher, StandardWatchEventKinds.ENTRY_MODIFY);
-
-		List<Path> allWatchDirs = recurseListFiles(rootPath);
-		for (Path watchDir : allWatchDirs) {
-			watchDir.register(classFilesWatcher, StandardWatchEventKinds.ENTRY_MODIFY,
-					StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE);
-		}
-
-		while (!Thread.currentThread().isInterrupted()) {
-			try {
-				WatchKey watchKey = classFilesWatcher.poll(10, TimeUnit.MILLISECONDS);
-				if (watchKey == null)
-					continue;
-
-				final AtomicBoolean isNeedReload = new AtomicBoolean(false);
-
-				List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
-				watchEvents.stream().forEach(event -> {
-					Path watchedPath = (Path) event.context();
-					try {
-						LOG.info("File {} changed in classpath, reload webapp", watchedPath.toString());
-						isNeedReload.compareAndSet(false, true);
-					} catch (Exception ex) {
-						LOG.error("watching file changed error", ex);
-					}
-				});
-				watchKey.reset();
-				if (isNeedReload.get()) {
-					Dorado.classLoader = new DoradoClassLoader();
-					Webapp.get().reload();
-				}
-			} catch (InterruptedException ex) {
-				ex.printStackTrace();
-				Thread.currentThread().interrupt();
-			}
-		}
-	}
-
-	private static List<Path> recurseListFiles(Path root) throws IOException {
-		List<Path> results = new ArrayList<>();
-		List<Path> pathList = Files.list(root).filter(p -> p.toFile().isDirectory()).collect(Collectors.toList());
-
-		for (Path p : pathList) {
-			results.add(p);
-			results.addAll(recurseListFiles(p));
-		}
-		return results;
 	}
 }
