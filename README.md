@@ -1,14 +1,12 @@
 # Dorado
-Simple,Fast,Lightweight http restful server implemention with Netty4 and JDK1.8+
+简单、快速、轻量级的http restful server实现，基于Netty4和JDK1.8+
 
 ## Features
 
-* HTTP/1.1 and HTTP/1.0 protocol support 
-* Http Long-connection supported (also Connection: Keep-Alive)
-* Http Restful serialized supported (JSON and google Protobuf)
-* Http Uri route mapping support
-* Unsupported multipart/form-data request
-* Unsupported HTTPS request
+* HTTP/1.1 and HTTP/1.0协议支持
+* 内置JSON/Protobuf序列化支持
+* Http路由支持
+
 
 ## Maven
 
@@ -22,7 +20,7 @@ Simple,Fast,Lightweight http restful server implemention with Netty4 and JDK1.8+
 
 ## Quick start
 
-* Simplest rest server
+* 最简单的Dorado rest server
 
 ```java
 public class Application {
@@ -30,14 +28,11 @@ public class Application {
 	public static void main(String[] args) throws Exception {
 		// create simple rest server
 		DoradoServerBuilder.forPort(18888).build().start();
-		//create rest server with dev mode
-		//dev mode support hot deployment
-		//DoradoServerBuilder.forPort(18888).devMode(true).build().start();
 	}
 }
 ```
 
-* Rest server with more config parameters
+* 更多定制化参数服务器
 
 ```java
 
@@ -57,7 +52,7 @@ public class Application {
 }
 ```
 
-* Controller
+* Rest Controller
 
 ```java
 @Controller
@@ -103,29 +98,30 @@ public class CampaignController {
 * More examples 
 
 Please visit https://github.com/javagossip/dorado-examples
-## Support annotations
-### class level
 
-| Annotation type  | description  | 
+## 注解说明
+### 类注解
+
+| 注解类型  | 描述  | 
+|:-------------: |:---------------:|
+| Controller    | 控制器 | 
+| Path      | 控制器访问Path|
+
+### 方法注解
+
+| 注解类型  | 描述  | 
 |:-------------: |:---------------|
-| Controller    | Indicates that an annotated class is a "Controller" (e.g. a web controller). | 
-| Path      | Identifies the URI path that a controller class or class method will serve requests for |
+| Path      | 资源访问路径，实际访问path为：controllerPath+methodPath |
+|GET|方法仅支持Http GET请求|
+|POST|方法仅支持Http POST请求|
+|PUT|方法仅支持HTTP PUT请求|
+|DELETE|方法仅支持HTTP DELETE请求|
+|Consume | 方法参数支持的MediaType, 如：application/json|
+|Produce | 方法响应MediaType, 如：application/json|
 
-### method level
+### 方法参数注解
 
-| Annotation type  | description  | 
-|:-------------: |:---------------|
-| Path      | Identifies the URI path that a resource class or class method will serve requests for |
-|GET|Indicates that the annotated method responds to HTTP GET requests|
-|POST|Indicates that the annotated method responds to HTTP POST requests|
-|PUT|Indicates that the annotated method responds to HTTP PUT requests|
-|DELETE|Indicates that the annotated method responds to HTTP DELETE requests|
-|Consume | Defines the media type that the methods of a controller class can accept|
-|Produce | Defines the media type that the methods of a controller class can produce|
-
-### parameter level
-
-| Annotation type  | description  |supported data type|
+| 注解类型  | 描述  |参数支持数据类型|
 |:-------------: |:---------------:|:------------:|
 |RequestParam|Query or Form parameter|Primitive type&wrapper class,String|
 |PathVariable|Uri path variable, example: {var}|Primitive type&wrapper class,String|
@@ -133,13 +129,13 @@ Please visit https://github.com/javagossip/dorado-examples
 |CookieParam|Request cookie value|Primitive type&wrapper class,String|
 |RequestBody|Http request body|String, byte[],InputStream or any serializable type|
 
-## Built-in Services
+## 内置服务
 
 * Get Server configuration: **[http://{ip}:{port}/config]()**
 * Get Server status: **[http://{ip}:{port}/status]()**
 * List All services: **[http://{ip}:{port}/services]()**
 
-## Best Practices
+## 最佳实践
 
-## Performance
+## 性能
 
