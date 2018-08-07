@@ -110,7 +110,7 @@ Please visit https://github.com/javagossip/dorado-examples
 ### 方法注解
 
 | 注解类型  | 描述  | 
-|:-------------: |:---------------|
+|:-------------: |:---------------:|
 | Path      | 资源访问路径，实际访问path为：controllerPath+methodPath |
 |GET|方法仅支持Http GET请求|
 |POST|方法仅支持Http POST请求|
