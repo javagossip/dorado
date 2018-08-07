@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ai.houyi</groupId>
 	<artifactId>dorado</artifactId>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>dorado</name>
 	<description>The restful server based netty4&amp;jdk8</description>
 	<url>https://github.com/javagossip/dorado</url>
