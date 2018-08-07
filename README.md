@@ -7,7 +7,6 @@ Simple,Fast,Lightweight http restful server implemention with Netty4 and JDK1.8+
 * Http Long-connection supported (also Connection: Keep-Alive)
 * Http Restful serialized supported (JSON and google Protobuf)
 * Http Uri route mapping support
-* Hot deployment supported in dev mode
 * Unsupported multipart/form-data request
 * Unsupported HTTPS request
 
@@ -17,7 +16,7 @@ Simple,Fast,Lightweight http restful server implemention with Netty4 and JDK1.8+
 <dependency>
     <groupId>ai.houyi</groupId>
     <artifactId>dorado</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
 </dependency>
 ```
 
