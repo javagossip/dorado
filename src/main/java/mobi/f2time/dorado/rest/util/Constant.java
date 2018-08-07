@@ -40,7 +40,7 @@ public final class Constant {
 
 	public static final int DEFAULT_MAX_WORKER_THREAD = 100;
 
-	public static final int DEFAULT_BACKLOG = 512;
+	public static final int DEFAULT_BACKLOG = 1024;
 
 	public static final int DEFAULT_MAX_PENDING_REQUEST = 10000;
 
