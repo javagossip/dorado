@@ -32,8 +32,21 @@ public abstract class ClassLoaderUtils {
 	 * @return
 	 */
 	public static String getPath(String resource) {
+		return getPath(getClassLoader(), resource);
+	}
+
+	/**
+	 * 获得资源真实文件路径
+	 * 
+	 * @param resource
+	 *            资源
+	 * @param classLoader
+	 *            当前类加载器
+	 * @return
+	 */
+	public static String getPath(ClassLoader classLoader, String resource) {
 		try {
-			return new File(getClassLoader().getResource(resource).toURI()).getPath();
+			return new File(classLoader.getResource(resource).toURI()).getPath();
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
