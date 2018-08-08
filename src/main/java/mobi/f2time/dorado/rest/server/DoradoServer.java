@@ -30,6 +30,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 import mobi.f2time.dorado.rest.http.impl.Webapp;
 import mobi.f2time.dorado.rest.util.ClassLoaderUtils;
 import mobi.f2time.dorado.rest.util.LogUtils;
+import mobi.f2time.dorado.spring.DoradoApplicationContext;
 
 /**
  * 
@@ -47,9 +48,16 @@ public class DoradoServer {
 		// print dorado ascii-art logo,use figlet generate ascii-art logo
 		System.out.println(ClassLoaderUtils.getResoureAsString("dorado-ascii"));
 		System.out.println();
-		
+
+		if (builder.isEnableSpring()) {
+			final DoradoApplicationContext ctx = new DoradoApplicationContext(builder.scanPackages());
+			Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+				ctx.close();
+			}));
+		}
+
 		Webapp.create(builder.scanPackages(), builder.isDevMode());
-		
+
 		EventLoopGroup acceptor = new NioEventLoopGroup(builder.getAcceptors());
 		EventLoopGroup worker = new NioEventLoopGroup(builder.getIoWorkers());
 

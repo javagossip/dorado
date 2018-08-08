@@ -46,6 +46,7 @@ public final class DoradoServerBuilder {
 
 	private String[] scanPackages;
 	private boolean devMode;
+	private boolean enableSpring;
 
 	private TracingThreadPoolExecutor executor;
 
@@ -124,6 +125,11 @@ public final class DoradoServerBuilder {
 		return this;
 	}
 
+	public DoradoServerBuilder enableSpring(boolean enableSpring) {
+		this.enableSpring = enableSpring;
+		return this;
+	}
+
 	public int getBacklog() {
 		return backlog;
 	}
@@ -156,6 +162,10 @@ public final class DoradoServerBuilder {
 		return devMode;
 	}
 
+	public boolean isEnableSpring() {
+		return this.enableSpring;
+	}
+	
 	public int getMaxIdleTime() {
 		return maxIdleTime;
 	}
