@@ -6,6 +6,7 @@
 * HTTP/1.1 and HTTP/1.0协议支持
 * 内置JSON/Protobuf序列化支持
 * Http路由支持
+* Spring框架支持
 
 
 ## Maven
@@ -14,7 +15,7 @@
 <dependency>
     <groupId>ai.houyi</groupId>
     <artifactId>dorado</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.4-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -27,7 +28,7 @@ public class Application {
 
 	public static void main(String[] args) throws Exception {
 		// create simple rest server
-		DoradoServerBuilder.forPort(18888).build().start();
+		DoradoServerBuilder.forPort(18888).scanPackages("com.rtbstack.demo").build().start();
 	}
 }
 ```
@@ -51,6 +52,23 @@ public class Application {
 	}
 }
 ```
+* spring框架支持
+    
+    DoradoServerBuilder.forPort(port).<font color=red>**springOn(true)**</font>
+
+```java
+
+public class Application {
+
+	public static void main(String[] args) throws Exception {
+		DoradoServerBuilder.forPort(18888).springOn(true)
+				.scanPackages("com.rtbstack.demo",
+						"com.rtbstack.demo.controller1")
+		       .build().start();
+	}
+}
+```
+
 
 * Rest Controller
 
