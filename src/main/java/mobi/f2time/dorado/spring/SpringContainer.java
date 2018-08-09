@@ -37,6 +37,7 @@ public final class SpringContainer implements BeanContainer {
 
 	private SpringContainer(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
+		Dorado.beanContainer = this;
 	}
 
 	public synchronized static void create(ApplicationContext applicationContext) {
