@@ -15,14 +15,10 @@
  */
 package mobi.f2time.dorado.spring;
 
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
-import org.springframework.core.type.filter.AnnotationTypeFilter;
 
 import mobi.f2time.dorado.BeanContainer;
 import mobi.f2time.dorado.Dorado;
-import mobi.f2time.dorado.rest.annotation.Controller;
 import mobi.f2time.dorado.rest.controller.RootController;
 import mobi.f2time.dorado.rest.server.DoradoServerBuilder;
 
@@ -44,13 +40,6 @@ public final class SpringContainer implements BeanContainer {
 		DoradoServerBuilder builder = Dorado.serverConfig;
 		if (builder == null) {
 			throw new IllegalStateException("Please init DoradoServer first!");
-		}
-
-		if (!(applicationContext instanceof DoradoApplicationContext)) {
-			ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(
-					(BeanDefinitionRegistry) applicationContext);
-			scanner.addIncludeFilter(new AnnotationTypeFilter(Controller.class));
-			scanner.scan(builder.scanPackages());
 		}
 
 		instance = new SpringContainer(applicationContext);
