@@ -17,7 +17,7 @@
 <dependency>
     <groupId>ai.houyi</groupId>
     <artifactId>dorado</artifactId>
-    <version>0.0.4-SNAPSHOT</version>
+    <version>0.0.4</version>
 </dependency>
 ```
 
@@ -166,7 +166,7 @@ Please visit https://github.com/javagossip/dorado-examples
 	<dependency>
 	    <groupId>ai.houyi</groupId>
 	    <artifactId>dorado-spring-boot-starter</artifactId>
-	    <version>version</version>
+	    <version>0.0.1</version>
 	</dependency>
 	```
 
