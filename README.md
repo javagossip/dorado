@@ -4,7 +4,8 @@
 ## Features
 
 * HTTP/1.1 and HTTP/1.0协议支持
-* 内置JSON/Protobuf序列化支持
+* 内置JSON/Protobuf序列化支持，JSON序列化框架使用Fastjson, 依赖内置；  
+  如果使用protobuf序列化，需要自行添加protobuf依赖, protobuf版本2.x
 * Http路由支持
 * Spring框架支持
 
