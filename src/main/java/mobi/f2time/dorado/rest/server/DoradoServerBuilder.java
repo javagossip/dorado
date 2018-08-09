@@ -46,7 +46,7 @@ public final class DoradoServerBuilder {
 
 	private String[] scanPackages;
 	private boolean devMode;
-	private boolean enableSpring;
+	private boolean springOn;
 
 	private TracingThreadPoolExecutor executor;
 
@@ -125,8 +125,8 @@ public final class DoradoServerBuilder {
 		return this;
 	}
 
-	public DoradoServerBuilder enableSpring(boolean enableSpring) {
-		this.enableSpring = enableSpring;
+	public DoradoServerBuilder springOn(boolean springOn) {
+		this.springOn = springOn;
 		return this;
 	}
 
@@ -162,10 +162,10 @@ public final class DoradoServerBuilder {
 		return devMode;
 	}
 
-	public boolean isEnableSpring() {
-		return this.enableSpring;
+	public boolean isSpringOn() {
+		return this.springOn;
 	}
-	
+
 	public int getMaxIdleTime() {
 		return maxIdleTime;
 	}
@@ -195,6 +195,10 @@ public final class DoradoServerBuilder {
 	}
 
 	public DoradoServer build() {
+		if (scanPackages == null || scanPackages.length == 0) {
+			throw new IllegalArgumentException("scanPackages must be not null");
+		}
+
 		if (minWorkers > maxWorkers) {
 			throw new IllegalArgumentException("minWorkers is greater than maxWorkers");
 		}

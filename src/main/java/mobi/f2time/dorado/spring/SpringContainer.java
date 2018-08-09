@@ -15,19 +15,35 @@
  */
 package mobi.f2time.dorado.spring;
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.ApplicationContext;
 
 /**
  * 
  * @author wangwp
  */
-public class DoradoApplicationContext extends AnnotationConfigApplicationContext {
-	private final DoradoClassPathBeanDefinitionScanner scanner;
-	
-	public DoradoApplicationContext(String... basePackages) {
-		super.scan(basePackages);
-		scanner = new DoradoClassPathBeanDefinitionScanner(this);
-		scanner.scan(basePackages);
-		refresh();
+public final class SpringContainer {
+	private static SpringContainer instance;
+
+	private final ApplicationContext applicationContext;
+
+	private SpringContainer(ApplicationContext applicationContext) {
+		this.applicationContext = applicationContext;
+	}
+
+	public synchronized static void create(ApplicationContext applicationContext) {
+		instance = new SpringContainer(applicationContext);
+	}
+
+	public static SpringContainer get() {
+		return instance;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T getBean(String name) {
+		return (T) applicationContext.getBean(name);
+	}
+
+	public <T> T getBean(Class<T> type) {
+		return applicationContext.getBean(type);
 	}
 }

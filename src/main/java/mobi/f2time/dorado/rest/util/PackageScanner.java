@@ -27,26 +27,13 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
+import mobi.f2time.dorado.exception.DoradoException;
+
 /**
  * 
  * @author wangwp
  */
 public class PackageScanner {
-
-	public static List<Class<?>> scanClassesWithClasspath(String classpath) throws Exception {
-		ClassLoader cl = Thread.currentThread().getContextClassLoader();
-
-		List<Class<?>> allClasses = new ArrayList<>();
-
-		int index = classpath.endsWith(File.separator) ? classpath.length() : classpath.length() + 1;
-		List<File> allClassFiles = FileUtils.listFiles(new File(classpath), Constant.CLASS_SUFFIX, true);
-
-		for (File classFile : allClassFiles) {
-			String className = classFile.getAbsolutePath().substring(index).replace(File.separatorChar, '.');
-			allClasses.add(loadClass(cl, className));
-		}
-		return allClasses;
-	}
 
 	public static List<Class<?>> scan(String packageName) throws ClassNotFoundException {
 		List<Class<?>> classes = new LinkedList<>();
@@ -65,7 +52,6 @@ public class PackageScanner {
 				default:
 					throw new URISyntaxException(uri.getScheme(), "unknown schema " + uri.getScheme());
 				}
-
 			}
 		} catch (URISyntaxException | IOException e) {
 			e.printStackTrace();
@@ -75,22 +61,28 @@ public class PackageScanner {
 	}
 
 	private static Class<?> loadClass(ClassLoader loader, String classPath) throws ClassNotFoundException {
-		classPath = classPath.substring(0, classPath.length() - 6);
-		return loader.loadClass(classPath);
+		try {
+			classPath = classPath.substring(0, classPath.length() - 6);
+			return loader.loadClass(classPath);
+		} catch (Throwable cause) {
+			LogUtils.error("", cause);
+		}
+		return null;
 	}
 
 	private static void scanFromFileProtocol(ClassLoader loader, List<Class<?>> classes, String dir, String packageName)
 			throws ClassNotFoundException {
-		File directory = new File(dir);
-		File[] files = directory.listFiles();
-		if (directory.isDirectory() && files != null) {
-			for (File classFile : files) {
-				if (!classFile.isDirectory() && classFile.getName().endsWith(Constant.CLASS_SUFFIX)
-						&& !classFile.getName().contains("$")) {
-					String className = String.format("%s.%s", packageName, classFile.getName());
+		try {
+			List<String> classNames = listAllClassNames(dir);
+			classNames.forEach(className -> {
+				try {
 					classes.add(loadClass(loader, className));
+				} catch (Throwable e) {
+					LogUtils.error(e.getMessage());
 				}
-			}
+			});
+		} catch (Exception ex) {
+			throw new DoradoException(ex);
 		}
 	}
 
@@ -132,10 +124,16 @@ public class PackageScanner {
 
 		for (File classFile : allClassFiles) {
 			String className = classFile.getAbsolutePath().substring(index).replace(File.separatorChar, '.');
-			className = className.substring(0, className.length() - 6);
+			//className = className.substring(0, className.length() - 6);
 			classNames.add(className);
 		}
-
 		return classNames;
+	}
+
+	public static void main(String[] args) throws Exception {
+		String packageName = "io.netty.channel";
+
+		List<Class<?>> classes = PackageScanner.scan(packageName);
+		classes.forEach(type -> System.out.println(type.getName()));
 	}
 }

@@ -31,6 +31,7 @@ import mobi.f2time.dorado.rest.http.impl.Webapp;
 import mobi.f2time.dorado.rest.util.ClassLoaderUtils;
 import mobi.f2time.dorado.rest.util.LogUtils;
 import mobi.f2time.dorado.spring.DoradoApplicationContext;
+import mobi.f2time.dorado.spring.SpringContainer;
 
 /**
  * 
@@ -49,14 +50,14 @@ public class DoradoServer {
 		System.out.println(ClassLoaderUtils.getResoureAsString("dorado-ascii"));
 		System.out.println();
 
-		if (builder.isEnableSpring()) {
+		if (builder.isSpringOn()) {
 			final DoradoApplicationContext ctx = new DoradoApplicationContext(builder.scanPackages());
+			SpringContainer.create(ctx);
 			Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 				ctx.close();
 			}));
 		}
-
-		Webapp.create(builder.scanPackages(), builder.isDevMode());
+		Webapp.create(builder.scanPackages(), builder.isDevMode(), builder.isSpringOn());
 
 		EventLoopGroup acceptor = new NioEventLoopGroup(builder.getAcceptors());
 		EventLoopGroup worker = new NioEventLoopGroup(builder.getIoWorkers());

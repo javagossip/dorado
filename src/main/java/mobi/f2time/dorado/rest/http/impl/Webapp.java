@@ -45,7 +45,7 @@ public class Webapp {
 
 	private final String[] packages;
 
-	private Webapp(String[] packages, boolean reloadable) {
+	private Webapp(String[] packages, boolean reloadable, boolean enableSpring) {
 		this.packages = packages;
 	}
 
@@ -54,7 +54,11 @@ public class Webapp {
 	}
 
 	public static synchronized void create(String[] packages, boolean reloadable) {
-		webapp = new Webapp(packages, reloadable);
+		create(packages, reloadable, false);
+	}
+
+	public static synchronized void create(String[] packages, boolean reloadable, boolean enableSpring) {
+		webapp = new Webapp(packages, reloadable, enableSpring);
 		webapp.initialize();
 	}
 
@@ -68,12 +72,8 @@ public class Webapp {
 	public void initialize() {
 		List<Class<?>> classes = new ArrayList<>();
 		try {
-			if (packages == null) {
-				classes.addAll(PackageScanner.scanClassesWithClasspath(ClassLoaderUtils.getPath(StringUtils.EMPTY)));
-			} else {
-				for (String scanPackage : packages) {
-					classes.addAll(PackageScanner.scan(scanPackage));
-				}
+			for (String scanPackage : packages) {
+				classes.addAll(PackageScanner.scan(scanPackage));
 			}
 			initializeUriRouting(RootController.class);
 			classes.forEach(clazz -> {
