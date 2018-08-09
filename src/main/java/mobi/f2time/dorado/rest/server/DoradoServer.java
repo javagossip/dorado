@@ -50,7 +50,7 @@ public class DoradoServer {
 		System.out.println(ClassLoaderUtils.getResoureAsString("dorado-ascii"));
 		System.out.println();
 
-		if (builder.isSpringOn() && Dorado.springInitialized) {
+		if (builder.isSpringOn() && !Dorado.springInitialized) {
 			SpringContainer.create(builder.scanPackages());
 		}
 

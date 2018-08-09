@@ -15,6 +15,8 @@
  */
 package mobi.f2time.dorado;
 
+import mobi.f2time.dorado.rest.server.DoradoServerBuilder;
+
 /**
  * 
  * @author wangwp
@@ -23,6 +25,7 @@ public final class Dorado {
 	public static ClassLoader classLoader;
 	public static boolean springInitialized;
 	public static BeanContainer beanContainer;
+	public static DoradoServerBuilder serverConfig;
 
 	static {
 		classLoader = Thread.currentThread().getContextClassLoader();

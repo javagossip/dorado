@@ -18,6 +18,7 @@ package mobi.f2time.dorado.rest.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import mobi.f2time.dorado.Dorado;
 import mobi.f2time.dorado.rest.annotation.Controller;
 import mobi.f2time.dorado.rest.annotation.Path;
 import mobi.f2time.dorado.rest.router.UriRoutingPath;
@@ -56,14 +57,13 @@ public class RootController {
 			String path = routingPath.routingPath();
 			String method = StringUtils.defaultString(routingPath.httpMethod(), "*");
 
-			serviceList.add(RestService.builder().withPath(path)
-					.withMethod(method).build());
+			serviceList.add(RestService.builder().withPath(path).withMethod(method).build());
 		}
 		return serviceList;
 	}
-	
+
 	@Path("config")
 	public DoradoServerBuilder config() {
-		return DoradoServerBuilder.get();
+		return Dorado.serverConfig;
 	}
 }

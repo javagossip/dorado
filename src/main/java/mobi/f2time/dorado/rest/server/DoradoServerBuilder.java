@@ -17,6 +17,7 @@ package mobi.f2time.dorado.rest.server;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
+import mobi.f2time.dorado.Dorado;
 import mobi.f2time.dorado.rest.util.Constant;
 import mobi.f2time.dorado.rest.util.TracingThreadPoolExecutor;
 
@@ -25,8 +26,6 @@ import mobi.f2time.dorado.rest.util.TracingThreadPoolExecutor;
  * @author wangwp
  */
 public final class DoradoServerBuilder {
-	private static DoradoServerBuilder serverConfig;
-
 	private int backlog = Constant.DEFAULT_BACKLOG;
 	private int acceptors = Constant.DEFAULT_ACCEPTOR_COUNT;
 	private int ioWorkers = Constant.DEFAULT_IO_WORKER_COUNT;
@@ -212,11 +211,7 @@ public final class DoradoServerBuilder {
 			executor.prestartAllCoreThreads();
 		}
 
-		serverConfig = this;
+		Dorado.serverConfig = this;
 		return new DoradoServer(this);
-	}
-
-	public static DoradoServerBuilder get() {
-		return serverConfig;
 	}
 }

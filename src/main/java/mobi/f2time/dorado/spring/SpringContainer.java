@@ -40,12 +40,18 @@ public final class SpringContainer implements BeanContainer {
 	}
 
 	public synchronized static void create(ApplicationContext applicationContext) {
+		DoradoServerBuilder builder = Dorado.serverConfig;
+		if (builder == null) {
+			throw new IllegalStateException("Please init DoradoServer first!");
+		}
+
 		if (!(applicationContext instanceof DoradoApplicationContext)) {
 			ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(
 					(BeanDefinitionRegistry) applicationContext);
 			scanner.addIncludeFilter(new AnnotationTypeFilter(Controller.class));
-			scanner.scan(DoradoServerBuilder.get().scanPackages());
+			scanner.scan(builder.scanPackages());
 		}
+
 		instance = new SpringContainer(applicationContext);
 		Dorado.springInitialized = true;
 	}
