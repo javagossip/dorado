@@ -8,6 +8,7 @@
   如果使用protobuf序列化，需要自行添加protobuf依赖, protobuf版本2.x
 * Http路由支持, 路由path支持任意的java正则表达式，通过{pathVariable:regex}这种方式支持
 * Spring框架支持，默认支持注解方式初始化spring容器
+* SpringBoot集成
 
 
 ## Maven
@@ -154,6 +155,29 @@ Please visit https://github.com/javagossip/dorado-examples
 * Get Server configuration: **[http://{ip}:{port}/config]()**
 * Get Server status: **[http://{ip}:{port}/status]()**
 * List All services: **[http://{ip}:{port}/services]()**
+
+## SpringBoot支持
+* 添加dorado-spring-boot-starter依赖
+
+  ```xml
+<dependency>
+    <groupId>ai.houyi</groupId>
+    <artifactId>dorado-spring-boot-starter</artifactId>
+    <version>${VERSION}</version>
+</dependency>
+```
+
+* 基于springboot的dorado应用
+
+	```java
+	@EnableAutoConfiguration
+	public class SpringBootApplication {
+	
+		public static void main(String[] args) throws Exception {
+			SpringApplication.run(SpringBootApplication.class, args);
+		}
+	}
+	```
 
 ## 最佳实践
 
