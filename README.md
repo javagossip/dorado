@@ -55,6 +55,8 @@ public class Application {
 * spring框架支持
     
     DoradoServerBuilder.forPort(port).<font color=red>**springOn(true)**</font>
+    
+    由于框架本身不直接依赖spring框架，如果启用spring之后，务必自行添加spring框架相关依赖到项目中，否则系统启动会出现ClassNotFound异常
 
 ```java
 
