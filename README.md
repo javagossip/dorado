@@ -6,8 +6,9 @@
 * HTTP/1.1 and HTTP/1.0协议支持
 * 内置JSON/Protobuf序列化支持，JSON序列化框架使用Fastjson, 依赖内置；  
   如果使用protobuf序列化，需要自行添加protobuf依赖, protobuf版本2.x
-* Http路由支持
-* Spring框架支持
+* Http路由支持, 路由path支持任意的java正则表达式，通过{pathVariable:regex}这种方式支持
+* Spring框架支持，默认支持注解方式初始化spring容器，如果不使用默认方式，  
+  参见：[自定义spring容器初始化](#advanced_spring)
 
 
 ## Maven
@@ -72,6 +73,27 @@ public class Application {
 }
 ```
 
+* <span id="advanced_spring">Spring容器外部初始化</span>
+
+```java
+
+public class Application {
+
+	public static void main(String[] args) throws Exception {
+			//首先初始化DoradoServer, 开启spring支持
+			DoradoServer server = DoradoServerBuilder.forPort(19999)
+			.scanPackages("mobi.f2time.dorado.examples")
+				.springOn(true).build();
+				
+		   //自行初始化spring的ApplicationContext和SpringContainer, 如下：
+		   ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-context.xml");
+		   SpringContainer.create(ctx);
+		   
+		   //最后启动DoradoServer
+		   server.start();
+	}
+}
+```
 
 * Rest Controller
 
