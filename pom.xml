@@ -1,8 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ai.houyi</groupId>
 	<artifactId>dorado</artifactId>
-	<version>0.0.5-SNAPSHOT</version>
+	<version>0.0.4-SNAPSHOT</version>
 	<name>dorado</name>
 	<description>The restful server based netty4&amp;jdk8</description>
 	<url>https://github.com/javagossip/dorado</url>
@@ -14,6 +15,7 @@
 		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
 		<maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
 		<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+		<maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
 
 		<netty.version>4.1.27.Final</netty.version>
 		<slf4j.version>1.7.25</slf4j.version>
@@ -120,6 +122,22 @@
 								<goals>
 									<goal>sign</goal>
 								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>${maven-javadoc-plugin.version}</version>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+								<configuration>
+									<additionalparam>-Xdoclint:none</additionalparam>
+								</configuration>
 							</execution>
 						</executions>
 					</plugin>
