@@ -47,7 +47,7 @@ public class PackageScanner {
 					scanFromJarProtocol(loader, classes, uri.getRawSchemeSpecificPart());
 					break;
 				case "file":
-					scanFromFileProtocol(loader, classes, uri.getPath(), packageName);
+					scanFromFileProtocol(loader, classes, new File(uri).getPath(), packageName);
 					break;
 				default:
 					throw new URISyntaxException(uri.getScheme(), "unknown schema " + uri.getScheme());
