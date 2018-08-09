@@ -157,6 +157,9 @@ Please visit https://github.com/javagossip/dorado-examples
 * List All services: **[http://{ip}:{port}/services]()**
 
 ## SpringBoot支持
+* dorado-spring-boot-starter  
+[https://github.com/javagossip/dorado-spring-boot-starter]()
+
 * 添加dorado-spring-boot-starter依赖
 
   ```xml
