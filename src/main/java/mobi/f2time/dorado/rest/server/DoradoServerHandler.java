@@ -15,7 +15,8 @@
  */
 package mobi.f2time.dorado.rest.server;
 
-import static mobi.f2time.dorado.rest.http.impl.ChannelHolder.*;
+import static mobi.f2time.dorado.rest.http.impl.ChannelHolder.set;
+import static mobi.f2time.dorado.rest.http.impl.ChannelHolder.unset;
 
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelFuture;
@@ -31,10 +32,8 @@ import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.timeout.IdleStateEvent;
 import mobi.f2time.dorado.Dorado;
 import mobi.f2time.dorado.rest.controller.DoradoStatus;
-import mobi.f2time.dorado.rest.http.FilterChain;
 import mobi.f2time.dorado.rest.http.HttpRequest;
 import mobi.f2time.dorado.rest.http.HttpResponse;
-import mobi.f2time.dorado.rest.http.impl.FilterManager;
 import mobi.f2time.dorado.rest.http.impl.HttpRequestImpl;
 import mobi.f2time.dorado.rest.http.impl.HttpResponseImpl;
 import mobi.f2time.dorado.rest.http.impl.Webapp;
@@ -102,9 +101,6 @@ public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpReq
 				ByteBufUtil.writeUtf8(response.content(), String.format(
 						"Resource not found, url: [%s], http_method: [%s]", request.uri(), _request.getMethod()));
 			} else {
-				FilterChain filterChain = FilterManager.getInstance().filter(_request.getRequestURI());
-				filterChain.doFilter(_request, _response);
-
 				String[] pathVariables = uriRouting.pathVariables();
 				uriRouting.controller().invoke(_request, _response, pathVariables);
 			}
