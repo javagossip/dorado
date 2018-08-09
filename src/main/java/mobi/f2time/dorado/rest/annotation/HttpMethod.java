@@ -56,8 +56,5 @@ public @interface HttpMethod {
 	 */
 	public static final String OPTIONS = "OPTIONS";
 
-	/**
-	 * Specifies the name of a HTTP method. E.g. "GET".
-	 */
 	String value();
 }

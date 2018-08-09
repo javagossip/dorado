@@ -29,20 +29,20 @@ public abstract class ClassLoaderUtils {
 	 * 
 	 * @param resource
 	 *            资源
-	 * @return
+	 * @return 资源文件路径
 	 */
 	public static String getPath(String resource) {
 		return getPath(getClassLoader(), resource);
 	}
 
 	/**
-	 * 获得资源真实文件路径
+	 * 从指定类加载器中获得资源真实文件路径
 	 * 
 	 * @param resource
 	 *            资源
 	 * @param classLoader
 	 *            当前类加载器
-	 * @return
+	 * @return 资源文件路径
 	 */
 	public static String getPath(ClassLoader classLoader, String resource) {
 		try {
@@ -61,7 +61,7 @@ public abstract class ClassLoaderUtils {
 	 * 
 	 * @param clazzName
 	 *            类名
-	 * @return
+	 * @return 类实例
 	 */
 	public static Object getInstance(String clazzName) {
 		try {
@@ -88,7 +88,7 @@ public abstract class ClassLoaderUtils {
 	 * 
 	 * @param name
 	 *            类名
-	 * @return
+	 * @return 加载指定类
 	 */
 	public static Class<?> loadClass(String name) {
 		try {
@@ -113,7 +113,7 @@ public abstract class ClassLoaderUtils {
 	 * 
 	 * @param resource
 	 *            资源文件
-	 * @return
+	 * @return 获得资源流
 	 */
 	public static InputStream getStream(String resource) {
 		return getClassLoader().getResourceAsStream(resource);
@@ -133,7 +133,7 @@ public abstract class ClassLoaderUtils {
 	 * 
 	 * @param resource
 	 *            资源文件
-	 * @return
+	 * @return 从资源文件加载属性
 	 */
 	public static Properties getProperties(String resource) {
 		Properties properties = new Properties();
@@ -153,7 +153,7 @@ public abstract class ClassLoaderUtils {
 	 * 
 	 * @param resource
 	 *            资源文件
-	 * @return
+	 * @return 资源reader实例
 	 */
 	public static Reader getReader(String resource) {
 		InputStream is = getStream(resource);
@@ -168,7 +168,7 @@ public abstract class ClassLoaderUtils {
 	 * 
 	 * @param resource
 	 *            资源文件
-	 * @return
+	 * @return 获得资源文件内容
 	 */
 	public static List<String> getList(String resource) {
 		List<String> list = new ArrayList<String>();

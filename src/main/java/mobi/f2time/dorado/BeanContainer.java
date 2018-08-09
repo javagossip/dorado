@@ -18,8 +18,9 @@ package mobi.f2time.dorado;
 import mobi.f2time.dorado.rest.util.ClassLoaderUtils;
 
 /**
+ * bean容器
+ * 
  * @author weiping wang
- * @param <T>
  *
  */
 public interface BeanContainer {
