@@ -162,13 +162,13 @@ Please visit https://github.com/javagossip/dorado-examples
 
 * 添加dorado-spring-boot-starter依赖
 
-  ```xml
-<dependency>
-    <groupId>ai.houyi</groupId>
-    <artifactId>dorado-spring-boot-starter</artifactId>
-    <version>${VERSION}</version>
-</dependency>
-```
+	```xml
+	<dependency>
+	    <groupId>ai.houyi</groupId>
+	    <artifactId>dorado-spring-boot-starter</artifactId>
+	    <version>version</version>
+	</dependency>
+	```
 
 * 基于springboot的dorado应用
 
