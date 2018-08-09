@@ -56,7 +56,6 @@ public class PackageScanner {
 		} catch (URISyntaxException | IOException e) {
 			e.printStackTrace();
 		}
-
 		return classes;
 	}
 
@@ -76,7 +75,7 @@ public class PackageScanner {
 			List<String> classNames = listAllClassNames(dir);
 			classNames.forEach(className -> {
 				try {
-					classes.add(loadClass(loader, className));
+					classes.add(loadClass(loader, String.format("%s.%s", packageName,className)));
 				} catch (Throwable e) {
 					LogUtils.error(e.getMessage());
 				}
@@ -124,14 +123,13 @@ public class PackageScanner {
 
 		for (File classFile : allClassFiles) {
 			String className = classFile.getAbsolutePath().substring(index).replace(File.separatorChar, '.');
-			//className = className.substring(0, className.length() - 6);
 			classNames.add(className);
 		}
 		return classNames;
 	}
 
 	public static void main(String[] args) throws Exception {
-		String packageName = "io.netty.channel";
+		String packageName = "mobi.f2time";
 
 		List<Class<?>> classes = PackageScanner.scan(packageName);
 		classes.forEach(type -> System.out.println(type.getName()));

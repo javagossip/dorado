@@ -57,7 +57,8 @@ public class DoradoServer {
 				ctx.close();
 			}));
 		}
-		Webapp.create(builder.scanPackages(), builder.isDevMode(), builder.isSpringOn());
+		
+		Webapp.create(builder.scanPackages(), builder.isSpringOn());
 
 		EventLoopGroup acceptor = new NioEventLoopGroup(builder.getAcceptors());
 		EventLoopGroup worker = new NioEventLoopGroup(builder.getIoWorkers());
@@ -65,17 +66,7 @@ public class DoradoServer {
 		ServerBootstrap bootstrap = null;
 		try {
 			bootstrap = new ServerBootstrap().group(acceptor, worker).channel(NioServerSocketChannel.class)
-					.childHandler(new ChannelInitializer<Channel>() {
-						@Override
-						protected void initChannel(Channel ch) throws Exception {
-							ChannelPipeline pipeline = ch.pipeline();
-
-							pipeline.addLast(new HttpServerCodec());
-							pipeline.addLast(new HttpObjectAggregator(builder.getMaxPacketLength()));
-							pipeline.addLast(new IdleStateHandler(builder.getMaxIdleTime(), 0, 0));
-							pipeline.addLast(DoradoServerHandler.create(builder));
-						}
-					});
+					.childHandler(new DoradoChannelInitializer(builder));
 
 			bootstrap.option(ChannelOption.SO_BACKLOG, builder.getBacklog());
 			bootstrap.childOption(ChannelOption.TCP_NODELAY, true);
@@ -90,6 +81,24 @@ public class DoradoServer {
 		} finally {
 			worker.shutdownGracefully();
 			acceptor.shutdownGracefully();
+		}
+	}
+
+	static class DoradoChannelInitializer extends ChannelInitializer<Channel> {
+		private final DoradoServerBuilder builder;
+
+		public DoradoChannelInitializer(DoradoServerBuilder builder) {
+			this.builder = builder;
+		}
+
+		@Override
+		protected void initChannel(Channel ch) throws Exception {
+			ChannelPipeline pipeline = ch.pipeline();
+
+			pipeline.addLast(new HttpServerCodec());
+			pipeline.addLast(new HttpObjectAggregator(builder.getMaxPacketLength()));
+			pipeline.addLast(new IdleStateHandler(builder.getMaxIdleTime(), 0, 0));
+			pipeline.addLast(DoradoServerHandler.create(builder));
 		}
 	}
 }

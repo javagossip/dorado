@@ -45,7 +45,7 @@ public class Webapp {
 
 	private final String[] packages;
 
-	private Webapp(String[] packages, boolean reloadable, boolean enableSpring) {
+	private Webapp(String[] packages, boolean springOn) {
 		this.packages = packages;
 	}
 
@@ -53,12 +53,8 @@ public class Webapp {
 		create(packages, false);
 	}
 
-	public static synchronized void create(String[] packages, boolean reloadable) {
-		create(packages, reloadable, false);
-	}
-
-	public static synchronized void create(String[] packages, boolean reloadable, boolean enableSpring) {
-		webapp = new Webapp(packages, reloadable, enableSpring);
+	public static synchronized void create(String[] packages, boolean springOn) {
+		webapp = new Webapp(packages, springOn);
 		webapp.initialize();
 	}
 
@@ -91,7 +87,7 @@ public class Webapp {
 	};
 
 	private void initializeWebFilters(Class<?> clazz) {
-		if (!Filter.class.isAssignableFrom(clazz)) {
+		if (!Filter.class.isAssignableFrom(clazz) || clazz.isInterface()) {
 			return;
 		}
 
