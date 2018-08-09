@@ -15,13 +15,22 @@
  */
 package mobi.f2time.dorado.spring;
 
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
+
+import mobi.f2time.dorado.BeanContainer;
+import mobi.f2time.dorado.Dorado;
+import mobi.f2time.dorado.rest.annotation.Controller;
+import mobi.f2time.dorado.rest.controller.RootController;
+import mobi.f2time.dorado.rest.server.DoradoServerBuilder;
 
 /**
  * 
  * @author wangwp
  */
-public final class SpringContainer {
+public final class SpringContainer implements BeanContainer {
 	private static SpringContainer instance;
 
 	private final ApplicationContext applicationContext;
@@ -31,19 +40,35 @@ public final class SpringContainer {
 	}
 
 	public synchronized static void create(ApplicationContext applicationContext) {
+		if (!(applicationContext instanceof DoradoApplicationContext)) {
+			ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(
+					(BeanDefinitionRegistry) applicationContext);
+			scanner.addIncludeFilter(new AnnotationTypeFilter(Controller.class));
+			scanner.scan(DoradoServerBuilder.get().scanPackages());
+		}
 		instance = new SpringContainer(applicationContext);
+		Dorado.springInitialized = true;
 	}
 
 	public static SpringContainer get() {
 		return instance;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T getBean(String name) {
-		return (T) applicationContext.getBean(name);
+	@Override
+	public <T> T getBean(Class<T> type) {
+		if (type == RootController.class) {
+			return BeanContainer.DEFAULT.getBean(type);
+		}
+		return applicationContext.getBean(type);
 	}
 
-	public <T> T getBean(Class<T> type) {
-		return applicationContext.getBean(type);
+	public static void create(String[] scanPackages) {
+		if (instance != null) {
+			throw new IllegalStateException("SpringContainer has been initialized");
+		}
+
+		DoradoApplicationContext applicationContext = new DoradoApplicationContext(scanPackages);
+		create(applicationContext);
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> applicationContext.close()));
 	}
 }

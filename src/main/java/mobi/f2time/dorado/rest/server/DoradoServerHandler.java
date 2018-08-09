@@ -29,6 +29,7 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.timeout.IdleStateEvent;
+import mobi.f2time.dorado.Dorado;
 import mobi.f2time.dorado.rest.controller.DoradoStatus;
 import mobi.f2time.dorado.rest.http.FilterChain;
 import mobi.f2time.dorado.rest.http.HttpRequest;

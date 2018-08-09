@@ -27,10 +27,10 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.timeout.IdleStateHandler;
+import mobi.f2time.dorado.Dorado;
 import mobi.f2time.dorado.rest.http.impl.Webapp;
 import mobi.f2time.dorado.rest.util.ClassLoaderUtils;
 import mobi.f2time.dorado.rest.util.LogUtils;
-import mobi.f2time.dorado.spring.DoradoApplicationContext;
 import mobi.f2time.dorado.spring.SpringContainer;
 
 /**
@@ -50,14 +50,10 @@ public class DoradoServer {
 		System.out.println(ClassLoaderUtils.getResoureAsString("dorado-ascii"));
 		System.out.println();
 
-		if (builder.isSpringOn()) {
-			final DoradoApplicationContext ctx = new DoradoApplicationContext(builder.scanPackages());
-			SpringContainer.create(ctx);
-			Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-				ctx.close();
-			}));
+		if (builder.isSpringOn() && Dorado.springInitialized) {
+			SpringContainer.create(builder.scanPackages());
 		}
-		
+
 		Webapp.create(builder.scanPackages(), builder.isSpringOn());
 
 		EventLoopGroup acceptor = new NioEventLoopGroup(builder.getAcceptors());

@@ -15,22 +15,20 @@
  */
 package mobi.f2time.dorado.rest.util;
 
+import static mobi.f2time.dorado.rest.util.ProtobufMessageDescriptors.registerMessageDescriptorForType;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import com.google.protobuf.Message;
 
+import mobi.f2time.dorado.Dorado;
 import mobi.f2time.dorado.rest.DefaultParameterNameResolver;
 import mobi.f2time.dorado.rest.ParameterNameResolver;
 import mobi.f2time.dorado.rest.annotation.Consume;
 import mobi.f2time.dorado.rest.annotation.Produce;
-import mobi.f2time.dorado.rest.controller.RootController;
 import mobi.f2time.dorado.rest.http.HttpRequest;
 import mobi.f2time.dorado.rest.http.HttpResponse;
-import mobi.f2time.dorado.rest.server.DoradoServerBuilder;
-import mobi.f2time.dorado.spring.SpringContainer;
-
-import static mobi.f2time.dorado.rest.util.ProtobufMessageDescriptors.*;
 
 /**
  * 
@@ -64,12 +62,7 @@ public class MethodDescriptor {
 		String[] parameterNames = parameterNameResolver.getParameterNames(method);
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
-		boolean springOn = DoradoServerBuilder.get().isSpringOn();
-		if (springOn && !isDefaultRootController(clazz)) {
-			this.invokeTarget = SpringContainer.get().getBean(clazz);
-		} else {
-			this.invokeTarget = ClassLoaderUtils.newInstance(clazz);
-		}
+		this.invokeTarget = Dorado.beanContainer.getBean(clazz);
 		this.annotations = method.getAnnotations();
 		this.consume = method.getAnnotation(Consume.class);
 		this.produce = method.getAnnotation(Produce.class);
@@ -83,10 +76,6 @@ public class MethodDescriptor {
 			methodParameters[i] = MethodParameter.create(name, type, annotation);
 			registerMessageDescriptorForTypeIfNeed(type);
 		}
-	}
-
-	private boolean isDefaultRootController(Class<?> type) {
-		return type == RootController.class;
 	}
 
 	private void registerMessageDescriptorForTypeIfNeed(Class<?> type) {

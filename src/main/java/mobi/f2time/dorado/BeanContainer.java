@@ -13,16 +13,24 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package mobi.f2time.dorado.rest.server;
+package mobi.f2time.dorado;
+
+import mobi.f2time.dorado.rest.util.ClassLoaderUtils;
 
 /**
- * 
- * @author wangwp
+ * @author weiping wang
+ * @param <T>
+ *
  */
-public final class Dorado {
-	public static ClassLoader classLoader;
+public interface BeanContainer {
 
-	static {
-		classLoader = Thread.currentThread().getContextClassLoader();
-	}
+	BeanContainer DEFAULT = new BeanContainer() {
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T> T getBean(Class<T> beanType) {
+			return (T) ClassLoaderUtils.newInstance(beanType);
+		}
+	};
+
+	<T> T getBean(Class<T> beanType);
 }
