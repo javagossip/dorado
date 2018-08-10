@@ -185,6 +185,7 @@ dorado框架本身已经提供了spring-boot starter模块，无需单独的dora
 
 	```java
 	@SpringBootApplication
+	@EnableDorado
 	public class SpringBootApplication {
 	
 		public static void main(String[] args) throws Exception {
