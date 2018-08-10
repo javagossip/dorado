@@ -17,7 +17,7 @@
 <dependency>
     <groupId>ai.houyi</groupId>
     <artifactId>dorado</artifactId>
-    <version>0.0.5</version>
+    <version>0.0.6</version>
 </dependency>
 ```
 
@@ -56,7 +56,7 @@ public class Application {
 ```
 * spring框架支持
     
-    DoradoServerBuilder.forPort(port).<font color=red>**springOn(true)**</font>
+    DoradoServerBuilder.forPort(port).<font color=red>**springOn()**</font>
     
     由于框架本身不直接依赖spring框架，如果启用spring之后，务必自行添加spring框架相关依赖到项目中，否则系统启动会出现ClassNotFound异常
 
@@ -65,7 +65,7 @@ public class Application {
 public class Application {
 
 	public static void main(String[] args) throws Exception {
-		DoradoServerBuilder.forPort(18888).springOn(true)
+		DoradoServerBuilder.forPort(18888).springOn()
 				.scanPackages("com.rtbstack.demo",
 						"com.rtbstack.demo.controller1")
 		       .build().start();
@@ -157,19 +157,30 @@ Please visit https://github.com/javagossip/dorado-examples
 * List All services: **[http://{ip}:{port}/services]()**
 
 ## SpringBoot集成
-* dorado-spring-boot-starter  
-[https://github.com/javagossip/dorado-spring-boot-starter](https://github.com/javagossip/dorado-spring-boot-starter "dorado-spring-boot-starter")
+dorado框架本身已经提供了spring-boot starter模块，无需单独的dorado-spring-boot-starter模块
 
-* 添加dorado-spring-boot-starter依赖
+* 添加spring-boot核心依赖
 
 	```xml
 	<dependency>
-	    <groupId>ai.houyi</groupId>
-	    <artifactId>dorado-spring-boot-starter</artifactId>
-	    <version>0.0.2</version>
-	</dependency>
-	```
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-autoconfigure-processor</artifactId>
+			<version>${spring-boot.version}</version>
+		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<version>${spring-boot.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+			<version>${spring-boot.version}</version>
+			<scope>provided</scope>
+		</dependency>
+	```
 * 基于springboot的dorado应用
 
 	```java
@@ -181,7 +192,23 @@ Please visit https://github.com/javagossip/dorado-examples
 		}
 	}
 	```
+* Dorado框架的spring-boot配置参数
 
+	|参数名|描述|默认值|
+	|:-----------|:----------:|:-----------:|
+	|dorado.port|dorado server监听端口|18888|
+	|dorado.backlog|backlog队列大小|10000|
+	|dorado.acceptors|dorado acceptor count|cpu核心数*2|
+	|dorado.io-workers||cpu核心数*2|
+	|dorado.min-workers|业务线程池最小线程数|100|
+	|dorado.max-workers|业务线程池最大线程数|100|
+	|dorado.max-connections|服务器最大连接数|100000|
+	|dorado.max-pending-request|业务线程池队列长度|10000|
+	|dorado.send-buffer|send buff size|256k|
+	|dorado.recv-buffer|recv buff size|256k|
+	|dorado.max-idle-time|连接最大空闲时间|8h|
+	|dorado.max-packet-length|http请求包体大小|1M|
+	
 
 ## 性能测试
 
