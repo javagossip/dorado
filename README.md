@@ -29,7 +29,8 @@
 public class Application {
 
 	public static void main(String[] args) throws Exception {
-		// create simple rest server
+		// create simple rest server, scanPackages现在可选，如果不设置
+		//系统默认会自动找到main主类所在的包作为basePackage进行扫描
 		DoradoServerBuilder.forPort(18888).build().start();
 	}
 }
@@ -205,8 +206,8 @@ dorado框架本身已经提供了spring-boot starter模块，无需单独的dora
 	|dorado.max-workers|业务线程池最大线程数|100|
 	|dorado.max-connections|服务器最大连接数|100000|
 	|dorado.max-pending-request|业务线程池队列长度|10000|
-	|dorado.send-buffer|send buff size|256k|
-	|dorado.recv-buffer|recv buff size|256k|
+	|dorado.send-buffer|send buffer size|256k|
+	|dorado.recv-buffer|recv buffer size|256k|
 	|dorado.max-idle-time|连接最大空闲时间|8h|
 	|dorado.max-packet-length|http请求包体大小|1M|
 	
