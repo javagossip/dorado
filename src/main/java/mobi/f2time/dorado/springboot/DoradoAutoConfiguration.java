@@ -16,17 +16,28 @@
 
 package mobi.f2time.dorado.springboot;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.util.ClassUtils;
 
 import mobi.f2time.dorado.rest.server.DoradoServer;
 import mobi.f2time.dorado.rest.server.DoradoServerBuilder;
@@ -37,11 +48,11 @@ import mobi.f2time.dorado.spring.SpringContainer;
  *
  */
 @Configuration
-@ConditionalOnClass({ EnableDorado.class })
+@ConditionalOnBean(annotation = EnableDorado.class)
 @EnableConfigurationProperties(DoradoConfig.class)
 @Order(Ordered.LOWEST_PRECEDENCE)
-public class DoradoStarter {
-	private static final Log LOG = LogFactory.getLog("dorado-spring-boot-starter");
+public class DoradoAutoConfiguration {
+	static final Log LOG = LogFactory.getLog("dorado-spring-boot-starter");
 
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -50,10 +61,12 @@ public class DoradoStarter {
 
 	@PostConstruct
 	public void startDoradoServer() {
-		if (!applicationContext.containsBean("springApplicationArguments")) {
-			LOG.warn("Not SpringBootApplication, unstart dorado server");
+		boolean isSpringBootApp = applicationContext.containsBean("springApplicationArguments");
+		if (!isSpringBootApp) {
+			LOG.info("Not SpringBoot Application launch, unstart dorado server!");
 			return;
 		}
+
 		int listenPort = config.getPort();
 
 		if (listenPort == 0) {
@@ -102,11 +115,58 @@ public class DoradoStarter {
 			builder.maxPacketLength(config.getMaxPacketLength());
 		}
 
-		builder.scanPackages(config.getScanPackages());
+		String[] scanPackages = null;
+		if (config.getScanPackages() == null || config.getScanPackages().length == 0) {
+			scanPackages = getSpringBootAppScanPackages();
+		}
+
+		builder.scanPackages(scanPackages);
 
 		DoradoServer doradoServer = builder.build();
 		SpringContainer.create(applicationContext);
 
 		doradoServer.start();
+	}
+
+	private String[] getSpringBootAppScanPackages() {
+		BeanDefinitionRegistry registry = (BeanDefinitionRegistry) applicationContext;
+
+		Set<String> packages = new HashSet<>();
+		String[] names = registry.getBeanDefinitionNames();
+		for (String name : names) {
+			BeanDefinition definition = registry.getBeanDefinition(name);
+			if (definition instanceof AnnotatedBeanDefinition) {
+				AnnotatedBeanDefinition annotatedDefinition = (AnnotatedBeanDefinition) definition;
+				addComponentScanningPackages(packages, annotatedDefinition.getMetadata());
+			}
+		}
+		return packages.toArray(new String[] {});
+	}
+
+	private void addComponentScanningPackages(Set<String> packages, AnnotationMetadata metadata) {
+		AnnotationAttributes attributes = AnnotationAttributes
+				.fromMap(metadata.getAnnotationAttributes(ComponentScan.class.getName(), true));
+		if (attributes != null) {
+			addPackages(packages, attributes.getStringArray("value"));
+			addPackages(packages, attributes.getStringArray("basePackages"));
+			addClasses(packages, attributes.getStringArray("basePackageClasses"));
+			if (packages.isEmpty()) {
+				packages.add(ClassUtils.getPackageName(metadata.getClassName()));
+			}
+		}
+	}
+
+	private void addPackages(Set<String> packages, String[] values) {
+		if (values != null) {
+			Collections.addAll(packages, values);
+		}
+	}
+
+	private void addClasses(Set<String> packages, String[] values) {
+		if (values != null) {
+			for (String value : values) {
+				packages.add(ClassUtils.getPackageName(value));
+			}
+		}
 	}
 }

@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Import;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Import(DoradoStarter.class)
+@Import(DoradoAutoConfiguration.class)
 public @interface EnableDorado {
 
 }
