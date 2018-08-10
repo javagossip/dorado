@@ -47,8 +47,10 @@ public class DoradoServer {
 
 	public void start() {
 		// print dorado ascii-art logo,use figlet generate ascii-art logo
-		System.out.println(ClassLoaderUtils.getResoureAsString("dorado-ascii"));
-		System.out.println();
+		if (!Dorado.springInitialized) {
+			System.out.println(ClassLoaderUtils.getResoureAsString("dorado-ascii"));
+			System.out.println();
+		}
 
 		if (builder.isSpringOn() && !Dorado.springInitialized) {
 			SpringContainer.create(builder.scanPackages());

@@ -55,76 +55,34 @@ public class DoradoAutoConfiguration {
 	static final Log LOG = LogFactory.getLog("dorado-spring-boot-starter");
 
 	@Autowired
-	private ApplicationContext applicationContext;
-	@Autowired
 	private DoradoConfig config;
+
+	@Autowired
+	private ApplicationContext applicationContext;
 
 	@PostConstruct
 	public void startDoradoServer() {
 		boolean isSpringBootApp = applicationContext.containsBean("springApplicationArguments");
+
 		if (!isSpringBootApp) {
 			LOG.info("Not SpringBoot Application launch, unstart dorado server!");
 			return;
 		}
 
-		int listenPort = config.getPort();
+		DoradoServerBuilder builder = DoradoServerBuilder.forPort(config.getPort()).backlog(config.getBacklog())
+				.acceptors(config.getAcceptors()).ioWorkers(config.getIoWorkers()).minWorkers(config.getMinWorkers())
+				.maxWorkers(config.getMaxWorkers()).maxConnection(config.getMaxConnections())
+				.maxPendingRequest(config.getMaxPendingRequest()).maxIdleTime(config.getMaxIdleTime())
+				.sendBuffer(config.getSendBuffer()).recvBuffer(config.getRecvBuffer())
+				.maxPacketLength(config.getMaxPacketLength());
 
-		if (listenPort == 0) {
-			throw new IllegalArgumentException("Must be setting dorado.port property");
-		}
-
-		DoradoServerBuilder builder = DoradoServerBuilder.forPort(config.getPort());
-
-		if (config.getAcceptors() > 0) {
-			builder.acceptors(config.getAcceptors());
-		}
-
-		if (config.getIoWorkers() > 0) {
-			builder.ioWorkers(config.getIoWorkers());
-		}
-
-		if (config.getMinWorkers() > 0 && config.getMaxWorkers() > 0) {
-			builder.minWorkers(config.getMinWorkers()).maxWorkers(config.getMaxWorkers());
-		}
-
-		if (config.getBacklog() > 0) {
-			builder.backlog(config.getBacklog());
-		}
-
-		if (config.getMaxConnections() > 0) {
-			builder.maxConnection(config.getMaxConnections());
-		}
-
-		if (config.getMaxPendingRequest() > 0) {
-			builder.maxPendingRequest(config.getMaxPendingRequest());
-		}
-
-		if (config.getMaxIdleTime() > 0) {
-			builder.maxIdleTime(config.getMaxIdleTime());
-		}
-
-		if (config.getSendBuffer() > 0) {
-			builder.sendBuffer(config.getSendBuffer());
-		}
-
-		if (config.getRecvBuffer() > 0) {
-			builder.recvBuffer(config.getRecvBuffer());
-		}
-
-		if (config.getMaxPacketLength() > 0) {
-			builder.maxPacketLength(config.getMaxPacketLength());
-		}
-
-		String[] scanPackages = null;
+		String[] scanPackages = config.getScanPackages();
 		if (config.getScanPackages() == null || config.getScanPackages().length == 0) {
 			scanPackages = getSpringBootAppScanPackages();
 		}
 
-		builder.scanPackages(scanPackages);
-
-		DoradoServer doradoServer = builder.build();
+		DoradoServer doradoServer = builder.scanPackages(scanPackages).build();
 		SpringContainer.create(applicationContext);
-
 		doradoServer.start();
 	}
 
