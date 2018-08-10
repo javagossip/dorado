@@ -30,7 +30,7 @@ public class Application {
 
 	public static void main(String[] args) throws Exception {
 		// create simple rest server
-		DoradoServerBuilder.forPort(18888).scanPackages("com.rtbstack.demo").build().start();
+		DoradoServerBuilder.forPort(18888).build().start();
 	}
 }
 ```
@@ -185,7 +185,7 @@ dorado框架本身已经提供了spring-boot starter模块，无需单独的dora
 
 	```java
 	@SpringBootApplication
-	@EnableDorado
+	@EnableDorado       //这个注解很重要，如果去掉不会启动dorado server
 	public class SpringBootApplication {
 	
 		public static void main(String[] args) throws Exception {
@@ -209,7 +209,6 @@ dorado框架本身已经提供了spring-boot starter模块，无需单独的dora
 	|dorado.recv-buffer|recv buff size|256k|
 	|dorado.max-idle-time|连接最大空闲时间|8h|
 	|dorado.max-packet-length|http请求包体大小|1M|
-	|dorado.scan-packages|dorado controller所在包|应用启动类所在包|
 	
 
 ## 性能测试
