@@ -199,7 +199,7 @@ dorado框架本身已经提供了spring-boot starter模块，无需单独的dora
 	|dorado.port|dorado server监听端口|18888|
 	|dorado.backlog|backlog队列大小|10000|
 	|dorado.acceptors|dorado acceptor count|cpu核心数*2|
-	|dorado.io-workers||cpu核心数*2|
+	|dorado.io-workers|dorado io worker count|cpu核心数*2|
 	|dorado.min-workers|业务线程池最小线程数|100|
 	|dorado.max-workers|业务线程池最大线程数|100|
 	|dorado.max-connections|服务器最大连接数|100000|
@@ -208,7 +208,7 @@ dorado框架本身已经提供了spring-boot starter模块，无需单独的dora
 	|dorado.recv-buffer|recv buff size|256k|
 	|dorado.max-idle-time|连接最大空闲时间|8h|
 	|dorado.max-packet-length|http请求包体大小|1M|
-	|dorado.scan-packages|controller所在包,dorado会扫描指定包以及下面子包里面所有符合条件的类|应用启动类所在包|
+	|dorado.scan-packages|dorado controller所在包|应用启动类所在包|
 	
 
 ## 性能测试
