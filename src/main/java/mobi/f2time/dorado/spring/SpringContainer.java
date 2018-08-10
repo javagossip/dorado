@@ -50,6 +50,7 @@ public final class SpringContainer implements BeanContainer {
 				&& (applicationContext instanceof BeanDefinitionRegistry)) {
 			ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(
 					(BeanDefinitionRegistry) applicationContext);
+			scanner.resetFilters(false);
 			scanner.addIncludeFilter(new AnnotationTypeFilter(Controller.class));
 			scanner.scan(builder.scanPackages());
 		}

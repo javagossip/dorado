@@ -15,14 +15,10 @@
  */
 package mobi.f2time.dorado.spring;
 
-import java.io.IOException;
-
-import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 
 import mobi.f2time.dorado.rest.annotation.Controller;
@@ -53,19 +49,7 @@ public class DoradoClassPathBeanDefinitionScanner extends ClassPathBeanDefinitio
 
 	@Override
 	protected void registerDefaultFilters() {
-		// super.registerDefaultFilters();
+		super.registerDefaultFilters();
 		this.addIncludeFilter(new AnnotationTypeFilter(Controller.class));
 	}
-
-	@Override
-	protected boolean isCandidateComponent(MetadataReader metadataReader) throws IOException {
-		return super.isCandidateComponent(metadataReader);
-	}
-
-	@Override
-	protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
-		return super.isCandidateComponent(beanDefinition)
-				&& beanDefinition.getMetadata().hasAnnotation(Controller.class.getName());
-	}
-
 }

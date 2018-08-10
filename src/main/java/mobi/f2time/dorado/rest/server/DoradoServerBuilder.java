@@ -19,6 +19,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import mobi.f2time.dorado.Dorado;
 import mobi.f2time.dorado.rest.util.Constant;
+import mobi.f2time.dorado.rest.util.LogUtils;
 import mobi.f2time.dorado.rest.util.TracingThreadPoolExecutor;
 
 /**
@@ -194,10 +195,6 @@ public final class DoradoServerBuilder {
 	}
 
 	public DoradoServer build() {
-		if (scanPackages == null || scanPackages.length == 0) {
-			throw new IllegalArgumentException("scanPackages must be not null");
-		}
-
 		if (minWorkers > maxWorkers) {
 			throw new IllegalArgumentException("minWorkers is greater than maxWorkers");
 		}
@@ -211,7 +208,35 @@ public final class DoradoServerBuilder {
 			executor.prestartAllCoreThreads();
 		}
 
+		if (scanPackages == null || scanPackages.length == 0) {
+			LogUtils.warn(String.format("Not setting scanPackages property, get default: %s", getDefaultScanPackage()));
+			scanPackages = new String[] { getDefaultScanPackage() };
+		}
+
+		if (scanPackages == null || scanPackages.length == 0) {
+			throw new IllegalArgumentException("scanPackages must be not null");
+		}
+
 		Dorado.serverConfig = this;
 		return new DoradoServer(this);
+	}
+
+	private String getDefaultScanPackage() {
+		try {
+			Class<?> mainClass = null;
+			StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
+			for (StackTraceElement stackTraceElement : stackTrace) {
+				if ("main".equals(stackTraceElement.getMethodName())) {
+					mainClass = Class.forName(stackTraceElement.getClassName());
+					break;
+				}
+			}
+			if (mainClass != null) {
+				return mainClass.getPackage().getName();
+			}
+		} catch (ClassNotFoundException ex) {
+			// Swallow and continue
+		}
+		return null;
 	}
 }

@@ -13,20 +13,23 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package mobi.f2time.dorado.spring;
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+package mobi.f2time.dorado.springboot;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.springframework.context.annotation.Import;
 
 /**
- * 
- * @author wangwp
+ * @author weiping wang
+ *
  */
-public class DoradoApplicationContext extends AnnotationConfigApplicationContext {
-	private final DoradoClassPathBeanDefinitionScanner scanner;
-	
-	public DoradoApplicationContext(String... basePackages) {
-		scanner = new DoradoClassPathBeanDefinitionScanner(this);
-		scanner.scan(basePackages);
-		refresh();
-	}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Import(DoradoStarter.class)
+public @interface EnableDorado {
+
 }

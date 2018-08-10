@@ -1,0 +1,1 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=mobi.f2time.dorado.springboot.DoradoStarter

@@ -173,7 +173,7 @@ Please visit https://github.com/javagossip/dorado-examples
 * 基于springboot的dorado应用
 
 	```java
-	@EnableAutoConfiguration
+	@SpringBootApplication
 	public class SpringBootApplication {
 	
 		public static void main(String[] args) throws Exception {
