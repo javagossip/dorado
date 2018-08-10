@@ -125,8 +125,8 @@ public final class DoradoServerBuilder {
 		return this;
 	}
 
-	public DoradoServerBuilder springOn(boolean springOn) {
-		this.springOn = springOn;
+	public DoradoServerBuilder springOn() {
+		this.springOn = true;
 		return this;
 	}
 
