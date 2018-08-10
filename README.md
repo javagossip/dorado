@@ -156,7 +156,7 @@ Please visit https://github.com/javagossip/dorado-examples
 * Get Server status: **[http://{ip}:{port}/status]()**
 * List All services: **[http://{ip}:{port}/services]()**
 
-## SpringBoot支持
+## SpringBoot集成
 * dorado-spring-boot-starter  
 [https://github.com/javagossip/dorado-spring-boot-starter](https://github.com/javagossip/dorado-spring-boot-starter "dorado-spring-boot-starter")
 
