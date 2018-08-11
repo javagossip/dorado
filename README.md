@@ -17,7 +17,7 @@
 <dependency>
     <groupId>ai.houyi</groupId>
     <artifactId>dorado</artifactId>
-    <version>0.0.7</version>
+    <version>0.0.8</version>
 </dependency>
 ```
 
