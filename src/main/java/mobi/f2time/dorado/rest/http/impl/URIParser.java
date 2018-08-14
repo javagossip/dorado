@@ -27,14 +27,14 @@ public class URIParser {
 
 	private String queryString;
 
-	private int contextPathLength;
+	private String contextPath;
 
 	public URIParser() {
 		this(Dorado.serverConfig.getContextPath());
 	}
 
 	public URIParser(String contextPath) {
-		contextPathLength = contextPath.length();
+		this.contextPath = contextPath;
 	}
 
 	public void parse(String uri) {
@@ -42,9 +42,13 @@ public class URIParser {
 
 		if (indx != -1) {
 			this.queryString = uri.substring(indx + 1);
-			this.requestUri = uri.substring(contextPathLength, indx);
+			this.requestUri = uri.substring(0, indx);
 		} else {
-			this.requestUri = uri.substring(contextPathLength);
+			this.requestUri = uri;
+		}
+
+		if (requestUri.startsWith(contextPath)) {
+			this.requestUri = this.requestUri.substring(contextPath.length());
 		}
 
 		if (this.requestUri.endsWith("/"))

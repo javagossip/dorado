@@ -79,7 +79,7 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 		boolean isKeepAlive = HttpUtil.isKeepAlive(request);
 		HttpUtil.setKeepAlive(response, isKeepAlive);
 		response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html;charset=UTF-8");
-		response.headers().set(HttpHeaderNames.SERVER, "dorado_1.x");
+		response.headers().set(HttpHeaderNames.SERVER, "Dorado");
 
 		ChannelFuture channelFuture = null;
 		try {
