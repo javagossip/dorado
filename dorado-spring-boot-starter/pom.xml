@@ -27,5 +27,10 @@
 			<artifactId>spring-boot-starter</artifactId>
 			<version>${spring-boot.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>ai.houyi</groupId>
+			<artifactId>dorado-core</artifactId>
+			<version>0.0.10-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>
