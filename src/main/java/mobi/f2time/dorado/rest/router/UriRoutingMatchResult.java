@@ -25,8 +25,10 @@ import java.util.regex.Matcher;
 public class UriRoutingMatchResult {
 	private final UriRoutingController controller;
 	private final String[] pathVariables;
+	private final String httpMethod;
 
-	private UriRoutingMatchResult(UriRoutingController controller, MatchResult matchResult) {
+	private UriRoutingMatchResult(UriRoutingController controller, MatchResult matchResult, String httpMethod) {
+		this.httpMethod = httpMethod;
 		this.controller = controller;
 		pathVariables = new String[matchResult.groupCount()];
 
@@ -35,12 +37,17 @@ public class UriRoutingMatchResult {
 		}
 	}
 
-	public static UriRoutingMatchResult create(UriRoutingController controller, Matcher matchResult) {
-		return new UriRoutingMatchResult(controller, matchResult);
+	public static UriRoutingMatchResult create(UriRoutingController controller, Matcher matchResult,
+			String httpMethod) {
+		return new UriRoutingMatchResult(controller, matchResult, httpMethod);
 	}
 
 	public UriRoutingController controller() {
 		return this.controller;
+	}
+
+	public String getHttpMethod() {
+		return httpMethod;
 	}
 
 	public String pathVariable(int index) {

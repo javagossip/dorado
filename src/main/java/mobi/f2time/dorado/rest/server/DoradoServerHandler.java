@@ -31,7 +31,6 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
-import mobi.f2time.dorado.Dorado;
 import mobi.f2time.dorado.rest.controller.DoradoStatus;
 import mobi.f2time.dorado.rest.http.HttpRequest;
 import mobi.f2time.dorado.rest.http.HttpResponse;
@@ -50,13 +49,11 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 	private final TracingThreadPoolExecutor asyncExecutor;
 	private final Webapp webapp;
 	private final DoradoStatus status;
-	private final boolean isDevMode;
 
 	private DoradoServerHandler(DoradoServerBuilder builder) {
 		this.webapp = Webapp.get();
 		this.asyncExecutor = (TracingThreadPoolExecutor) builder.executor();
 		this.status = DoradoStatus.get();
-		this.isDevMode = builder.isDevMode();
 	}
 
 	public static DoradoServerHandler create(DoradoServerBuilder builder) {
@@ -76,10 +73,6 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 	}
 
 	private void handleHttpRequest(ChannelHandlerContext ctx, Object msg) {
-		if (isDevMode) {
-			Thread.currentThread().setContextClassLoader(Dorado.classLoader);
-		}
-
 		FullHttpRequest request = (FullHttpRequest) msg;
 		FullHttpResponse response = new DefaultFullHttpResponse(request.protocolVersion(), HttpResponseStatus.OK);
 

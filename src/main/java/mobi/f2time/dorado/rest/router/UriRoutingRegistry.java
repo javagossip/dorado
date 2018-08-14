@@ -52,7 +52,7 @@ public class UriRoutingRegistry {
 			matchResult = uriRouting.path.routingPathPattern().matcher(request.getRequestURI());
 
 			if (matchResult.matches() && (routingMethod == null || (request.getMethod().equals(routingMethod)))) {
-				return UriRoutingMatchResult.create(uriRouting.controller, matchResult);
+				return UriRoutingMatchResult.create(uriRouting.controller, matchResult,request.getMethod());
 			}
 		}
 		return null;
