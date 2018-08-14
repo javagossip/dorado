@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ai.houyi</groupId>
 	<artifactId>dorado</artifactId>
@@ -6,17 +7,16 @@
 	<name>dorado</name>
 	<description>The restful server based netty4&amp;jdk8</description>
 	<url>https://github.com/javagossip/dorado</url>
+	<packaging>pom</packaging>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
 		<maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
 		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
 		<maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
 		<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
 		<maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
 		<maven-source-plugin.version>3.0.1</maven-source-plugin.version>
-
 		<netty.version>4.1.27.Final</netty.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<protobuf-java.version>2.6.1</protobuf-java.version>
@@ -70,61 +70,6 @@
 		</pluginManagement>
 	</build>
 
-	<dependencies>
-		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty-all</artifactId>
-			<version>${netty.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.ow2.asm</groupId>
-			<artifactId>asm</artifactId>
-			<version>${asm.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>fastjson</artifactId>
-			<version>${fastjson.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.google.protobuf</groupId>
-			<artifactId>protobuf-java</artifactId>
-			<version>${protobuf-java.version}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>${spring.version}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-autoconfigure-processor</artifactId>
-			<version>${spring-boot.version}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-configuration-processor</artifactId>
-			<version>${spring-boot.version}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
-			<version>${spring-boot.version}</version>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
-
 	<profiles>
 		<profile>
 			<id>dev</id>
@@ -134,9 +79,6 @@
 		</profile>
 		<profile>
 			<id>release</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
 			<build>
 				<plugins>
 					<plugin>
@@ -151,7 +93,7 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-source-plugin</artifactId>
 						<version>${maven-source-plugin.version}</version>
-						
+
 						<executions>
 							<execution>
 								<phase>package</phase>
@@ -166,7 +108,7 @@
 						<artifactId>maven-javadoc-plugin</artifactId>
 						<version>${maven-javadoc-plugin.version}</version>
 						<configuration>
-						<charset>UTF-8</charset>
+							<charset>UTF-8</charset>
 						</configuration>
 						<executions>
 							<execution>
@@ -205,4 +147,8 @@
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
+	<modules>
+		<module>dorado-core</module>
+		<module>dorado-spring-boot-starter</module>
+	</modules>
 </project>
