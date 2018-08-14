@@ -15,6 +15,9 @@
  */
 package mobi.f2time.dorado.rest.http.impl;
 
+import mobi.f2time.dorado.Dorado;
+import mobi.f2time.dorado.rest.util.StringUtils;
+
 /**
  * 
  * @author wangwp
@@ -24,7 +27,14 @@ public class URIParser {
 
 	private String queryString;
 
+	private int contextPathLength;
+
 	public URIParser() {
+		this(Dorado.serverConfig.getContextPath());
+	}
+
+	public URIParser(String contextPath) {
+		contextPathLength = contextPath.length();
 	}
 
 	public void parse(String uri) {
@@ -32,14 +42,17 @@ public class URIParser {
 
 		if (indx != -1) {
 			this.queryString = uri.substring(indx + 1);
-			this.requestUri = uri.substring(0, indx);
+			this.requestUri = uri.substring(contextPathLength, indx);
 		} else {
-			this.requestUri = uri;
+			this.requestUri = uri.substring(contextPathLength);
 		}
 
 		if (this.requestUri.endsWith("/"))
-			this.requestUri.substring(0, this.requestUri.length() - 1);
+			this.requestUri = this.requestUri.substring(this.requestUri.length() - 1);
 
+		if (StringUtils.EMPTY.equals(this.requestUri)) {
+			this.requestUri = "/";
+		}
 	}
 
 	public String getQueryString() {
@@ -48,5 +61,11 @@ public class URIParser {
 
 	public String getRequestUri() {
 		return requestUri;
+	}
+
+	public static void main(String[] args) throws Exception {
+		URIParser parser = new URIParser("/api");
+		parser.parse("/api/");
+		System.out.println(parser.getRequestUri());
 	}
 }

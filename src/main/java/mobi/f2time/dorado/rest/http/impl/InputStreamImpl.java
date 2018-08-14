@@ -29,8 +29,8 @@ public class InputStreamImpl extends InputStream {
 
 	private final ByteBufInputStream in;
 
-	public InputStreamImpl(FullHttpRequest originalHttpRequest) {
-		this.in = new ByteBufInputStream(originalHttpRequest.content());
+	public InputStreamImpl(FullHttpRequest request) {
+		this.in = new ByteBufInputStream(request.content());
 	}
 
 	@Override

@@ -20,6 +20,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import mobi.f2time.dorado.Dorado;
 import mobi.f2time.dorado.rest.util.Constant;
 import mobi.f2time.dorado.rest.util.LogUtils;
+import mobi.f2time.dorado.rest.util.StringUtils;
 import mobi.f2time.dorado.rest.util.TracingThreadPoolExecutor;
 
 /**
@@ -47,6 +48,7 @@ public final class DoradoServerBuilder {
 	private String[] scanPackages;
 	private boolean devMode;
 	private boolean springOn;
+	private String contextPath = StringUtils.EMPTY;
 
 	private TracingThreadPoolExecutor executor;
 
@@ -130,6 +132,11 @@ public final class DoradoServerBuilder {
 		return this;
 	}
 
+	public DoradoServerBuilder contextPath(String contextPath) {
+		this.contextPath = contextPath;
+		return this;
+	}
+
 	public int getBacklog() {
 		return backlog;
 	}
@@ -192,6 +199,10 @@ public final class DoradoServerBuilder {
 
 	public int getPort() {
 		return port;
+	}
+
+	public String getContextPath() {
+		return contextPath;
 	}
 
 	public DoradoServer build() {

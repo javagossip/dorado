@@ -19,6 +19,7 @@ package mobi.f2time.dorado.springboot;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import mobi.f2time.dorado.rest.util.Constant;
+import mobi.f2time.dorado.rest.util.StringUtils;
 
 /**
  * @author weiping wang
@@ -27,7 +28,7 @@ import mobi.f2time.dorado.rest.util.Constant;
 @ConfigurationProperties("dorado")
 public class DoradoConfig {
 	private int port = 18888;
-	
+
 	private int backlog = Constant.DEFAULT_BACKLOG;
 	private int acceptors = Constant.DEFAULT_ACCEPTOR_COUNT;
 	private int ioWorkers = Constant.DEFAULT_IO_WORKER_COUNT;
@@ -42,6 +43,7 @@ public class DoradoConfig {
 	private int sendBuffer = Constant.DEFAULT_SEND_BUFFER_SIZE;
 	private int recvBuffer = Constant.DEFAULT_RECV_BUFFER_SIZE;
 	private int maxPacketLength = Constant.DEFAULT_MAX_PACKET_LENGTH;
+	private String contextPath = StringUtils.EMPTY;
 
 	private String[] scanPackages;
 
@@ -67,6 +69,14 @@ public class DoradoConfig {
 
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	public String getContextPath() {
+		return contextPath;
+	}
+
+	public void setContextPath(String contextPath) {
+		this.contextPath = contextPath;
 	}
 
 	public void setScanPackages(String[] scanPackages) {

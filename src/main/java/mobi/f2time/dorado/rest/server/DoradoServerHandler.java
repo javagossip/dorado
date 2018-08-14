@@ -22,7 +22,7 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
@@ -30,6 +30,7 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.timeout.IdleStateEvent;
+import io.netty.util.ReferenceCountUtil;
 import mobi.f2time.dorado.Dorado;
 import mobi.f2time.dorado.rest.controller.DoradoStatus;
 import mobi.f2time.dorado.rest.http.HttpRequest;
@@ -45,7 +46,7 @@ import mobi.f2time.dorado.rest.util.TracingThreadPoolExecutor;
  * 
  * @author wangwp
  */
-public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 	private final TracingThreadPoolExecutor asyncExecutor;
 	private final Webapp webapp;
 	private final DoradoStatus status;
@@ -62,10 +63,8 @@ public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpReq
 		return new DoradoServerHandler(builder);
 	}
 
-	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
+	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		status.totalRequestsIncrement();
-
 		if (asyncExecutor == null) {
 			handleHttpRequest(ctx, msg);
 			return;
@@ -98,8 +97,9 @@ public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpReq
 			UriRoutingMatchResult uriRouting = webapp.getUriRoutingRegistry().findRouteController(_request);
 			if (uriRouting == null) {
 				response.setStatus(HttpResponseStatus.NOT_FOUND);
-				ByteBufUtil.writeUtf8(response.content(), String.format(
-						"Resource not found, url: [%s], http_method: [%s]", request.uri(), _request.getMethod()));
+				ByteBufUtil.writeUtf8(response.content(),
+						String.format("Resource not found, url: [%s], http_method: [%s]", _request.getRequestURI(),
+								_request.getMethod()));
 			} else {
 				String[] pathVariables = uriRouting.pathVariables();
 				uriRouting.controller().invoke(_request, _response, pathVariables);
@@ -117,6 +117,7 @@ public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpReq
 			if (!isKeepAlive && channelFuture != null) {
 				channelFuture.addListener(ChannelFutureListener.CLOSE);
 			}
+			ReferenceCountUtil.release(msg);
 			status.handledRequestsIncrement();
 		}
 	}

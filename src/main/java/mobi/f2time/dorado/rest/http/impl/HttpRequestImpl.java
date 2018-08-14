@@ -54,15 +54,19 @@ public class HttpRequestImpl implements HttpRequest {
 		this.originalRequest = originalHttpRequest;
 		this.parameters = new HashMap<>();
 
-		this.in = new InputStreamImpl(originalHttpRequest);
 		// 解析querystring上面的参数
 		this.queryStringDecoder = new QueryStringDecoder(originalHttpRequest.uri());
 		this.parameters.putAll(queryStringDecoder.parameters());
 
-		if (originalHttpRequest.method() == HttpMethod.POST) {
+		String contentType = originalHttpRequest.headers().get(HttpHeaderNames.CONTENT_TYPE);
+		if (originalHttpRequest.method() == HttpMethod.POST
+				&& "application/x-www-form-urlencoded".equalsIgnoreCase(contentType)) {
 			QueryStringDecoder requestParameterDecoder = new QueryStringDecoder(
 					originalHttpRequest.content().toString(CharsetUtil.UTF_8), false);
 			this.parameters.putAll(requestParameterDecoder.parameters());
+			this.in = null;
+		} else {
+			this.in = new InputStreamImpl(originalHttpRequest);
 		}
 
 		this.headers = originalHttpRequest.headers();

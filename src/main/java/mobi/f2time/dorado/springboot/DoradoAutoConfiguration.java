@@ -74,7 +74,7 @@ public class DoradoAutoConfiguration {
 				.maxWorkers(config.getMaxWorkers()).maxConnection(config.getMaxConnections())
 				.maxPendingRequest(config.getMaxPendingRequest()).maxIdleTime(config.getMaxIdleTime())
 				.sendBuffer(config.getSendBuffer()).recvBuffer(config.getRecvBuffer())
-				.maxPacketLength(config.getMaxPacketLength());
+				.maxPacketLength(config.getMaxPacketLength()).contextPath(config.getContextPath());
 
 		String[] scanPackages = config.getScanPackages();
 		if (config.getScanPackages() == null || config.getScanPackages().length == 0) {
