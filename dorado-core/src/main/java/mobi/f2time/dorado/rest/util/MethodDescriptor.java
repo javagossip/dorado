@@ -75,6 +75,7 @@ public class MethodDescriptor {
 			String name = parameterNames[i];
 
 			methodParameters[i] = MethodParameter.create(name, type, annotation);
+			methodParameters[i].setMethodParameterCount(method.getParameterCount());
 			registerMessageDescriptorForTypeIfNeed(type);
 		}
 	}
@@ -131,6 +132,7 @@ public class MethodDescriptor {
 		private Class<?> type;
 		private Annotation annotation;
 		private Class<?> annotationType;
+		private int methodParameterCount;
 
 		private MethodParameter(String name, Class<?> type, Annotation annotation) {
 			this.name = name;
@@ -149,12 +151,20 @@ public class MethodDescriptor {
 			}
 		}
 
+		public void setMethodParameterCount(int parameterCount) {
+			this.methodParameterCount = parameterCount;
+		}
+
 		public static MethodParameter create(String name, Class<?> type, Annotation annotation) {
 			return new MethodParameter(name, type, annotation);
 		}
 
 		public String getName() {
 			return this.name;
+		}
+
+		public int getMethodParameterCount() {
+			return methodParameterCount;
 		}
 
 		public Class<?> getType() {

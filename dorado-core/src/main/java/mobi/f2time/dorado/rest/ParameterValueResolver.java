@@ -75,7 +75,6 @@ public interface ParameterValueResolver {
 		MessageBodyConverter converter = MessageBodyConverters
 				.getMessageBodyConverter(MediaTypeUtils.defaultForType(parameterType, methodDesc.consume()));
 		return converter.readMessageBody(payload, parameterType);
-
 	};
 
 	ParameterValueResolver ALL = new ParameterValueResolver() {
@@ -101,8 +100,17 @@ public interface ParameterValueResolver {
 			if (parameterType.isPrimitive()) {
 				return TypeUtils.primitiveDefault(parameterType);
 			}
+
+			if (TypeUtils.isWrapper(parameterType)) {
+				return null;
+			}
+
+			// 如果方法只有一个参数且不是基础类型以及wrapper类型的话尝试利用requestBody转换器
+			if (methodParameter.getMethodParameterCount() == 1) {
+				return REQUEST_BODY.resolveParameterValue(request, response, desc, methodParameter, pathVariable);
+			}
 			// 如果从请求参数、路径参数、请求头部参数都无法获取到且非基本类型的话尝试从请求体中获取
-			return REQUEST_BODY.resolveParameterValue(request, response, desc, methodParameter, pathVariable);
+			return null;
 		}
 	};
 

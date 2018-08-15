@@ -47,7 +47,8 @@ public final class TypeUtils {
 				|| (type == Long.class) || (type == Short.class) 
 				|| (type == Float.class)|| (type == Double.class) 
 				|| (type == Boolean.class) 
-				|| (type == Character.class);
+				|| (type == Character.class) ||
+				(type == Byte.class);
 	}
 
 	public static boolean isPrimitiveOrWrapper(Class<?> type) {

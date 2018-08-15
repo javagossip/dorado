@@ -83,7 +83,8 @@ public class DoradoAutoConfiguration {
 
 		DoradoServer doradoServer = builder.scanPackages(scanPackages).build();
 		SpringContainer.create(applicationContext);
-		doradoServer.start();
+		new Thread(()->doradoServer.start()).start();
+		//doradoServer.start();
 	}
 
 	private String[] getSpringBootAppScanPackages() {
