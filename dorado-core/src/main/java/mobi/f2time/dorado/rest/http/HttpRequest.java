@@ -45,4 +45,8 @@ public interface HttpRequest {
 	String getRequestURI();
 
 	InputStream getInputStream();
+	
+	MultipartFile getFile();
+	
+	MultipartFile[] getFiles();
 }

@@ -22,12 +22,12 @@ import java.util.List;
 import mobi.f2time.dorado.rest.http.Cookie;
 import mobi.f2time.dorado.rest.http.HttpRequest;
 import mobi.f2time.dorado.rest.http.HttpResponse;
-import mobi.f2time.dorado.rest.util.TypeUtils;
 import mobi.f2time.dorado.rest.util.MediaTypeUtils;
 import mobi.f2time.dorado.rest.util.MethodDescriptor;
 import mobi.f2time.dorado.rest.util.MethodDescriptor.MethodParameter;
 import mobi.f2time.dorado.rest.util.TypeConverter;
 import mobi.f2time.dorado.rest.util.TypeConverters;
+import mobi.f2time.dorado.rest.util.TypeUtils;
 
 /**
  * 
@@ -104,5 +104,13 @@ public interface ParameterValueResolver {
 			// 如果从请求参数、路径参数、请求头部参数都无法获取到且非基本类型的话尝试从请求体中获取
 			return REQUEST_BODY.resolveParameterValue(request, response, desc, methodParameter, pathVariable);
 		}
+	};
+
+	ParameterValueResolver MULTIPARTFILE = (req, resp, methodDesc, methodParam, pathVariable) -> {
+		Class<?> parameterType = methodParam.getType();
+		if (parameterType.isArray()) {
+			return req.getFiles();
+		}
+		return req.getFile();
 	};
 }

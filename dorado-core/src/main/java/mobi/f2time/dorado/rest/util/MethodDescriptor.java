@@ -29,6 +29,7 @@ import mobi.f2time.dorado.rest.annotation.Consume;
 import mobi.f2time.dorado.rest.annotation.Produce;
 import mobi.f2time.dorado.rest.http.HttpRequest;
 import mobi.f2time.dorado.rest.http.HttpResponse;
+import mobi.f2time.dorado.rest.http.MultipartFile;
 
 /**
  * 
@@ -141,6 +142,11 @@ public class MethodDescriptor {
 				this.annotationType = HttpRequest.class;
 			if (type == HttpResponse.class)
 				this.annotationType = HttpResponse.class;
+			if (type == MultipartFile.class)
+				this.annotationType = MultipartFile.class;
+			if (type.isArray() && type.getComponentType() == MultipartFile.class) {
+				this.annotationType = MultipartFile.class;
+			}
 		}
 
 		public static MethodParameter create(String name, Class<?> type, Annotation annotation) {
@@ -168,5 +174,10 @@ public class MethodDescriptor {
 			return "MethodParameter [name=" + name + ", type=" + type + ", annotation=" + annotation
 					+ ", annotationType=" + annotationType + "]";
 		}
+	}
+
+	public static void main(String[] args) throws Exception {
+		MultipartFile[] a = new MultipartFile[] {};
+		System.out.println(a.getClass().isArray());
 	}
 }

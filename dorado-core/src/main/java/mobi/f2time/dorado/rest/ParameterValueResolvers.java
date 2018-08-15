@@ -24,6 +24,7 @@ import mobi.f2time.dorado.rest.annotation.RequestBody;
 import mobi.f2time.dorado.rest.annotation.RequestParam;
 import mobi.f2time.dorado.rest.http.HttpRequest;
 import mobi.f2time.dorado.rest.http.HttpResponse;
+import mobi.f2time.dorado.rest.http.MultipartFile;
 
 /**
  * 
@@ -39,6 +40,7 @@ public class ParameterValueResolvers {
 		parameterValueResolverHolder.put(HttpRequest.class, ParameterValueResolver.HTTP_REQUEST);
 		parameterValueResolverHolder.put(HttpResponse.class, ParameterValueResolver.HTTP_RESPONSE);
 		parameterValueResolverHolder.put(RequestBody.class, ParameterValueResolver.REQUEST_BODY);
+		parameterValueResolverHolder.put(MultipartFile.class, ParameterValueResolver.MULTIPARTFILE);
 	}
 
 	public static ParameterValueResolver getParameterValueResolver(Class<?> parameterAnnotationType) {

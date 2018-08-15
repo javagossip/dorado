@@ -17,6 +17,7 @@ package mobi.f2time.dorado.rest.http.impl;
 
 import java.io.InputStream;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,15 +31,21 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
-import io.netty.util.CharsetUtil;
+import io.netty.handler.codec.http.multipart.Attribute;
+import io.netty.handler.codec.http.multipart.FileUpload;
+import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
+import io.netty.handler.codec.http.multipart.InterfaceHttpData;
+import io.netty.handler.codec.http.multipart.InterfaceHttpData.HttpDataType;
 import mobi.f2time.dorado.rest.http.HttpRequest;
+import mobi.f2time.dorado.rest.http.MultipartFile;
+import mobi.f2time.dorado.rest.util.LogUtils;
 
 /**
  * 
  * @author wangwp
  */
 public class HttpRequestImpl implements HttpRequest {
-	private final FullHttpRequest originalRequest;
+	private final FullHttpRequest request;
 
 	private final InputStreamImpl in;
 
@@ -49,29 +56,53 @@ public class HttpRequestImpl implements HttpRequest {
 	private final Map<String, List<String>> parameters;
 
 	private final HttpHeaders headers;
+	private final List<MultipartFile> multipartFiles;
 
-	public HttpRequestImpl(FullHttpRequest originalHttpRequest) {
-		this.originalRequest = originalHttpRequest;
+	public HttpRequestImpl(FullHttpRequest request) {
+		this.request = request;
 		this.parameters = new HashMap<>();
+		this.headers = request.headers();
+		this.multipartFiles = new ArrayList<>();
+
+		this.uriParser = new URIParser();
+		uriParser.parse(request.uri());
 
 		// 解析querystring上面的参数
-		this.queryStringDecoder = new QueryStringDecoder(originalHttpRequest.uri());
+		this.queryStringDecoder = new QueryStringDecoder(request.uri());
 		this.parameters.putAll(queryStringDecoder.parameters());
+		this.in = new InputStreamImpl(request);
 
-		String contentType = originalHttpRequest.headers().get(HttpHeaderNames.CONTENT_TYPE);
-		if (originalHttpRequest.method() == HttpMethod.POST
-				&& "application/x-www-form-urlencoded".equalsIgnoreCase(contentType)) {
-			QueryStringDecoder requestParameterDecoder = new QueryStringDecoder(
-					originalHttpRequest.content().toString(CharsetUtil.UTF_8), false);
-			this.parameters.putAll(requestParameterDecoder.parameters());
-			this.in = null;
-		} else {
-			this.in = new InputStreamImpl(originalHttpRequest);
+		if (request.method() == HttpMethod.POST) {
+			parseHttpPostRequest(request);
 		}
+	}
 
-		this.headers = originalHttpRequest.headers();
-		this.uriParser = new URIParser();
-		uriParser.parse(originalHttpRequest.uri());
+	private void parseHttpPostRequest(FullHttpRequest request) {
+		try {
+			HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(request);
+			for (InterfaceHttpData httpData : decoder.getBodyHttpDatas()) {
+				HttpDataType _type = httpData.getHttpDataType();
+				if (_type == HttpDataType.Attribute) {
+					Attribute attribute = (Attribute) httpData;
+					parseAttribute(attribute);
+				} else if (_type == HttpDataType.FileUpload) {
+					FileUpload upload = (FileUpload) httpData;
+					multipartFiles.add(MultipartFileFactory.create(upload));
+				}
+			}
+		} catch (Exception ex) {
+			LogUtils.warn(ex.getMessage());
+		}
+	}
+
+	private void parseAttribute(Attribute attribute) throws Exception {
+		if (this.parameters.containsKey(attribute.getName())) {
+			this.parameters.get(attribute.getName()).add(attribute.getValue());
+		} else {
+			List<String> values = new ArrayList<>();
+			values.add(attribute.getValue());
+			this.parameters.put(attribute.getName(), values);
+		}
 	}
 
 	@Override
@@ -103,7 +134,7 @@ public class HttpRequestImpl implements HttpRequest {
 
 	@Override
 	public mobi.f2time.dorado.rest.http.Cookie[] getCookies() {
-		String cookieString = this.originalRequest.headers().get(HttpHeaderNames.COOKIE);
+		String cookieString = this.request.headers().get(HttpHeaderNames.COOKIE);
 		if (cookieString != null) {
 			Set<Cookie> cookies = ServerCookieDecoder.LAX.decode(cookieString);
 			return cookies.stream().map(cookie -> new CookieImpl(cookie)).collect(Collectors.toList())
@@ -134,11 +165,29 @@ public class HttpRequestImpl implements HttpRequest {
 
 	@Override
 	public String getMethod() {
-		return this.originalRequest.method().name();
+		return this.request.method().name();
 	}
 
 	@Override
 	public InputStream getInputStream() {
 		return this.in;
+	}
+
+	public MultipartFile getFile() {
+		if (multipartFiles != null && !multipartFiles.isEmpty()) {
+			return multipartFiles.get(0);
+		}
+		return null;
+	}
+
+	public MultipartFile[] getFiles() {
+		if (multipartFiles != null && !multipartFiles.isEmpty()) {
+			return multipartFiles.toArray(new MultipartFile[] {});
+		}
+		return null;
+	}
+
+	public List<MultipartFile> getFileList() {
+		return multipartFiles;
 	}
 }
