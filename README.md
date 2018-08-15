@@ -16,8 +16,8 @@
 ```xml
 <dependency>
     <groupId>ai.houyi</groupId>
-    <artifactId>dorado</artifactId>
-    <version>0.0.8</version>
+    <artifactId>dorado-core</artifactId>
+    <version>0.0.11</version>
 </dependency>
 ```
 
@@ -158,29 +158,15 @@ Please visit https://github.com/javagossip/dorado-examples
 * List All services: **[http://{ip}:{port}/services]()**
 
 ## SpringBoot集成
-dorado框架本身已经提供了spring-boot starter模块，无需单独的dorado-spring-boot-starter模块
 
-* 添加spring-boot核心依赖
+* 添加dorado-spring-boot-starter核心依赖
 
 	```xml
 	<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-autoconfigure-processor</artifactId>
-			<version>${spring-boot.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-configuration-processor</artifactId>
-			<version>${spring-boot.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
-			<version>${spring-boot.version}</version>
-			<scope>provided</scope>
-		</dependency>
+	    <groupId>ai.houyi</groupId>
+	    <artifactId>dorado-spring-boot-starter</artifactId>
+	    <version>0.0.11</version>
+    </dependency>
 	```
 * 基于springboot的dorado应用
 
