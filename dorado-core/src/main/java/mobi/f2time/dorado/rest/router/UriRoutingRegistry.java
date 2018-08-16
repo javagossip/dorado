@@ -43,7 +43,7 @@ public class UriRoutingRegistry {
 		uriRoutingRegistry.sort((a, b) -> a.path.compareTo(b.path));
 	}
 
-	public UriRoutingMatchResult findRouteController(HttpRequest request) {
+	public Router findRouteController(HttpRequest request) {
 		Matcher matchResult = null;
 
 		String routingMethod = null;
@@ -52,7 +52,7 @@ public class UriRoutingRegistry {
 			matchResult = uriRouting.path.routingPathPattern().matcher(request.getRequestURI());
 
 			if (matchResult.matches() && (routingMethod == null || (request.getMethod().equals(routingMethod)))) {
-				return UriRoutingMatchResult.create(uriRouting.controller, matchResult,request.getMethod());
+				return Router.create(uriRouting.controller, matchResult,request.getMethod());
 			}
 		}
 		return null;

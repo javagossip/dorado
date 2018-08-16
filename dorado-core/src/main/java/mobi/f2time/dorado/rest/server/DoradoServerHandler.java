@@ -37,7 +37,7 @@ import mobi.f2time.dorado.rest.http.HttpResponse;
 import mobi.f2time.dorado.rest.http.impl.HttpRequestImpl;
 import mobi.f2time.dorado.rest.http.impl.HttpResponseImpl;
 import mobi.f2time.dorado.rest.http.impl.Webapp;
-import mobi.f2time.dorado.rest.router.UriRoutingMatchResult;
+import mobi.f2time.dorado.rest.router.Router;
 import mobi.f2time.dorado.rest.util.LogUtils;
 import mobi.f2time.dorado.rest.util.TracingThreadPoolExecutor;
 
@@ -87,15 +87,14 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 			HttpRequest _request = new HttpRequestImpl(request);
 			HttpResponse _response = new HttpResponseImpl(response);
 
-			UriRoutingMatchResult uriRouting = webapp.getUriRoutingRegistry().findRouteController(_request);
-			if (uriRouting == null) {
+			Router router = webapp.getUriRoutingRegistry().findRouteController(_request);
+			if (router == null) {
 				response.setStatus(HttpResponseStatus.NOT_FOUND);
 				ByteBufUtil.writeUtf8(response.content(),
 						String.format("Resource not found, url: [%s], http_method: [%s]", _request.getRequestURI(),
 								_request.getMethod()));
 			} else {
-				String[] pathVariables = uriRouting.pathVariables();
-				uriRouting.controller().invoke(_request, _response, pathVariables);
+				router.invoke(_request, _response);
 			}
 		} catch (Throwable ex) {
 			LogUtils.error("handle http request error", ex);

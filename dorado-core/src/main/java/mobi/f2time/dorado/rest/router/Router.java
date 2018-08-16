@@ -18,16 +18,19 @@ package mobi.f2time.dorado.rest.router;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 
+import mobi.f2time.dorado.rest.http.HttpRequest;
+import mobi.f2time.dorado.rest.http.HttpResponse;
+
 /**
  * 
  * @author wangwp
  */
-public class UriRoutingMatchResult {
+public class Router {
 	private final UriRoutingController controller;
 	private final String[] pathVariables;
 	private final String httpMethod;
 
-	private UriRoutingMatchResult(UriRoutingController controller, MatchResult matchResult, String httpMethod) {
+	private Router(UriRoutingController controller, MatchResult matchResult, String httpMethod) {
 		this.httpMethod = httpMethod;
 		this.controller = controller;
 		pathVariables = new String[matchResult.groupCount()];
@@ -37,13 +40,20 @@ public class UriRoutingMatchResult {
 		}
 	}
 
-	public static UriRoutingMatchResult create(UriRoutingController controller, Matcher matchResult,
-			String httpMethod) {
-		return new UriRoutingMatchResult(controller, matchResult, httpMethod);
+	public static Router create(UriRoutingController controller, Matcher matchResult, String httpMethod) {
+		return new Router(controller, matchResult, httpMethod);
 	}
 
 	public UriRoutingController controller() {
 		return this.controller;
+	}
+
+	public Object invoke(HttpRequest request, HttpResponse response) {
+		try {
+			return this.controller.invoke(request, response, pathVariables);
+		} catch (Exception ex) {
+		}
+		return null;
 	}
 
 	public String getHttpMethod() {

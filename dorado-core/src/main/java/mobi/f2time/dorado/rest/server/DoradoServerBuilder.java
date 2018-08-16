@@ -48,6 +48,8 @@ public final class DoradoServerBuilder {
 	private String[] scanPackages;
 	private boolean devMode;
 	private boolean springOn;
+	private boolean filterOn;
+
 	private String contextPath = StringUtils.EMPTY;
 
 	private TracingThreadPoolExecutor executor;
@@ -56,6 +58,10 @@ public final class DoradoServerBuilder {
 
 	private DoradoServerBuilder(int port) {
 		this.port = port;
+	}
+
+	public boolean isFilterOn() {
+		return filterOn;
 	}
 
 	public static DoradoServerBuilder forPort(int port) {
@@ -129,6 +135,11 @@ public final class DoradoServerBuilder {
 
 	public DoradoServerBuilder springOn() {
 		this.springOn = true;
+		return this;
+	}
+
+	public DoradoServerBuilder filterOn() {
+		this.filterOn = true;
 		return this;
 	}
 
