@@ -7,6 +7,7 @@
 * 内置JSON/Protobuf序列化支持，JSON序列化框架使用Fastjson, 依赖内置；  
   如果使用protobuf序列化，需要自行添加protobuf依赖, protobuf版本2.x
 * Http路由支持, 路由path支持任意的java正则表达式，通过{pathVariable:regex}这种方式支持
+* 支持文件上传
 * Spring框架支持，默认支持注解方式初始化spring容器
 * SpringBoot集成
 
@@ -198,6 +199,7 @@ Please visit https://github.com/javagossip/dorado-examples
 	|dorado.max-packet-length|http请求包体大小|1M|
 	
 
+## swagger集成
 ## 性能测试
 
 
