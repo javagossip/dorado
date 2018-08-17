@@ -149,5 +149,6 @@
 	<modules>
 		<module>dorado-core</module>
 		<module>dorado-spring-boot-starter</module>
+		<module>dorado-swagger</module>
 	</modules>
 </project>

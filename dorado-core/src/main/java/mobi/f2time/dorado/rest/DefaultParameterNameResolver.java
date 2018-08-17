@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import mobi.f2time.dorado.rest.annotation.HeaderParam;
 import mobi.f2time.dorado.rest.annotation.PathVariable;
 import mobi.f2time.dorado.rest.annotation.RequestParam;
+import mobi.f2time.dorado.rest.util.StringUtils;
 
 /**
  * 根据方法参数注解获得方法参数名
@@ -47,7 +48,8 @@ public class DefaultParameterNameResolver implements ParameterNameResolver {
 				continue;
 			}
 			parameterAnnotation = parameterAnnotations[i][0];
-			parameterNames[i] = getParameterNameByAnnotation(parameterAnnotation);
+			String parameterNameByAnnotation = getParameterNameByAnnotation(parameterAnnotation);
+			parameterNames[i] = StringUtils.defaultString(parameterNameByAnnotation, parameterNames[i]);
 		}
 		return parameterNames;
 	}

@@ -16,7 +16,11 @@
 package mobi.f2time.dorado.rest;
 
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
+
+import mobi.f2time.dorado.rest.annotation.Produce;
+import mobi.f2time.dorado.rest.util.StringUtils;
 
 /**
  * 
@@ -33,6 +37,14 @@ public class MessageBodyConverters {
 		messageBodyConverterHolder.put(MediaType.APPLICATION_PROTOBUF_TYPE, MessageBodyConverter.PROTOBUF);
 		messageBodyConverterHolder.put(MediaType.APPLICATION_OCTET_STREAM_TYPE, MessageBodyConverter.DEFAULT);
 		messageBodyConverterHolder.put(MediaType.WILDCARD_TYPE, MessageBodyConverter.DEFAULT);
+
+		@SuppressWarnings("rawtypes")
+		ServiceLoader<MessageBodyConverter> extMessageBodyConverters = ServiceLoader.load(MessageBodyConverter.class);
+		extMessageBodyConverters.forEach(converter -> {
+			Produce produce = converter.getClass().getAnnotation(Produce.class);
+			if (produce != null && StringUtils.isBlank(produce.value()))
+				messageBodyConverterHolder.put(MediaType.valueOf(produce.value()), converter);
+		});
 	}
 
 	@SuppressWarnings("rawtypes")
