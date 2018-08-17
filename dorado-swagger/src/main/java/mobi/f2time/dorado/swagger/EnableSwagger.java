@@ -13,29 +13,22 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package mobi.f2time.dorado.swagger.controller;
+package mobi.f2time.dorado.swagger;
 
-import io.swagger.models.Swagger;
-import mobi.f2time.dorado.rest.annotation.Path;
-import mobi.f2time.dorado.rest.annotation.Produce;
-import mobi.f2time.dorado.swagger.SwaggerFactory;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+@Documented
+@Retention(RUNTIME)
+@Target(TYPE)
 /**
  * 
  * @author wangwp
  */
-@Path("/swagger")
-public class SwaggerV2Controller {
-
-	@Path(".yaml")
-	@Produce("application/yaml")
-	public Swagger listingWithYaml() {
-		return SwaggerFactory.getSwagger();
-	}
-
-	@Path(".json")
-	@Produce("application/json")
-	public Swagger listingWithJson() {
-		return SwaggerFactory.getSwagger();
-	}
+public @interface EnableSwagger {
+	String[] value();
 }

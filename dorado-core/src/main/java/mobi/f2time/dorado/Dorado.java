@@ -26,6 +26,7 @@ public final class Dorado {
 	public static volatile boolean springInitialized;
 	public static volatile BeanContainer beanContainer;
 	public static volatile DoradoServerBuilder serverConfig;
+	public static volatile Class<?> mainClass;
 
 	static {
 		classLoader = Thread.currentThread().getContextClassLoader();

@@ -250,6 +250,7 @@ public final class DoradoServerBuilder {
 			for (StackTraceElement stackTraceElement : stackTrace) {
 				if ("main".equals(stackTraceElement.getMethodName())) {
 					mainClass = Class.forName(stackTraceElement.getClassName());
+					Dorado.mainClass = mainClass;
 					break;
 				}
 			}
