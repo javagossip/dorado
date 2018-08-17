@@ -18,6 +18,7 @@ package mobi.f2time.dorado.rest.router;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 
+import mobi.f2time.dorado.exception.DoradoException;
 import mobi.f2time.dorado.rest.http.HttpRequest;
 import mobi.f2time.dorado.rest.http.HttpResponse;
 
@@ -52,8 +53,8 @@ public class Router {
 		try {
 			return this.controller.invoke(request, response, pathVariables);
 		} catch (Exception ex) {
+			throw new DoradoException(ex);
 		}
-		return null;
 	}
 
 	public String getHttpMethod() {

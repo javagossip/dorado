@@ -17,7 +17,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.swagger</groupId>
-			<artifactId>swagger-jersey-jaxrs</artifactId>
+			<artifactId>swagger-core</artifactId>
 			<version>1.5.20</version>
 		</dependency>
 	</dependencies>

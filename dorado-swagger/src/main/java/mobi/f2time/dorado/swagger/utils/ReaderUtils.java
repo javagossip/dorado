@@ -1,15 +1,5 @@
 package mobi.f2time.dorado.swagger.utils;
 
-import io.swagger.jaxrs.ext.SwaggerExtension;
-import io.swagger.jaxrs.ext.SwaggerExtensions;
-import io.swagger.models.Swagger;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.util.ParameterProcessor;
-import io.swagger.util.ReflectionUtils;
-
-import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -23,6 +13,16 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
+
+import io.swagger.models.Swagger;
+import io.swagger.models.parameters.Parameter;
+import io.swagger.util.ParameterProcessor;
+import io.swagger.util.ReflectionUtils;
+import mobi.f2time.dorado.swagger.ext.SwaggerExtension;
+import mobi.f2time.dorado.swagger.ext.SwaggerExtensions;
 
 
 public class ReaderUtils {
