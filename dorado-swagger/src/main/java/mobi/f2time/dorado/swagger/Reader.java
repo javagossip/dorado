@@ -133,7 +133,7 @@ public class Reader {
         }
 
         for (Class<?> cls : sortedClasses) {
-            read(cls, "", null, false, new String[0], new String[0], new LinkedHashMap<String, Tag>(), new ArrayList<Parameter>(), new HashSet<Class<?>>());
+            read(cls,  new LinkedHashMap<String, Tag>(), new ArrayList<Parameter>(), new HashSet<Class<?>>());
         }
         return swagger;
     }
@@ -147,14 +147,15 @@ public class Reader {
             readSwaggerConfig(cls, swaggerDefinition);
         }
 
-        return read(cls, "", null, false, new String[0], new String[0], new LinkedHashMap<String, Tag>(), new ArrayList<Parameter>(), new HashSet<Class<?>>());
+        return read(cls, new LinkedHashMap<String, Tag>(), new ArrayList<Parameter>(), new HashSet<Class<?>>());
     }
 
-    protected Swagger read(Class<?> cls, String parentPath, String parentMethod, boolean isSubresource, String[] parentConsumes, String[] parentProduces, Map<String, Tag> parentTags, List<Parameter> parentParameters) {
-        return read(cls, parentPath, parentMethod, isSubresource, parentConsumes, parentProduces, parentTags, parentParameters, new HashSet<Class<?>>());
+    protected Swagger read(Class<?> cls,Map<String, Tag> parentTags, List<Parameter> parentParameters) {
+        return read(cls, parentTags, parentParameters, new HashSet<Class<?>>());
     }
 
-    private Swagger read(Class<?> cls, String parentPath, String parentMethod, boolean isSubresource, String[] parentConsumes, String[] parentProduces, Map<String, Tag> parentTags, List<Parameter> parentParameters, Set<Class<?>> scannedResources) {
+    @SuppressWarnings("deprecation")
+	private Swagger read(Class<?> cls, Map<String, Tag> parentTags, List<Parameter> parentParameters, Set<Class<?>> scannedResources) {
         Map<String, Tag> tags = new LinkedHashMap<String, Tag>();
         List<SecurityRequirement> securities = new ArrayList<SecurityRequirement>();
 
@@ -169,7 +170,7 @@ public class Reader {
         boolean isApiHidden = hasApiAnnotation && api.hidden();
 
         // class readable only if annotated with ((@Path and @Api) or isSubresource ) - and @Api not hidden
-        boolean classReadable = ((hasPathAnnotation && hasApiAnnotation) || isSubresource) && !isApiHidden;
+        boolean classReadable = ((hasPathAnnotation && hasApiAnnotation)) && !isApiHidden;
 
         // readable if classReadable or scanAll
         boolean readable = classReadable;
@@ -215,11 +216,6 @@ public class Reader {
         }
 
         if (readable) {
-            if (isSubresource) {
-                if (parentTags != null) {
-                    tags.putAll(parentTags);
-                }
-            }
             // merge consumes, produces
             if (consumes.length == 0 && cls.getAnnotation(Consume.class) != null) {
                 //consumes = ReaderUtils.splitContentValues(cls.getAnnotation(Consume.class).value());
@@ -257,7 +253,7 @@ public class Reader {
                 }
                 mobi.f2time.dorado.rest.annotation.Path methodPath = ReflectionUtils.getAnnotation(method, mobi.f2time.dorado.rest.annotation.Path.class);
 
-                String operationPath = getPath(apiPath, methodPath, parentPath, isSubresource);
+                String operationPath = getPath(apiPath, methodPath);
                 Map<String, String> regexMap = new LinkedHashMap<String, String>();
                 operationPath = PathUtils.parsePath(operationPath, regexMap);
                 if (operationPath != null) {
@@ -300,37 +296,10 @@ public class Reader {
                     }
 
                     String[] apiConsumes = consumes;
-                    if (parentConsumes != null) {
-                        Set<String> both = new LinkedHashSet<String>(Arrays.asList(apiConsumes));
-                        both.addAll(new LinkedHashSet<String>(Arrays.asList(parentConsumes)));
-                        if (operation.getConsumes() != null) {
-                            both.addAll(new LinkedHashSet<String>(operation.getConsumes()));
-                        }
-                        apiConsumes = both.toArray(new String[both.size()]);
-                    }
-
                     String[] apiProduces = produces;
-                    if (parentProduces != null) {
-                        Set<String> both = new LinkedHashSet<String>(Arrays.asList(apiProduces));
-                        both.addAll(new LinkedHashSet<String>(Arrays.asList(parentProduces)));
-                        if (operation.getProduces() != null) {
-                            both.addAll(new LinkedHashSet<String>(operation.getProduces()));
-                        }
-                        apiProduces = both.toArray(new String[both.size()]);
-                    }
-                    final Class<?> subResource = getSubResourceWithJaxRsSubresourceLocatorSpecs(method);
-                    if (subResource != null && !scannedResources.contains(subResource)) {
-                        scannedResources.add(subResource);
-                        read(subResource, operationPath, httpMethod, true, apiConsumes, apiProduces, tags, operation.getParameters(), scannedResources);
-                        // remove the sub resource so that it can visit it later in another path
-                        // but we have a room for optimization in the future to reuse the scanned result
-                        // by caching the scanned resources in the reader instance to avoid actual scanning
-                        // the the resources again
-                        scannedResources.remove(subResource);
-                    }
-
+                   
                     // can't continue without a valid http method
-                    httpMethod = (httpMethod == null) ? parentMethod : httpMethod;
+                    //httpMethod = (httpMethod == null) ? parentMethod : httpMethod;
                     if (httpMethod != null) {
                         if (apiOperation != null) {
                             for (String tag : apiOperation.tags()) {
@@ -432,7 +401,8 @@ public class Reader {
                 Arrays.<Annotation>asList(param));
     }
 
-    protected void readSwaggerConfig(Class<?> cls, SwaggerDefinition config) {
+    @SuppressWarnings("deprecation")
+	protected void readSwaggerConfig(Class<?> cls, SwaggerDefinition config) {
         if (!config.basePath().isEmpty()) {
             swagger.setBasePath(config.basePath());
         }
@@ -622,26 +592,6 @@ public class Reader {
         return null;
     }
 
-    protected Class<?> getSubResourceWithJaxRsSubresourceLocatorSpecs(Method method) {
-        final Class<?> rawType = method.getReturnType();
-        final Class<?> type;
-        if (Class.class.equals(rawType)) {
-            type = getClassArgument(method.getGenericReturnType());
-            if (type == null) {
-                return null;
-            }
-        } else {
-            type = rawType;
-        }
-
-        if (method.getAnnotation(javax.ws.rs.Path.class) != null) {
-            if (extractOperationMethod(null, method, null) == null) {
-                return type;
-            }
-        }
-        return null;
-    }
-
     private static Class<?> getClassArgument(Type cls) {
         if (cls instanceof ParameterizedType) {
             final ParameterizedType parameterized = (ParameterizedType) cls;
@@ -682,25 +632,16 @@ public class Reader {
         return output;
     }
 
-    private String getPath(mobi.f2time.dorado.rest.annotation.Path classLevelPath, mobi.f2time.dorado.rest.annotation.Path methodLevelPath, String parentPath,
-                           boolean isSubResource) {
-        if (classLevelPath == null && methodLevelPath == null && StringUtils.isEmpty(parentPath)) {
+    private String getPath(mobi.f2time.dorado.rest.annotation.Path classLevelPath, mobi.f2time.dorado.rest.annotation.Path methodLevelPath) {
+        if (classLevelPath == null && methodLevelPath == null) {
             return null;
         }
         StringBuilder b = new StringBuilder();
-        if (parentPath != null && !"".equals(parentPath) && !"/".equals(parentPath)) {
-            if (!parentPath.startsWith("/")) {
-                parentPath = "/" + parentPath;
-            }
-            if (parentPath.endsWith("/")) {
-                parentPath = parentPath.substring(0, parentPath.length() - 1);
-            }
-
-            b.append(parentPath);
-        }
-        if (classLevelPath != null && !isSubResource) {
+       
+        if (classLevelPath != null) {
             b.append(classLevelPath.value());
         }
+        
         if (methodLevelPath != null && !"/".equals(methodLevelPath.value())) {
             String methodPath = methodLevelPath.value();
             if (!methodPath.startsWith("/") && !b.toString().endsWith("/")) {
@@ -757,7 +698,8 @@ public class Reader {
                 Collections.<Parameter> emptyList(), Collections.<ApiResponse> emptyList());
     }
 
-    private Operation parseMethod(Class<?> cls, Method method, AnnotatedMethod annotatedMethod,
+    @SuppressWarnings("deprecation")
+	private Operation parseMethod(Class<?> cls, Method method, AnnotatedMethod annotatedMethod,
             List<Parameter> globalParameters, List<ApiResponse> classApiResponses) {
         Operation operation = new Operation();
         if (annotatedMethod != null) {
@@ -955,7 +897,8 @@ public class Reader {
         }
     }
 
-    private void addResponse(Operation operation, ApiResponse apiResponse, JsonView jsonView) {
+    @SuppressWarnings("deprecation")
+	private void addResponse(Operation operation, ApiResponse apiResponse, JsonView jsonView) {
         Map<String, Property> responseHeaders = parseResponseHeaders(apiResponse.responseHeaders(), jsonView);
         Map<String, Object> examples = parseExamples(apiResponse.examples());
 

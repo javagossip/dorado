@@ -1,8 +1,20 @@
 package mobi.f2time.dorado.swagger.ext;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.AnnotatedField;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
+import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
+
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.parameters.CookieParameter;
-import io.swagger.models.parameters.FormParameter;
 import io.swagger.models.parameters.HeaderParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.PathParameter;
@@ -17,19 +29,6 @@ import mobi.f2time.dorado.rest.annotation.CookieParam;
 import mobi.f2time.dorado.rest.annotation.HeaderParam;
 import mobi.f2time.dorado.rest.annotation.PathVariable;
 import mobi.f2time.dorado.rest.annotation.RequestParam;
-
-import com.fasterxml.jackson.databind.BeanDescription;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.introspect.AnnotatedField;
-import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
-import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
 public class DefaultParameterExtension implements SwaggerExtension {
     // make jaxrs 2.0 classes optional
@@ -107,7 +106,8 @@ public class DefaultParameterExtension implements SwaggerExtension {
      * @param type
      * @param typesToSkip
      */
-    private void handleAdditionalAnnotation(List<Parameter> parameters, Annotation annotation, 
+    @SuppressWarnings("deprecation")
+	private void handleAdditionalAnnotation(List<Parameter> parameters, Annotation annotation, 
         final Type type, Set<Type> typesToSkip) {
         if (isBeanParametersAggregatorAnnotation(annotation)) {
             // Use Jackson's logic for processing Beans
