@@ -76,6 +76,7 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 		FullHttpRequest request = (FullHttpRequest) msg;
 		FullHttpResponse response = new DefaultFullHttpResponse(request.protocolVersion(), HttpResponseStatus.OK);
 
+		
 		boolean isKeepAlive = HttpUtil.isKeepAlive(request);
 		HttpUtil.setKeepAlive(response, isKeepAlive);
 		response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html;charset=UTF-8");
