@@ -16,6 +16,7 @@
 package mobi.f2time.dorado.swagger.controller;
 
 import io.swagger.models.Swagger;
+import mobi.f2time.dorado.rest.annotation.Controller;
 import mobi.f2time.dorado.rest.annotation.Path;
 import mobi.f2time.dorado.rest.annotation.Produce;
 import mobi.f2time.dorado.swagger.SwaggerFactory;
@@ -24,16 +25,17 @@ import mobi.f2time.dorado.swagger.SwaggerFactory;
  * 
  * @author wangwp
  */
-@Path("/swagger")
+@Controller
+@Path("/api-docs")
 public class SwaggerV2Controller {
 
-	@Path(".yaml")
+	@Path("/swagger.yaml")
 	@Produce("application/yaml")
 	public Swagger listingWithYaml() {
 		return SwaggerFactory.getSwagger();
 	}
 
-	@Path(".json")
+	@Path("/swagger.json")
 	@Produce("application/json")
 	public Swagger listingWithJson() {
 		return SwaggerFactory.getSwagger();

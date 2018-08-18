@@ -81,6 +81,7 @@ import mobi.f2time.dorado.rest.annotation.POST;
 import mobi.f2time.dorado.rest.annotation.PUT;
 import mobi.f2time.dorado.rest.annotation.Produce;
 import mobi.f2time.dorado.rest.http.HttpResponse;
+import mobi.f2time.dorado.rest.util.MethodDescriptor;
 import mobi.f2time.dorado.swagger.ext.SwaggerExtension;
 import mobi.f2time.dorado.swagger.ext.SwaggerExtensions;
 import mobi.f2time.dorado.swagger.utils.ReaderUtils;
@@ -88,7 +89,7 @@ import mobi.f2time.dorado.swagger.utils.ReaderUtils;
 public class Reader {
     private static final Logger LOGGER = LoggerFactory.getLogger(Reader.class);
     private static final String SUCCESSFUL_OPERATION = "successful operation";
-    private static final String PATH_DELIMITER = "/";
+    //private static final String PATH_DELIMITER = "/";
 
     private Swagger swagger;
 
@@ -156,6 +157,8 @@ public class Reader {
 
     @SuppressWarnings("deprecation")
 	private Swagger read(Class<?> cls, Map<String, Tag> parentTags, List<Parameter> parentParameters, Set<Class<?>> scannedResources) {
+    	//ClassDescriptor classDescriptor = ClassDescriptor.create(cls);
+    	
         Map<String, Tag> tags = new LinkedHashMap<String, Tag>();
         List<SecurityRequirement> securities = new ArrayList<SecurityRequirement>();
 
@@ -229,10 +232,10 @@ public class Reader {
             final List<Parameter> globalParameters = new ArrayList<Parameter>();
 
             // look for constructor-level annotated properties
-            globalParameters.addAll(ReaderUtils.collectConstructorParameters(cls, swagger));
-
-            // look for field-level annotated properties
-            globalParameters.addAll(ReaderUtils.collectFieldParameters(cls, swagger));
+//            globalParameters.addAll(ReaderUtils.collectConstructorParameters(cls, swagger));
+//
+//            // look for field-level annotated properties
+//            globalParameters.addAll(ReaderUtils.collectFieldParameters(cls, swagger));
 
             // build class/interface level @ApiResponse list
             ApiResponses classResponseAnnotation = ReflectionUtils.getAnnotation(cls, ApiResponses.class);
@@ -701,6 +704,7 @@ public class Reader {
     @SuppressWarnings("deprecation")
 	private Operation parseMethod(Class<?> cls, Method method, AnnotatedMethod annotatedMethod,
             List<Parameter> globalParameters, List<ApiResponse> classApiResponses) {
+    	//MethodDescriptor methodDescriptor = MethodDescriptor.create(cls, method);
         Operation operation = new Operation();
         if (annotatedMethod != null) {
             method = annotatedMethod.getAnnotated();
@@ -856,11 +860,13 @@ public class Reader {
         }
 
         Annotation[][] paramAnnotations = ReflectionUtils.getParameterAnnotations(method);
+        MethodDescriptor methodDescriptor = MethodDescriptor.create(cls, method);
+        
         if (annotatedMethod == null) {
             Type[] genericParameterTypes = method.getGenericParameterTypes();
             for (int i = 0; i < genericParameterTypes.length; i++) {
                 final Type type = TypeFactory.defaultInstance().constructType(genericParameterTypes[i], cls);
-                List<Parameter> parameters = getParameters(type, Arrays.asList(paramAnnotations[i]));
+                List<Parameter> parameters = getParameters(type, Arrays.asList(paramAnnotations[i]),methodDescriptor);
 
                 for (Parameter parameter : parameters) {
                     operation.parameter(parameter);
@@ -870,7 +876,7 @@ public class Reader {
             for (int i = 0; i < annotatedMethod.getParameterCount(); i++) {
                 AnnotatedParameter param = annotatedMethod.getParameter(i);
                 final Type type = TypeFactory.defaultInstance().constructType(param.getParameterType(), cls);
-                List<Parameter> parameters = getParameters(type, Arrays.asList(paramAnnotations[i]));
+                List<Parameter> parameters = getParameters(type, Arrays.asList(paramAnnotations[i]),methodDescriptor);
 
                 for (Parameter parameter : parameters) {
                     operation.parameter(parameter);
@@ -888,7 +894,39 @@ public class Reader {
         return operation;
     }
 
-    private void processOperationDecorator(Operation operation, Method method) {
+    private List<Parameter> getParameters(Type type, List<Annotation> annotations, MethodDescriptor methodDescriptor) {
+    	  final Iterator<SwaggerExtension> chain = SwaggerExtensions.chain();
+          if (!chain.hasNext()) {
+              return Collections.emptyList();
+          }
+          LOGGER.debug("getParameters for {}", type);
+          Set<Type> typesToSkip = new HashSet<Type>();
+          final SwaggerExtension extension = chain.next();
+          LOGGER.debug("trying extension {}", extension);
+
+          final List<Parameter> parameters = extension.extractParameters(annotations, type, typesToSkip, chain,methodDescriptor);
+          if (!parameters.isEmpty()) {
+              final List<Parameter> processed = new ArrayList<Parameter>(parameters.size());
+              for (Parameter parameter : parameters) {
+                  if (ParameterProcessor.applyAnnotations(swagger, parameter, type, annotations) != null) {
+                      processed.add(parameter);
+                  }
+              }
+              return processed;
+          } else {
+              LOGGER.debug("no parameter found, looking at body params");
+              final List<Parameter> body = new ArrayList<Parameter>();
+              if (!typesToSkip.contains(type)) {
+                  Parameter param = ParameterProcessor.applyAnnotations(swagger, null, type, annotations);
+                  if (param != null) {
+                      body.add(param);
+                  }
+              }
+              return body;
+          }
+	}
+
+	private void processOperationDecorator(Operation operation, Method method) {
         final Iterator<SwaggerExtension> chain = SwaggerExtensions.chain();
         if (chain.hasNext()) {
             SwaggerExtension extension = chain.next();
@@ -943,37 +981,6 @@ public class Reader {
         return map;
     }
 
-    private List<Parameter> getParameters(Type type, List<Annotation> annotations) {
-        final Iterator<SwaggerExtension> chain = SwaggerExtensions.chain();
-        if (!chain.hasNext()) {
-            return Collections.emptyList();
-        }
-        LOGGER.debug("getParameters for {}", type);
-        Set<Type> typesToSkip = new HashSet<Type>();
-        final SwaggerExtension extension = chain.next();
-        LOGGER.debug("trying extension {}", extension);
-
-        final List<Parameter> parameters = extension.extractParameters(annotations, type, typesToSkip, chain);
-        if (!parameters.isEmpty()) {
-            final List<Parameter> processed = new ArrayList<Parameter>(parameters.size());
-            for (Parameter parameter : parameters) {
-                if (ParameterProcessor.applyAnnotations(swagger, parameter, type, annotations) != null) {
-                    processed.add(parameter);
-                }
-            }
-            return processed;
-        } else {
-            LOGGER.debug("no parameter found, looking at body params");
-            final List<Parameter> body = new ArrayList<Parameter>();
-            if (!typesToSkip.contains(type)) {
-                Parameter param = ParameterProcessor.applyAnnotations(swagger, null, type, annotations);
-                if (param != null) {
-                    body.add(param);
-                }
-            }
-            return body;
-        }
-    }
 
     public String extractOperationMethod(ApiOperation apiOperation, Method method, Iterator<SwaggerExtension> chain) {
         if (apiOperation != null && !"".equals(apiOperation.httpMethod())) {

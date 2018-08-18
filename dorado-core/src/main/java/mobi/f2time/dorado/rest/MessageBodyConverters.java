@@ -42,7 +42,7 @@ public class MessageBodyConverters {
 		ServiceLoader<MessageBodyConverter> extMessageBodyConverters = ServiceLoader.load(MessageBodyConverter.class);
 		extMessageBodyConverters.forEach(converter -> {
 			Produce produce = converter.getClass().getAnnotation(Produce.class);
-			if (produce != null && StringUtils.isBlank(produce.value()))
+			if (produce != null && !StringUtils.isBlank(produce.value()))
 				messageBodyConverterHolder.put(MediaType.valueOf(produce.value()), converter);
 		});
 	}

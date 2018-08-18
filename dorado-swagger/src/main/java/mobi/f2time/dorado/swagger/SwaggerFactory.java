@@ -38,6 +38,7 @@ public class SwaggerFactory {
 		String[] packages = null;
 		Class<?> mainClass = Dorado.mainClass;
 		EnableSwagger enableSwagger = mainClass.getAnnotation(EnableSwagger.class);
+		
 		if (enableSwagger != null) {
 			packages = enableSwagger.value();
 		}

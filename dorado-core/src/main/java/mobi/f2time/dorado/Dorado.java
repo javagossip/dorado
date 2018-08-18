@@ -28,8 +28,33 @@ public final class Dorado {
 	public static volatile DoradoServerBuilder serverConfig;
 	public static volatile Class<?> mainClass;
 
+	public static volatile boolean isEnableSwagger;
+	public static volatile boolean isEnableSpring;
+	public static volatile boolean isEnableProtobuf;
+
 	static {
 		classLoader = Thread.currentThread().getContextClassLoader();
 		beanContainer = BeanContainer.DEFAULT;
+
+		try {
+			Class.forName("com.google.protobuf.Message");
+			isEnableProtobuf = true;
+		} catch (Throwable ex) {
+			// ignore this ex
+		}
+
+		try {
+			Class.forName("org.springframework.context.ApplicationContext");
+			isEnableSpring = true;
+		} catch (Throwable ex) {
+			// ignore this ex
+		}
+		
+		try {
+			Class.forName("mobi.f2time.dorado.swagger.controller.SwaggerV2Controller");
+			isEnableSwagger = true;
+		} catch (Throwable ex) {
+			// ignore this ex
+		}
 	}
 }

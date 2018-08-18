@@ -15,12 +15,19 @@
  */
 package mobi.f2time.dorado.rest.router;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 
+import mobi.f2time.dorado.rest.annotation.Controller;
+import mobi.f2time.dorado.rest.annotation.HttpMethod;
+import mobi.f2time.dorado.rest.annotation.Path;
 import mobi.f2time.dorado.rest.http.HttpRequest;
+import mobi.f2time.dorado.rest.util.StringUtils;
 
 /**
  * 
@@ -38,6 +45,44 @@ public class UriRoutingRegistry {
 		return _instance;
 	}
 
+	public void register(Class<?> type) {
+		Controller controller = type.getAnnotation(Controller.class);
+		if (controller == null)
+			return;
+
+		Path classLevelPath = type.getAnnotation(Path.class);
+		String controllerPath = classLevelPath == null ? StringUtils.EMPTY : classLevelPath.value();
+
+		Method[] controllerMethods = type.getDeclaredMethods();
+		for (Method method : controllerMethods) {
+			if (Modifier.isStatic(method.getModifiers()) || method.getAnnotations().length == 0
+					|| !Modifier.isPublic(method.getModifiers())) {
+				continue;
+			}
+
+			Path methodLevelPath = method.getAnnotation(Path.class);
+			HttpMethod httpMethod = getHttpMethod(method.getAnnotations());
+			String methodPath = methodLevelPath == null ? StringUtils.EMPTY : methodLevelPath.value();
+
+			UriRoutingPath uriRoutingPath = UriRoutingPath.create(String.format("%s%s", controllerPath, methodPath),
+					httpMethod);
+			UriRoutingController routeController = UriRoutingController.create(uriRoutingPath, type, method);
+			register(uriRoutingPath, routeController);
+		}
+	}
+
+	private HttpMethod getHttpMethod(Annotation[] annotations) {
+		HttpMethod httpMethod = null;
+
+		for (Annotation annotation : annotations) {
+			httpMethod = annotation.annotationType().getAnnotation(HttpMethod.class);
+			if (httpMethod != null) {
+				return httpMethod;
+			}
+		}
+		return null;
+	}
+
 	public void register(UriRoutingPath routeMapping, UriRoutingController controller) {
 		uriRoutingRegistry.add(UriRouting.create(routeMapping, controller));
 		uriRoutingRegistry.sort((a, b) -> a.path.compareTo(b.path));
@@ -52,7 +97,7 @@ public class UriRoutingRegistry {
 			matchResult = uriRouting.path.routingPathPattern().matcher(request.getRequestURI());
 
 			if (matchResult.matches() && (routingMethod == null || (request.getMethod().equals(routingMethod)))) {
-				return Router.create(uriRouting.controller, matchResult,request.getMethod());
+				return Router.create(uriRouting.controller, matchResult, request.getMethod());
 			}
 		}
 		return null;

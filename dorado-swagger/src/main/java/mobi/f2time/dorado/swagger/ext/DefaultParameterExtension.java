@@ -29,6 +29,8 @@ import mobi.f2time.dorado.rest.annotation.CookieParam;
 import mobi.f2time.dorado.rest.annotation.HeaderParam;
 import mobi.f2time.dorado.rest.annotation.PathVariable;
 import mobi.f2time.dorado.rest.annotation.RequestParam;
+import mobi.f2time.dorado.rest.util.MethodDescriptor;
+import mobi.f2time.dorado.rest.util.MethodDescriptor.MethodParameter;
 
 public class DefaultParameterExtension implements SwaggerExtension {
     // make jaxrs 2.0 classes optional
@@ -203,4 +205,54 @@ public class DefaultParameterExtension implements SwaggerExtension {
         }
         return in;
     }
+
+	@Override
+	public List<Parameter> extractParameters(List<Annotation> annotations, Type type, Set<Type> typesToSkip,
+			Iterator<SwaggerExtension> chain, MethodDescriptor methodDescriptor) {
+		if (shouldIgnoreType(type, typesToSkip)) {
+			return new ArrayList<Parameter>();
+		}
+
+		List<Parameter> parameters = new ArrayList<Parameter>();
+		for (MethodParameter _parameter : methodDescriptor.getParameters()) {
+			Parameter parameter = null;
+			Class<?> annotationType = _parameter.getAnnotationType();
+			if (annotationType == RequestParam.class) {
+				QueryParameter fp = new QueryParameter().name(_parameter.getName());
+				Property schema = createProperty(type);
+				if (schema != null) {
+					fp.setProperty(schema);
+				}
+				parameter = fp;
+			} else if (annotationType == PathVariable.class) {
+				PathParameter fp = new PathParameter().name(_parameter.getName());
+				Property schema = createProperty(type);
+				if (schema != null) {
+					fp.setProperty(schema);
+				}
+				parameter = fp;
+			} else if (annotationType == HeaderParam.class) {
+				HeaderParameter hp = new HeaderParameter().name(_parameter.getName());
+				Property schema = createProperty(type);
+				if (schema != null) {
+					hp.setProperty(schema);
+				}
+				parameter = hp;
+			} else if (annotationType == CookieParam.class) {
+				CookieParameter cp = new CookieParameter().name(_parameter.getName());
+				Property schema = createProperty(type);
+				if (schema != null) {
+					cp.setProperty(schema);
+				}
+				parameter = cp;
+			} else {
+				handleAdditionalAnnotation(parameters, _parameter.getAnnotation(), type, typesToSkip);
+			}
+			
+			if (parameter != null) {
+				parameters.add(parameter);
+			}
+		}
+		return parameters;
+	}
 }

@@ -24,6 +24,7 @@ import com.google.protobuf.Message;
 import io.netty.util.CharsetUtil;
 import mobi.f2time.dorado.rest.util.IOUtils;
 import mobi.f2time.dorado.rest.util.ProtobufMessageDescriptors;
+import mobi.f2time.dorado.rest.util.TypeUtils;
 
 /**
  * 
@@ -66,7 +67,7 @@ public interface ObjectSerializer {
 	ObjectSerializer DEFAULT = new ObjectSerializer() {
 		@Override
 		public byte[] serialize(Object t) {
-			if (t instanceof Message) {
+			if (TypeUtils.isProtobufMessage(t.getClass())) {
 				return ((Message) t).toByteArray();
 			}
 			return com.alibaba.fastjson.JSON.toJSONBytes(t);
@@ -76,7 +77,8 @@ public interface ObjectSerializer {
 		@Override
 		public Object deserialize(InputStream in, Class type) {
 			try {
-				if (Message.class.isAssignableFrom(type)) {
+
+				if (TypeUtils.isProtobufMessage(type)) {
 					return ProtobufMessageDescriptors.newMessageForType(in, type);
 				}
 				return JSONObject.parseObject(in, type);

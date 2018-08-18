@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.models.Operation;
 import io.swagger.models.parameters.Parameter;
+import mobi.f2time.dorado.rest.util.MethodDescriptor;
 
 /**
  * 
@@ -78,4 +79,7 @@ public interface SwaggerExtension {
 	default JavaType constructType(Type type) {
 		return TypeFactory.defaultInstance().constructType(type);
 	}
+
+	public List<Parameter> extractParameters(List<Annotation> annotations, Type type, Set<Type> typesToSkip,
+			Iterator<SwaggerExtension> chain, MethodDescriptor methodDescriptor);
 }

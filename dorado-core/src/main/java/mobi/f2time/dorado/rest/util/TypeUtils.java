@@ -15,6 +15,7 @@
  */
 package mobi.f2time.dorado.rest.util;
 
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,8 +26,8 @@ import com.google.protobuf.Message;
  * @author wangwp
  */
 public final class TypeUtils {
-	private static final Map<Class<?>,Object> primitiveDefaultHolder = new HashMap<>();
-	
+	private static final Map<Class<?>, Object> primitiveDefaultHolder = new HashMap<>();
+
 	static {
 		primitiveDefaultHolder.put(int.class, 0);
 		primitiveDefaultHolder.put(long.class, 0L);
@@ -37,36 +38,30 @@ public final class TypeUtils {
 		primitiveDefaultHolder.put(boolean.class, false);
 		primitiveDefaultHolder.put(char.class, (char) 0);
 	}
-	
+
 	public static boolean isPrimitive(Class<?> type) {
 		return type.isPrimitive();
 	}
 
 	public static boolean isWrapper(Class<?> type) {
-		return (type == Integer.class) 
-				|| (type == Long.class) || (type == Short.class) 
-				|| (type == Float.class)|| (type == Double.class) 
-				|| (type == Boolean.class) 
-				|| (type == Character.class) ||
-				(type == Byte.class);
+		return (type == Integer.class) || (type == Long.class) || (type == Short.class) || (type == Float.class)
+				|| (type == Double.class) || (type == Boolean.class) || (type == Character.class)
+				|| (type == Byte.class);
 	}
 
 	public static boolean isPrimitiveOrWrapper(Class<?> type) {
 		return isPrimitive(type) || isWrapper(type);
 	}
-	
+
 	public static boolean isSerializableType(Class<?> type) {
-		return !isPrimitive(type) 
-				&& !isWrapper(type) 
-				&& type != String.class
-				&& type != byte[].class
+		return !isPrimitive(type) && !isWrapper(type) && type != String.class && type != byte[].class
 				&& type != Byte[].class;
 	}
 
 	public static Object primitiveDefault(Class<?> parameterType) {
 		return primitiveDefaultHolder.get(parameterType);
 	}
-	
+
 	public static boolean isProtobufMessage(Class<?> type) {
 		try {
 			return Message.class.isAssignableFrom(type);
@@ -75,5 +70,19 @@ public final class TypeUtils {
 		}
 		return false;
 	}
-}
 
+	@SuppressWarnings("rawtypes")
+	public static boolean hasAnnotationByName(Class type, String annotationName) {
+		Annotation[] annotations = type.getAnnotations();
+		for (Annotation annotation : annotations) {
+			if (annotation.annotationType().getName().equals(annotationName)) {
+				return true;
+			}
+			Annotation[] _annotations = annotation.annotationType().getAnnotations();
+			if (_annotations != null)
+				return hasAnnotationByName(annotation.annotationType(), annotationName);
+		}
+		
+		return false;
+	}
+}

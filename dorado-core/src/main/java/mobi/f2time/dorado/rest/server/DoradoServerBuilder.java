@@ -217,6 +217,7 @@ public final class DoradoServerBuilder {
 	}
 
 	public DoradoServer build() {
+		Class<?> mainClass = resolveMainClass();
 		if (minWorkers > maxWorkers) {
 			throw new IllegalArgumentException("minWorkers is greater than maxWorkers");
 		}
@@ -230,9 +231,10 @@ public final class DoradoServerBuilder {
 			executor.prestartAllCoreThreads();
 		}
 
-		if (scanPackages == null || scanPackages.length == 0) {
-			LogUtils.warn(String.format("Not setting scanPackages property, get default: %s", getDefaultScanPackage()));
-			scanPackages = new String[] { getDefaultScanPackage() };
+		if ((scanPackages == null || scanPackages.length == 0) && mainClass != null) {
+			String defaultPackage = mainClass.getPackage().getName();
+			LogUtils.warn(String.format("Not setting scanPackages property, get default: %s", defaultPackage));
+			scanPackages = new String[] { defaultPackage };
 		}
 
 		if (scanPackages == null || scanPackages.length == 0) {
@@ -243,9 +245,10 @@ public final class DoradoServerBuilder {
 		return new DoradoServer(this);
 	}
 
-	private String getDefaultScanPackage() {
+	private Class<?> resolveMainClass() {
+		Class<?> mainClass = null;
+
 		try {
-			Class<?> mainClass = null;
 			StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
 			for (StackTraceElement stackTraceElement : stackTrace) {
 				if ("main".equals(stackTraceElement.getMethodName())) {
@@ -254,12 +257,9 @@ public final class DoradoServerBuilder {
 					break;
 				}
 			}
-			if (mainClass != null) {
-				return mainClass.getPackage().getName();
-			}
-		} catch (ClassNotFoundException ex) {
-			// Swallow and continue
+		} catch (Exception ex) {
+			// ignore this ex
 		}
-		return null;
+		return mainClass;
 	}
 }
