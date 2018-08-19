@@ -18,8 +18,9 @@ package mobi.f2time.dorado.rest.http.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import mobi.f2time.dorado.Dorado;
 import mobi.f2time.dorado.exception.DoradoException;
+import mobi.f2time.dorado.rest.ResourceRegister;
+import mobi.f2time.dorado.rest.ResourceRegisters;
 import mobi.f2time.dorado.rest.annotation.Path;
 import mobi.f2time.dorado.rest.controller.RootController;
 import mobi.f2time.dorado.rest.http.Filter;
@@ -61,10 +62,9 @@ public class Webapp {
 
 	public void initialize() {
 		List<Class<?>> classes = new ArrayList<>();
-		
-		if (Dorado.isEnableSwagger) {
-			getUriRoutingRegistry()
-					.register(ClassLoaderUtils.loadClass("mobi.f2time.dorado.swagger.controller.SwaggerV2Controller"));
+
+		for (ResourceRegister resourceRegister : ResourceRegisters.getInstance().getResourceRegisters()) {
+			resourceRegister.register();
 		}
 
 		try {

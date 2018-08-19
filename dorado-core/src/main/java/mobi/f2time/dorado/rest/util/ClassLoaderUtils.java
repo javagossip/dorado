@@ -197,4 +197,8 @@ public abstract class ClassLoaderUtils {
 	public static String getResoureAsString(String resource) {
 		return IOUtils.toString(getStream(resource));
 	}
+
+	public static byte[] getResoureAsStream(String format) {
+		return null;
+	}
 }

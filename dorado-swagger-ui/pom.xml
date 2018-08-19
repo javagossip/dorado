@@ -8,4 +8,12 @@
   <artifactId>dorado-swagger-ui</artifactId>
   <name>dorado-swagger-ui</name>
   <description>swagger-ui model for dorado</description>
+  
+  <dependencies>
+  	<dependency>
+  		<groupId>ai.houyi</groupId>
+  		<artifactId>dorado-swagger</artifactId>
+  		<version>0.0.14-SNAPSHOT</version>
+  	</dependency>
+  </dependencies>
 </project>

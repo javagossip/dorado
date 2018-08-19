@@ -15,7 +15,10 @@
  */
 package mobi.f2time.dorado;
 
+import java.net.URL;
+
 import mobi.f2time.dorado.rest.server.DoradoServerBuilder;
+import mobi.f2time.dorado.rest.util.ClassLoaderUtils;
 
 /**
  * 
@@ -31,6 +34,7 @@ public final class Dorado {
 	public static volatile boolean isEnableSwagger;
 	public static volatile boolean isEnableSpring;
 	public static volatile boolean isEnableProtobuf;
+	public static volatile boolean isEnableSwaggerUi;
 
 	static {
 		classLoader = Thread.currentThread().getContextClassLoader();
@@ -55,6 +59,13 @@ public final class Dorado {
 			isEnableSwagger = true;
 		} catch (Throwable ex) {
 			// ignore this ex
+		}
+		
+		try {
+			URL url = ClassLoaderUtils.getURL("META-INF/webjars/swagger-ui");
+			isEnableSwaggerUi = url!=null;
+		}catch(Throwable ex) {
+			//ignore this ex
 		}
 	}
 }

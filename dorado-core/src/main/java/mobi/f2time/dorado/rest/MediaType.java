@@ -151,6 +151,8 @@ public class MediaType {
 	public final static String APPLICATION_PROTOBUF = "application/x-protobuf";
 
 	public final static MediaType APPLICATION_PROTOBUF_TYPE = new MediaType("application", "x-protobuf");
+	public static final MediaType TEXT_JAVASCRIPT = new MediaType("text", "javascript");
+	public static final MediaType TEXT_CSS = new MediaType("text", "css");;
 
 	private static TreeMap<String, String> createParametersMap(Map<String, String> initialValues) {
 		final TreeMap<String, String> map = new TreeMap<String, String>(new Comparator<String>() {

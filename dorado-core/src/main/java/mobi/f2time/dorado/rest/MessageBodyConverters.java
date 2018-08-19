@@ -32,6 +32,8 @@ public class MessageBodyConverters {
 
 	static {
 		messageBodyConverterHolder.put(MediaType.TEXT_HTML_TYPE, MessageBodyConverter.TEXT_WILDCARD);
+		messageBodyConverterHolder.put(MediaType.TEXT_JAVASCRIPT, MessageBodyConverter.TEXT_WILDCARD);
+		messageBodyConverterHolder.put(MediaType.TEXT_CSS, MessageBodyConverter.TEXT_WILDCARD);
 		messageBodyConverterHolder.put(MediaType.TEXT_PLAIN_TYPE, MessageBodyConverter.TEXT_WILDCARD);
 		messageBodyConverterHolder.put(MediaType.APPLICATION_JSON_TYPE, MessageBodyConverter.JSON);
 		messageBodyConverterHolder.put(MediaType.APPLICATION_PROTOBUF_TYPE, MessageBodyConverter.PROTOBUF);
