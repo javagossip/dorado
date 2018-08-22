@@ -19,6 +19,7 @@ import static mobi.f2time.dorado.rest.util.ProtobufMessageDescriptors.registerMe
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 
 import com.google.protobuf.Message;
 
@@ -59,7 +60,10 @@ public class MethodDescriptor {
 		if (!method.isAccessible()) {
 			method.setAccessible(true);
 		}
+
 		Class<?>[] parameterTypes = method.getParameterTypes();
+		Type[] genericParameterTypes = method.getGenericParameterTypes();
+
 		String[] parameterNames = parameterNameResolver.getParameterNames(method);
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
@@ -73,8 +77,9 @@ public class MethodDescriptor {
 			Annotation annotation = parameterAnnotations[i].length == 0 ? null : parameterAnnotations[i][0];
 			Class<?> type = parameterTypes[i];
 			String name = parameterNames[i];
+			Type genericParameterType = genericParameterTypes[i];
 
-			methodParameters[i] = MethodParameter.create(name, type, annotation);
+			methodParameters[i] = MethodParameter.create(name, type, genericParameterType, annotation);
 			methodParameters[i].setMethodParameterCount(method.getParameterCount());
 			registerMessageDescriptorForTypeIfNeed(type);
 		}
@@ -133,8 +138,9 @@ public class MethodDescriptor {
 		private Annotation annotation;
 		private Class<?> annotationType;
 		private int methodParameterCount;
+		private Type parameterizedType;
 
-		private MethodParameter(String name, Class<?> type, Annotation annotation) {
+		private MethodParameter(String name, Class<?> type, Type parameterizedType, Annotation annotation) {
 			this.name = name;
 			this.type = type;
 			this.annotation = annotation;
@@ -149,14 +155,17 @@ public class MethodDescriptor {
 			if (type.isArray() && type.getComponentType() == MultipartFile.class) {
 				this.annotationType = MultipartFile.class;
 			}
+
+			this.parameterizedType = parameterizedType;
 		}
 
 		public void setMethodParameterCount(int parameterCount) {
 			this.methodParameterCount = parameterCount;
 		}
 
-		public static MethodParameter create(String name, Class<?> type, Annotation annotation) {
-			return new MethodParameter(name, type, annotation);
+		public static MethodParameter create(String name, Class<?> type, Type genericParameterType,
+				Annotation annotation) {
+			return new MethodParameter(name, type, genericParameterType, annotation);
 		}
 
 		public String getName() {
@@ -177,6 +186,10 @@ public class MethodDescriptor {
 
 		public Class<?> getAnnotationType() {
 			return this.annotationType;
+		}
+
+		public Type getParameterizedType() {
+			return parameterizedType;
 		}
 
 		@Override

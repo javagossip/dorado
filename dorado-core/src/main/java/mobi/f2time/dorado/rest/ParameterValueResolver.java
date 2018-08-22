@@ -16,6 +16,7 @@
 package mobi.f2time.dorado.rest;
 
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,13 +69,14 @@ public interface ParameterValueResolver {
 		return parameterType.isPrimitive() ? TypeUtils.primitiveDefault(parameterType) : null;
 	};
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "rawtypes" })
 	ParameterValueResolver REQUEST_BODY = (req, resp, methodDesc, methodParam, pathVariable) -> {
 		Class<?> parameterType = methodParam.getType();
 		InputStream payload = req.getInputStream();
 		MessageBodyConverter converter = MessageBodyConverters
 				.getMessageBodyConverter(MediaTypeUtils.defaultForType(parameterType, methodDesc.consume()));
-		return converter.readMessageBody(payload, parameterType);
+		Type parameterizedType = methodParam.getParameterizedType();
+		return converter.readMessageBody(payload, parameterizedType);
 	};
 
 	ParameterValueResolver ALL = new ParameterValueResolver() {

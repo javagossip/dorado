@@ -16,6 +16,7 @@
 package mobi.f2time.dorado.rest.util;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,9 +63,11 @@ public final class TypeUtils {
 		return primitiveDefaultHolder.get(parameterType);
 	}
 
-	public static boolean isProtobufMessage(Class<?> type) {
+	public static boolean isProtobufMessage(Type type) {
 		try {
-			return Message.class.isAssignableFrom(type);
+			if (!(type instanceof Class))
+				return false;
+			return Message.class.isAssignableFrom((Class<?>) type);
 		} catch (Throwable ex) {
 			// do nothing
 		}
@@ -82,7 +85,7 @@ public final class TypeUtils {
 			if (_annotations != null)
 				return hasAnnotationByName(annotation.annotationType(), annotationName);
 		}
-		
+
 		return false;
 	}
 }

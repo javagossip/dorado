@@ -16,6 +16,7 @@
 package mobi.f2time.dorado.rest;
 
 import java.io.InputStream;
+import java.lang.reflect.Type;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.Message;
@@ -32,7 +33,7 @@ import mobi.f2time.dorado.rest.util.SerializeUtils;
 public interface MessageBodyConverter<T> {
 	byte[] writeMessageBody(T t);
 
-	T readMessageBody(InputStream in, Class<T> clazz);
+	T readMessageBody(InputStream in, Type clazz);
 
 	MessageBodyConverter<? extends Object> JSON = new MessageBodyConverter<Object>() {
 		@Override
@@ -40,10 +41,9 @@ public interface MessageBodyConverter<T> {
 			return com.alibaba.fastjson.JSON.toJSONBytes(t);
 		}
 
-		@SuppressWarnings({ "unchecked", "rawtypes" })
 		@Override
-		public Object readMessageBody(InputStream in, Class clazz) {
-			return JSONObject.parseObject(IOUtils.toString(in, CharsetUtil.UTF_8.name()), clazz);
+		public Object readMessageBody(InputStream in, Type type) {
+			return JSONObject.parseObject(IOUtils.toString(in, CharsetUtil.UTF_8.name()), type);
 		}
 	};
 
@@ -55,7 +55,7 @@ public interface MessageBodyConverter<T> {
 		}
 
 		@Override
-		public Object readMessageBody(InputStream in, Class<Object> clazz) {
+		public Object readMessageBody(InputStream in, Type type) {
 			return IOUtils.toString(in, CharsetUtil.UTF_8.name());
 		}
 	};
@@ -68,7 +68,7 @@ public interface MessageBodyConverter<T> {
 		}
 
 		@Override
-		public Message readMessageBody(InputStream in, Class<Message> type) {
+		public Message readMessageBody(InputStream in, Type type) {
 			try {
 				return (Message) ObjectSerializer.PROTOBUF.deserialize(in, type);
 			} catch (Throwable ex) {
@@ -85,8 +85,8 @@ public interface MessageBodyConverter<T> {
 		}
 
 		@Override
-		public Object readMessageBody(InputStream in, Class<Object> clazz) {
-			return SerializeUtils.deserialize(in, clazz);
+		public Object readMessageBody(InputStream in, Type type) {
+			return SerializeUtils.deserialize(in, type);
 		}
 	};
 }

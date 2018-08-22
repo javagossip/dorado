@@ -17,6 +17,7 @@ package mobi.f2time.dorado.rest;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.Message;
@@ -33,8 +34,7 @@ import mobi.f2time.dorado.rest.util.TypeUtils;
 public interface ObjectSerializer {
 	byte[] serialize(Object t);
 
-	@SuppressWarnings("rawtypes")
-	Object deserialize(InputStream in, Class type);
+	Object deserialize(InputStream in, Type type);
 
 	ObjectSerializer JSON = new ObjectSerializer() {
 		@Override
@@ -42,9 +42,8 @@ public interface ObjectSerializer {
 			return com.alibaba.fastjson.JSON.toJSONString(t).getBytes(CharsetUtil.UTF_8);
 		}
 
-		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
-		public Object deserialize(InputStream in, Class type) {
+		public Object deserialize(InputStream in, Type type) {
 			String text = IOUtils.toString(in, CharsetUtil.UTF_8.name());
 			return JSONObject.parseObject(text, type);
 		}
@@ -59,8 +58,8 @@ public interface ObjectSerializer {
 
 		@SuppressWarnings("rawtypes")
 		@Override
-		public Object deserialize(InputStream in, Class type) {
-			return ProtobufMessageDescriptors.newMessageForType(in, type);
+		public Object deserialize(InputStream in, Type type) {
+			return ProtobufMessageDescriptors.newMessageForType(in, (Class) type);
 		}
 	};
 
@@ -73,13 +72,12 @@ public interface ObjectSerializer {
 			return com.alibaba.fastjson.JSON.toJSONBytes(t);
 		}
 
-		@SuppressWarnings("rawtypes")
 		@Override
-		public Object deserialize(InputStream in, Class type) {
+		public Object deserialize(InputStream in, Type type) {
 			try {
 
 				if (TypeUtils.isProtobufMessage(type)) {
-					return ProtobufMessageDescriptors.newMessageForType(in, type);
+					return ProtobufMessageDescriptors.newMessageForType(in, (Class<?>) type);
 				}
 				return JSONObject.parseObject(in, type);
 			} catch (IOException ex) {

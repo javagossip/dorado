@@ -18,7 +18,6 @@ package mobi.f2time.dorado.swagger.ui.controller;
 import mobi.f2time.dorado.rest.annotation.Controller;
 import mobi.f2time.dorado.rest.annotation.GET;
 import mobi.f2time.dorado.rest.annotation.Path;
-import mobi.f2time.dorado.rest.annotation.Produce;
 import mobi.f2time.dorado.rest.http.HttpRequest;
 import mobi.f2time.dorado.rest.http.HttpResponse;
 import mobi.f2time.dorado.rest.util.ClassLoaderUtils;
@@ -34,69 +33,23 @@ import mobi.f2time.dorado.rest.util.LogUtils;
 public class SwaggerUIController {
 	private static final String RESOURCE_PREFIX = "META-INF/resources/webjars/swagger-ui";
 
-	
 	@GET
-	public void readStaticResource(HttpRequest request,HttpResponse response) {
+	public void readStaticResource(HttpRequest request, HttpResponse response) {
 		String uri = request.getRequestURI();
 		LogUtils.info(String.format("access static resource uri: %s", uri));
-		
-		String resource=String.format("%s%s", RESOURCE_PREFIX,uri);
+
+		String resource = String.format("%s%s", RESOURCE_PREFIX, uri);
 		byte[] data = IOUtils.readBytes(ClassLoaderUtils.getStream(resource));
-		
-		if(uri.endsWith(".css")) {
+
+		if (uri.endsWith(".css")) {
 			response.setHeader("content-type", "text/css;charset=UTF-8");
-		}else if(uri.endsWith(".html")) {
+		} else if (uri.endsWith(".html")) {
 			response.setHeader("content-type", "text/html;charset=UTF-8");
-		}else if(uri.endsWith(".js")) {
+		} else if (uri.endsWith(".js")) {
 			response.setHeader("content-type", "text/javascript;charset=UTF-8");
-		}else if(uri.endsWith(".map")) {
+		} else if (uri.endsWith(".map")) {
 			//
 		}
 		response.write(data);
 	}
 }
-	
-	/*@Path(".*\\.css.*")
-	@GET
-	@Produce("text/css")
-	public String readCss(HttpRequest request) {
-		String cssUri = request.getRequestURI();
-		LogUtils.info("cssUri: " + cssUri);
-
-		String cssBody = ClassLoaderUtils.getResoureAsString(String.format("%s%s", RESOURCE_PREFIX, cssUri));
-		return cssBody;
-	}
-
-	@Path(".*\\.htm.*")
-	@GET
-	@Produce("text/html; charset=UTF-8")
-	public String indexSwaggerUi(HttpRequest request) {
-		String uri = request.getRequestURI();
-		LogUtils.info("uri: " + uri);
-		String body = ClassLoaderUtils.getResoureAsString(String.format("%s%s", RESOURCE_PREFIX, uri));
-		return body;
-	}
-
-	@Path(".*\\.js.*")
-	@GET
-	@Produce("text/javascript; charset=UTF-8")
-	public String readJs(HttpRequest request) {
-		String uri = request.getRequestURI();
-		LogUtils.info("uri: " + uri);
-		String body = ClassLoaderUtils.getResoureAsString(String.format("%s%s", RESOURCE_PREFIX, uri));
-		return body;
-	}
-
-
-//	@GET
-//	public void readBytes(HttpRequest request,HttpResponse response) {
-//		String uri = request.getRequestURI();
-//		String contentType = request.getHeader("accept");
-//		LogUtils.info("uri: " + uri+", contentType: "+contentType);
-//		
-//		response.setHeader("content_type", contentType.split(",")[0]);
-//		byte[] body=IOUtils.readBytes(ClassLoaderUtils.getStream(String.format("%s%s", RESOURCE_PREFIX, uri)));
-//		response.write(body);
-//		//return body;
-//	}*/
-//}

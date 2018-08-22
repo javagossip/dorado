@@ -17,6 +17,7 @@ package mobi.f2time.dorado.swagger.yaml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -44,9 +45,9 @@ public class YamlMessageBodyConverter implements MessageBodyConverter<Object> {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public Object readMessageBody(InputStream in, Class clazz) {
+	public Object readMessageBody(InputStream in, Type type) {
 		try {
-			return Yaml.mapper().readValue(in, clazz);
+			return Yaml.mapper().readValue(in, (Class) type);
 		} catch (IOException ex) {
 			LogUtils.error(ex.getMessage(), ex);
 		}

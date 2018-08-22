@@ -16,6 +16,7 @@
 package mobi.f2time.dorado.rest.util;
 
 import java.io.InputStream;
+import java.lang.reflect.Type;
 
 import mobi.f2time.dorado.rest.ObjectSerializer;
 
@@ -29,8 +30,7 @@ public class SerializeUtils {
 		return ObjectSerializer.DEFAULT.serialize(t);
 	}
 
-	@SuppressWarnings("rawtypes")
-	public static Object deserialize(InputStream in, Class type) {
+	public static Object deserialize(InputStream in, Type type) {
 		return ObjectSerializer.DEFAULT.deserialize(in, type);
 	}
 }
