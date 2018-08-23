@@ -219,9 +219,9 @@ public class Application {
 	public static void main(String[] args) throws Exception {
 		// create simple rest server
 		DoradoServerBuilder.forPort(18888).maxPacketLength(1024*1024*10)
-		   .build().start();;
+		   .build().start();
 	}
-}	
+}
 ```
 	
 * 在controller实现里面增加swagger相关的注解即可自动生成在线的api doc
