@@ -16,7 +16,7 @@
 package mobi.f2time.dorado.rest;
 
 /**
- * @author weiping wang <javagossip@gmail.com>
+ * @author weiping wang 
  *
  */
 public interface ResourceRegister {

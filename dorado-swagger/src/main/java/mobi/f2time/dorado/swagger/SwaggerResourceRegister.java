@@ -20,7 +20,7 @@ import mobi.f2time.dorado.rest.router.UriRoutingRegistry;
 import mobi.f2time.dorado.swagger.controller.SwaggerV2Controller;
 
 /**
- * @author weiping wang <javagossip@gmail.com>
+ * @author weiping wang 
  *
  */
 public class SwaggerResourceRegister implements ResourceRegister {

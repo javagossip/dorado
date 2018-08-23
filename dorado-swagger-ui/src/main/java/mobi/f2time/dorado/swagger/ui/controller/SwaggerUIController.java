@@ -25,7 +25,7 @@ import mobi.f2time.dorado.rest.util.IOUtils;
 import mobi.f2time.dorado.rest.util.LogUtils;
 
 /**
- * @author weiping wang <javagossip@gmail.com>
+ * @author weiping wang
  *
  */
 @Controller

@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.ServiceLoader;
 
 /**
- * @author weiping wang <javagossip@gmail.com>
+ * @author weiping wang
  *
  */
 public class ResourceRegisters {

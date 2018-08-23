@@ -14,7 +14,7 @@
  * under the License.
  */
 /**
- * @author weiping wang <javagossip@gmail.com>
+ * @author weiping wang
  *
  */
 package mobi.f2time.dorado.swagger.ui.controller;
