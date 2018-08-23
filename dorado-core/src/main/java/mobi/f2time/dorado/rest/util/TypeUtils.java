@@ -15,6 +15,7 @@
  */
 package mobi.f2time.dorado.rest.util;
 
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -61,7 +62,7 @@ public final class TypeUtils {
 
 	public static boolean isSerializableType(Class<?> type) {
 		return !isPrimitive(type) && !isWrapper(type) && type != String.class && type != byte[].class
-				&& type != Byte[].class;
+				&& type != Byte[].class && type != InputStream.class;
 	}
 
 	public static Object primitiveDefault(Class<?> parameterType) {

@@ -1,5 +1,6 @@
 package mobi.f2time.dorado.swagger.ext;
 
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -22,10 +23,12 @@ import io.swagger.models.properties.StringProperty;
 import io.swagger.util.Json;
 import mobi.f2time.dorado.rest.annotation.CookieParam;
 import mobi.f2time.dorado.rest.annotation.HeaderParam;
+import mobi.f2time.dorado.rest.annotation.Path;
 import mobi.f2time.dorado.rest.annotation.PathVariable;
 import mobi.f2time.dorado.rest.annotation.RequestParam;
 import mobi.f2time.dorado.rest.util.MethodDescriptor;
 import mobi.f2time.dorado.rest.util.MethodDescriptor.MethodParameter;
+import mobi.f2time.dorado.rest.util.TypeUtils;
 
 public class DefaultParameterExtension implements SwaggerExtension {
 
@@ -70,6 +73,9 @@ public class DefaultParameterExtension implements SwaggerExtension {
 			return new ArrayList<Parameter>();
 		}
 
+		Path methodPathAnno = methodDescriptor.getMethod().getAnnotation(Path.class);
+		String operationPath = methodPathAnno != null ? methodPathAnno.value() : null;
+
 		List<Parameter> parameters = new ArrayList<Parameter>();
 		for (MethodParameter _parameter : methodDescriptor.getParameters()) {
 			Parameter parameter = null;
@@ -106,10 +112,43 @@ public class DefaultParameterExtension implements SwaggerExtension {
 				handleAdditionalAnnotation(parameters, _parameter.getAnnotation(), type, typesToSkip);
 			}
 
+			if (parameter == null) {
+				if (operationPath!=null&&operationPath.contains(String.format("{%s}", _parameter.getName()))) {
+					PathParameter fp = new PathParameter().name(_parameter.getName());
+					Property schema = createProperty(type);
+					if (schema != null) {
+						fp.setProperty(schema);
+					}
+					parameter = fp;
+				} else if (!isRequestBodyParam(_parameter)) {
+					// 如果不是requestbody类型的参数，默认作为queryParameter
+					QueryParameter fp = new QueryParameter().name(_parameter.getName());
+					Property schema = createProperty(type);
+					if (schema != null) {
+						fp.setProperty(schema);
+					}
+					parameter = fp;
+				}
+			}
+
 			if (parameter != null) {
 				parameters.add(parameter);
 			}
 		}
 		return parameters;
+	}
+
+	private boolean isRequestBodyParam(MethodParameter _parameter) {
+		Class<?> type = _parameter.getType();
+
+		if(byte[].class==type || InputStream.class==type) {
+			return true;
+			
+		}
+		if (TypeUtils.isSerializableType(type)) {
+			return true;
+		}
+		
+		return false;
 	}
 }
