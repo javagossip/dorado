@@ -10,6 +10,7 @@
 * 支持文件上传
 * Spring框架支持，默认支持注解方式初始化spring容器
 * SpringBoot集成
+* 集成swagger restful API文档生成工具
 
 
 ## Maven
@@ -18,7 +19,7 @@
 <dependency>
     <groupId>ai.houyi</groupId>
     <artifactId>dorado-core</artifactId>
-    <version>0.0.12</version>
+    <version>0.0.14</version>
 </dependency>
 ```
 
@@ -166,7 +167,7 @@ Please visit https://github.com/javagossip/dorado-examples
 	<dependency>
 	    <groupId>ai.houyi</groupId>
 	    <artifactId>dorado-spring-boot-starter</artifactId>
-	    <version>0.0.12</version>
+	    <version>0.0.14</version>
     </dependency>
 	```
 * 基于springboot的dorado应用
@@ -208,7 +209,7 @@ Please visit https://github.com/javagossip/dorado-examples
 	<dependency>
 	    <groupId>ai.houyi</groupId>
 	    <artifactId>dorado-swagger-ui</artifactId>
-	    <version>0.0.14-SNAPSHOT</version>
+	    <version>0.0.14</version>
     </dependency>
 ```
 
