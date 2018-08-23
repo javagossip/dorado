@@ -74,7 +74,7 @@ public class UriRoutingController {
 					methodDescriptor.produce());
 
 			MessageBodyConverter messageBodyConverter = MessageBodyConverters.getMessageBodyConverter(mediaType);
-			response.setHeader(HttpHeaderNames.CONTENT_TYPE.toString(), mediaType.toString());
+			response.setHeader(HttpHeaderNames.CONTENT_TYPE, mediaType.toString());
 			response.write(messageBodyConverter.writeMessageBody(result));
 		}
 		return null;

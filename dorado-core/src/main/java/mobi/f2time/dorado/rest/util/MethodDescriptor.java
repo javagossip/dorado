@@ -25,6 +25,7 @@ import com.google.protobuf.Message;
 
 import mobi.f2time.dorado.Dorado;
 import mobi.f2time.dorado.rest.DefaultParameterNameResolver;
+import mobi.f2time.dorado.rest.MediaType;
 import mobi.f2time.dorado.rest.ParameterNameResolver;
 import mobi.f2time.dorado.rest.annotation.Consume;
 import mobi.f2time.dorado.rest.annotation.Produce;
@@ -45,8 +46,8 @@ public class MethodDescriptor {
 	private Class<?> returnType;
 
 	private MethodParameter[] methodParameters;
-	private Consume consume;
-	private Produce produce;
+	private String consume;
+	private String produce;
 
 	private MethodDescriptor(Class<?> clazz, Method method) {
 		this(clazz, method, new DefaultParameterNameResolver());
@@ -69,8 +70,8 @@ public class MethodDescriptor {
 
 		this.invokeTarget = Dorado.beanContainer.getBean(clazz);
 		this.annotations = method.getAnnotations();
-		this.consume = method.getAnnotation(Consume.class);
-		this.produce = method.getAnnotation(Produce.class);
+		Consume consumeAnnotation = method.getAnnotation(Consume.class);
+		Produce produceAnnotation = method.getAnnotation(Produce.class);
 
 		methodParameters = new MethodParameter[method.getParameterCount()];
 		for (int i = 0; i < method.getParameterCount(); i++) {
@@ -79,10 +80,16 @@ public class MethodDescriptor {
 			String name = parameterNames[i];
 			Type genericParameterType = genericParameterTypes[i];
 
-			methodParameters[i] = MethodParameter.create(name, type, genericParameterType, annotation);
+			MethodParameter methodParameter = MethodParameter.create(name, type, genericParameterType, annotation);
+			if (methodParameter.annotationType == MultipartFile.class) {
+			}
+			methodParameters[i] = methodParameter;
 			methodParameters[i].setMethodParameterCount(method.getParameterCount());
 			registerMessageDescriptorForTypeIfNeed(type);
 		}
+
+		this.consume = consumeAnnotation == null ? guessConsume() : consumeAnnotation.value();
+		this.produce = produceAnnotation == null ? guessProduce() : produceAnnotation.value();
 	}
 
 	private void registerMessageDescriptorForTypeIfNeed(Class<?> type) {
@@ -125,11 +132,27 @@ public class MethodDescriptor {
 	}
 
 	public String consume() {
-		return consume == null ? "*/*" : consume.value();
+		return this.consume;
+	}
+
+	private String guessConsume() {
+		for (MethodParameter param : this.methodParameters) {
+			if (param.annotationType == MultipartFile.class) {
+				return MediaType.MULTIPART_FORM_DATA;
+			} else if (TypeUtils.isProtobufMessage(param.getType())) {
+				return MediaType.APPLICATION_PROTOBUF;
+			}
+		}
+		return MediaType.APPLICATION_JSON;
 	}
 
 	public String produce() {
-		return produce == null ? "*/*" : produce.value();
+		return this.produce;
+	}
+
+	private String guessProduce() {
+		MediaType mediaType = MediaTypeUtils.forType(returnType);
+		return mediaType == null ? MediaType.WILDCARD : mediaType.getType();
 	}
 
 	public static class MethodParameter {
