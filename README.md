@@ -233,7 +233,7 @@ Please visit https://github.com/javagossip/dorado-examples
 	public class CampaignController {
 		@Autowired
 		private CampaignService campaignService;
-	
+		
 		@Path("/{id:[0-9]+}")
 		@GET
 		@ApiOperation("新建campaign")
@@ -241,9 +241,10 @@ Please visit https://github.com/javagossip/dorado-examples
 			Campaign campaign = new Campaign();
 			campaign.setId(id);
 			campaign.setName("test campaign");
-	
+		
 			return campaign;
 		}
+	}
 	```
 
 * 浏览器访问如下地址即可  
