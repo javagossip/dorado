@@ -200,6 +200,55 @@ Please visit https://github.com/javagossip/dorado-examples
 	
 
 ## swagger集成
+如果对swagger还不了解的话，参考：[https://swagger.io/]()  
+
+* 添加dorado-swagger-ui依赖
+
+ ```xml
+	<dependency>
+	    <groupId>ai.houyi</groupId>
+	    <artifactId>dorado-swagger-ui</artifactId>
+	    <version>0.0.14-SNAPSHOT</version>
+    </dependency>
+	```
+* 项目启动类中使用EnableSwagger注解启用swagger
+
+	```java
+	@EnableSwagger
+	public class Application {
+		public static void main(String[] args) throws Exception {
+			// create simple rest server
+			DoradoServerBuilder.forPort(18888).maxPacketLength(1024*1024*10)
+			   .build().start();;
+		}
+	}	
+	```
+	
+* 在controller实现里面增加swagger相关的注解即可自动生成在线的api doc
+
+	```java
+	@Controller
+	@Path("/campaign")
+	@Api(tags = { "营销活动管理" })
+	public class CampaignController {
+		@Autowired
+		private CampaignService campaignService;
+	
+		@Path("/{id:[0-9]+}")
+		@GET
+		@ApiOperation("新建campaign")
+		public Campaign newCampaign(@PathVariable("id") int id) {
+			Campaign campaign = new Campaign();
+			campaign.setId(id);
+			campaign.setName("test campaign");
+	
+			return campaign;
+		}
+	```
+
+* 浏览器访问如下地址即可  
+	http://{host}:{port}/swagger-ui.html
+
 ## 性能测试
 
 
