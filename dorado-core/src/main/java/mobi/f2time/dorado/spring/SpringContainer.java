@@ -68,7 +68,11 @@ public final class SpringContainer implements BeanContainer {
 		if (type == RootController.class) {
 			return BeanContainer.DEFAULT.getBean(type);
 		}
-		return applicationContext.getBean(type);
+		try {
+			return applicationContext.getBean(type);
+		} catch (Throwable ex) {
+			return BeanContainer.DEFAULT.getBean(type);
+		}
 	}
 
 	public static void create(String[] scanPackages) {

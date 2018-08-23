@@ -38,6 +38,11 @@ public interface MessageBodyConverter<T> {
 	MessageBodyConverter<? extends Object> JSON = new MessageBodyConverter<Object>() {
 		@Override
 		public byte[] writeMessageBody(Object t) {
+			if (t.getClass() == String.class) {
+				return ((String) t).getBytes(CharsetUtil.UTF_8);
+			} else if (t.getClass() == byte[].class) {
+				return (byte[]) t;
+			}
 			return com.alibaba.fastjson.JSON.toJSONBytes(t);
 		}
 

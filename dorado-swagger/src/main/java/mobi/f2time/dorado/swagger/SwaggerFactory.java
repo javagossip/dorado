@@ -16,11 +16,13 @@
 package mobi.f2time.dorado.swagger;
 
 import java.util.HashSet;
+import java.util.ServiceLoader;
 import java.util.Set;
 
 import io.swagger.models.Swagger;
 import mobi.f2time.dorado.Dorado;
 import mobi.f2time.dorado.rest.util.PackageScanner;
+import mobi.f2time.dorado.swagger.ext.ApiInfoBuilder;
 
 /**
  * 
@@ -28,6 +30,16 @@ import mobi.f2time.dorado.rest.util.PackageScanner;
  */
 public class SwaggerFactory {
 	private static Swagger swagger;
+	private static ApiInfoBuilder apiInfoBuilder;
+
+	static {
+		ServiceLoader<ApiInfoBuilder> apiInfoBuilders = ServiceLoader.load(ApiInfoBuilder.class);
+		apiInfoBuilder = apiInfoBuilders.iterator().hasNext() ? apiInfoBuilders.iterator().next() : null;
+
+		if (apiInfoBuilder == null) {
+			apiInfoBuilder = Dorado.beanContainer.getBean(ApiInfoBuilder.class);
+		}
+	}
 
 	public static Swagger getSwagger() {
 		if (swagger != null)
@@ -38,7 +50,7 @@ public class SwaggerFactory {
 		String[] packages = null;
 		Class<?> mainClass = Dorado.mainClass;
 		EnableSwagger enableSwagger = mainClass.getAnnotation(EnableSwagger.class);
-		
+
 		if (enableSwagger != null) {
 			packages = enableSwagger.value();
 		}
@@ -63,12 +75,17 @@ public class SwaggerFactory {
 				// ignore this ex
 			}
 		}
+
 		Swagger _swagger = reader.read(classes);
+		if (apiInfoBuilder != null) {
+			_swagger.setInfo(apiInfoBuilder.buildInfo());
+			_swagger.setSchemes(apiInfoBuilder.schemes());
+		}
 		swagger = _swagger;
 		return _swagger;
 	}
-	
+
 	public static void main(String[] args) throws Exception {
-		
+
 	}
 }

@@ -15,6 +15,10 @@
  */
 package mobi.f2time.dorado.swagger.controller;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.swagger.models.Swagger;
 import mobi.f2time.dorado.rest.annotation.Controller;
 import mobi.f2time.dorado.rest.annotation.Path;
@@ -28,6 +32,10 @@ import mobi.f2time.dorado.swagger.SwaggerFactory;
 @Controller
 @Path("/api-docs")
 public class SwaggerV2Controller {
+	private static ObjectMapper mapper = new ObjectMapper();
+	static {
+		mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+	}
 
 	@Path("/swagger.yaml")
 	@Produce("application/yaml")
@@ -37,7 +45,12 @@ public class SwaggerV2Controller {
 
 	@Path("/swagger.json")
 	@Produce("application/json")
-	public Swagger listingWithJson() {
-		return SwaggerFactory.getSwagger();
+	public String listingWithJson() {
+		try {
+			return mapper.writeValueAsString(SwaggerFactory.getSwagger());
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

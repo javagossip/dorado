@@ -13,22 +13,22 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package mobi.f2time.dorado.swagger;
+package mobi.f2time.dorado.swagger.ext;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.util.Arrays;
+import java.util.List;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import io.swagger.models.Info;
+import io.swagger.models.Scheme;
 
-@Documented
-@Retention(RUNTIME)
-@Target(TYPE)
 /**
- * 
- * @author wangwp
+ * @author weiping wang
+ *
  */
-public @interface EnableSwagger {
-	String[] value() default {};
+public interface ApiInfoBuilder {
+	Info buildInfo();
+
+	default List<Scheme> schemes() {
+		return Arrays.asList(Scheme.HTTP);
+	}
 }
