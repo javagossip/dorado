@@ -224,7 +224,10 @@ public class Application {
 	}
 }
 ```
-	
+
+* 设置Api文档全局信息  
+实现**mobi.f2time.dorado.swagger.ext.ApiInfoBuilder**接口
+
 * 在controller实现里面增加swagger相关的注解即可自动生成在线的api doc
 
 ```java
@@ -247,7 +250,6 @@ public class CampaignController {
 	}
 }
 ```
-
 
 * 浏览器访问如下地址即可  
 	http://{host}:{port}/swagger-ui.html  
