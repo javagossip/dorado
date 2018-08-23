@@ -210,7 +210,8 @@ Please visit https://github.com/javagossip/dorado-examples
 	    <artifactId>dorado-swagger-ui</artifactId>
 	    <version>0.0.14-SNAPSHOT</version>
     </dependency>
-	```
+```
+
 * 项目启动类中使用EnableSwagger注解启用swagger  
 
 ```java
