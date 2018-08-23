@@ -226,7 +226,26 @@ public class Application {
 ```
 
 * 设置Api文档全局信息  
-实现**mobi.f2time.dorado.swagger.ext.ApiInfoBuilder**接口
+实现**mobi.f2time.dorado.swagger.ext.ApiInfoBuilder**接口  
+
+```java
+@Component //如果是集成spring或springboot环境的话，直接增加component注解即可
+public class ApiInfoBuilderImpl implements ApiInfoBuilder {
+
+	@Override
+	//这里定制Api全局信息，如文档描述、license,contact等信息
+	public Info buildInfo() {
+		return new Info()
+				.contact(new Contact().email("javagossip@gmail.com").name("weiping wang")
+						.url("http://github.com/javagossip/dorado"))
+				.license(new License().name("apache v2.0").url("http://www.apache.org"))
+				.termsOfService("http://swagger.io/terms/").description("Dorado服务框架api接口文档")
+				.title("dorado demo api接口文档").version("1.0.0");
+	}
+}
+```
+非spring环境需要在resources/META-INF/services下的mobi.f2time.dorado.swagger.ext.ApiInfoBuilder文件中增加如下配置：  
+**mobi.f2time.dorado.demo.ApiInfoBuilderImpl**
 
 * 在controller实现里面增加swagger相关的注解即可自动生成在线的api doc
 
