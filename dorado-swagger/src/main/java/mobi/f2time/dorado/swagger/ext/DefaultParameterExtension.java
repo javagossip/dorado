@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.parameters.CookieParameter;
+import io.swagger.models.parameters.FormParameter;
 import io.swagger.models.parameters.HeaderParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.PathParameter;
@@ -26,6 +27,7 @@ import mobi.f2time.dorado.rest.annotation.HeaderParam;
 import mobi.f2time.dorado.rest.annotation.Path;
 import mobi.f2time.dorado.rest.annotation.PathVariable;
 import mobi.f2time.dorado.rest.annotation.RequestParam;
+import mobi.f2time.dorado.rest.http.MultipartFile;
 import mobi.f2time.dorado.rest.util.MethodDescriptor;
 import mobi.f2time.dorado.rest.util.MethodDescriptor.MethodParameter;
 import mobi.f2time.dorado.rest.util.TypeUtils;
@@ -80,7 +82,10 @@ public class DefaultParameterExtension implements SwaggerExtension {
 		for (MethodParameter _parameter : methodDescriptor.getParameters()) {
 			Parameter parameter = null;
 			Class<?> annotationType = _parameter.getAnnotationType();
-			if (annotationType == RequestParam.class) {
+			if (annotationType == MultipartFile.class) {
+				FormParameter fp = new FormParameter().type("file").name(_parameter.getName());
+				parameter = fp;
+			} else if (annotationType == RequestParam.class) {
 				QueryParameter fp = new QueryParameter().name(_parameter.getName());
 				Property schema = createProperty(type);
 				if (schema != null) {
@@ -113,7 +118,7 @@ public class DefaultParameterExtension implements SwaggerExtension {
 			}
 
 			if (parameter == null) {
-				if (operationPath!=null&&operationPath.contains(String.format("{%s}", _parameter.getName()))) {
+				if (operationPath != null && operationPath.contains(String.format("{%s}", _parameter.getName()))) {
 					PathParameter fp = new PathParameter().name(_parameter.getName());
 					Property schema = createProperty(type);
 					if (schema != null) {
@@ -141,14 +146,14 @@ public class DefaultParameterExtension implements SwaggerExtension {
 	private boolean isRequestBodyParam(MethodParameter _parameter) {
 		Class<?> type = _parameter.getType();
 
-		if(byte[].class==type || InputStream.class==type) {
+		if (byte[].class == type || InputStream.class == type) {
 			return true;
-			
+
 		}
 		if (TypeUtils.isSerializableType(type)) {
 			return true;
 		}
-		
+
 		return false;
 	}
 }

@@ -55,18 +55,6 @@
 			<version>${spring-boot.version}</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-core</artifactId>
-			<version>1.5.21</version>
-			<scope>provided</scope>
-		</dependency>
 		<!-- https://mvnrepository.com/artifact/io.swagger/swagger-jersey-jaxrs -->
-		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-jersey-jaxrs</artifactId>
-			<version>1.5.21</version>
-			<scope>provided</scope>
-		</dependency>
 	</dependencies>
 </project>

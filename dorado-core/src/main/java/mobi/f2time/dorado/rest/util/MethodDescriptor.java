@@ -152,7 +152,7 @@ public class MethodDescriptor {
 
 	private String guessProduce() {
 		MediaType mediaType = MediaTypeUtils.forType(returnType);
-		return mediaType == null ? MediaType.WILDCARD : mediaType.getType();
+		return mediaType == null ? MediaType.WILDCARD : mediaType.toString();
 	}
 
 	public static class MethodParameter {

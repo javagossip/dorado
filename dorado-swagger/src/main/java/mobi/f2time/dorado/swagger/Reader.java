@@ -701,7 +701,7 @@ public class Reader {
 	@SuppressWarnings("deprecation")
 	private Operation parseMethod(Class<?> cls, Method method, AnnotatedMethod annotatedMethod,
 			List<Parameter> globalParameters, List<ApiResponse> classApiResponses) {
-		// MethodDescriptor methodDescriptor = MethodDescriptor.create(cls, method);
+		MethodDescriptor methodDescriptor = MethodDescriptor.create(cls, method);
 		Operation operation = new Operation();
 		if (annotatedMethod != null) {
 			method = annotatedMethod.getAnnotated();
@@ -804,12 +804,15 @@ public class Reader {
 
 		operation.operationId(operationId);
 
+		
 		if (operation.getConsumes() == null || operation.getConsumes().isEmpty()) {
 			final Consume consumes = ReflectionUtils.getAnnotation(method, Consume.class);
 			if (consumes != null) {
 				// for (String mediaType : ReaderUtils.splitContentValues(consumes.value())) {
 				operation.consumes(Arrays.asList(consumes.value()));
 				// }
+			}else {
+				operation.consumes(methodDescriptor.consume());
 			}
 		}
 
@@ -819,6 +822,8 @@ public class Reader {
 				// for (String mediaType : ReaderUtils.splitContentValues(produces.value())) {
 				operation.produces(produces.value());
 				// }
+			}else {
+				operation.produces(methodDescriptor.produce());
 			}
 		}
 
@@ -857,7 +862,7 @@ public class Reader {
 		}
 
 		Annotation[][] paramAnnotations = ReflectionUtils.getParameterAnnotations(method);
-		MethodDescriptor methodDescriptor = MethodDescriptor.create(cls, method);
+		//MethodDescriptor methodDescriptor = MethodDescriptor.create(cls, method);
 
 		if (annotatedMethod == null) {
 			Type[] genericParameterTypes = method.getGenericParameterTypes();
