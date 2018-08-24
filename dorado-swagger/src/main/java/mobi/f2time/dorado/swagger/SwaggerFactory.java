@@ -36,8 +36,12 @@ public class SwaggerFactory {
 		ServiceLoader<ApiInfoBuilder> apiInfoBuilders = ServiceLoader.load(ApiInfoBuilder.class);
 		apiInfoBuilder = apiInfoBuilders.iterator().hasNext() ? apiInfoBuilders.iterator().next() : null;
 
-		if (apiInfoBuilder == null) {
-			apiInfoBuilder = Dorado.beanContainer.getBean(ApiInfoBuilder.class);
+		try {
+			if (apiInfoBuilder == null) {
+				apiInfoBuilder = Dorado.beanContainer.getBean(ApiInfoBuilder.class);
+			}
+		} catch (Throwable ex) {
+			// ignore this exception
 		}
 	}
 
