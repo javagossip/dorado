@@ -15,8 +15,8 @@
  */
 package mobi.f2time.dorado.rest.router;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,7 +34,7 @@ public class UriRoutingPath implements Comparable<UriRoutingPath> {
 	private Pattern routingPathPattern;
 	private HttpMethod httpMethod;
 
-	private Map<String, Integer> pathVariableIndexHolder = new HashMap<>();
+	private Map<String, Integer> pathVariableIndexHolder = new ConcurrentHashMap<>();
 
 	private UriRoutingPath(String routingPath, HttpMethod httpMethod) {
 		this.httpMethod = httpMethod;

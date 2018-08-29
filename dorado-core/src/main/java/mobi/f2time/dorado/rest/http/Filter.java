@@ -15,14 +15,17 @@
  */
 package mobi.f2time.dorado.rest.http;
 
-import java.io.IOException;
-
 /**
+ * 请求过滤器，比如做统一的访问权限校验以及获取授权信息
  * 
  * @author wangwp
  */
 public interface Filter {
 
-	void doFilter(HttpRequest request, HttpResponse response, FilterChain filterChain)
-			throws IOException;
+	default boolean preFilter(HttpRequest request, HttpResponse response) {
+		return true;
+	}
+
+	default void postFilter(HttpRequest request, HttpResponse response) {
+	}
 }
