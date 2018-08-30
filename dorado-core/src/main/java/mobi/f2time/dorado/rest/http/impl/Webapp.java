@@ -22,6 +22,7 @@ import mobi.f2time.dorado.exception.DoradoException;
 import mobi.f2time.dorado.rest.ResourceRegister;
 import mobi.f2time.dorado.rest.ResourceRegisters;
 import mobi.f2time.dorado.rest.controller.RootController;
+import mobi.f2time.dorado.rest.http.Filter;
 import mobi.f2time.dorado.rest.router.UriRoutingRegistry;
 import mobi.f2time.dorado.rest.util.LogUtils;
 import mobi.f2time.dorado.rest.util.PackageScanner;
@@ -69,7 +70,7 @@ public class Webapp {
 
 			initializeUriRouting(RootController.class);
 			classes.forEach(clazz -> {
-				initializeUriRouting(clazz);
+				registerWebComponent(clazz);
 			});
 
 			UriRoutingRegistry registry = getUriRoutingRegistry();
@@ -80,6 +81,14 @@ public class Webapp {
 			throw new DoradoException(ex);
 		}
 	};
+
+	private void registerWebComponent(Class<?> type) {
+		if(Filter.class.isAssignableFrom(type)) {
+			//TODO
+		}else {
+			initializeUriRouting(type);
+		}
+	}
 
 	private void initializeUriRouting(Class<?> c) {
 		UriRoutingRegistry.getInstance().register(c);
