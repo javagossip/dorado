@@ -26,12 +26,12 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * 
  * @author wangwp
  */
-public final class Cache<K, V> {
+public final class SimpleLRUCache<K, V> {
 	private final LinkedHashMap<K, V> cache;
 	private final Lock r;
 	private final Lock w;
 
-	private Cache(int capacity) {
+	private SimpleLRUCache(int capacity) {
 		this.cache = new LRUMap<K, V>(capacity);
 		ReadWriteLock lock = new ReentrantReadWriteLock();
 
@@ -39,8 +39,8 @@ public final class Cache<K, V> {
 		this.w = lock.writeLock();
 	}
 
-	public static <K, V> Cache<K, V> create(int capacity) {
-		return new Cache<K, V>(capacity);
+	public static <K, V> SimpleLRUCache<K, V> create(int capacity) {
+		return new SimpleLRUCache<K, V>(capacity);
 	}
 
 	public void put(K key, V value) {
@@ -61,12 +61,32 @@ public final class Cache<K, V> {
 		}
 	}
 
+	public void remove(K key) {
+		w.lock();
+		try {
+			this.cache.remove(key);
+		} finally {
+			w.unlock();
+		}
+	}
+
+	public void clear() {
+		w.lock();
+		try {
+			this.cache.clear();
+		} finally {
+			w.unlock();
+		}
+	}
+
 	static class LRUMap<K, V> extends LinkedHashMap<K, V> {
 		private static final long serialVersionUID = 1L;
 		private final int capacity;
 
 		public LRUMap(int capacity) {
+			super((int) Math.ceil(capacity / 0.75) + 1, 0.75f, true);
 			this.capacity = capacity;
+
 		}
 
 		@Override

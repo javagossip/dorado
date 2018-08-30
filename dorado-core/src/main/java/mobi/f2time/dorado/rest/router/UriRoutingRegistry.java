@@ -27,7 +27,7 @@ import mobi.f2time.dorado.rest.annotation.Controller;
 import mobi.f2time.dorado.rest.annotation.HttpMethod;
 import mobi.f2time.dorado.rest.annotation.Path;
 import mobi.f2time.dorado.rest.http.HttpRequest;
-import mobi.f2time.dorado.rest.util.Cache;
+import mobi.f2time.dorado.rest.util.SimpleLRUCache;
 import mobi.f2time.dorado.rest.util.StringUtils;
 
 /**
@@ -38,7 +38,7 @@ public class UriRoutingRegistry {
 	private static final UriRoutingRegistry _instance = new UriRoutingRegistry();
 
 	private List<UriRouting> uriRoutingRegistry = new ArrayList<>();
-	private final Cache<RoutingCacheKey, Router> cache = Cache.create(512);
+	private final SimpleLRUCache<RoutingCacheKey, Router> cache = SimpleLRUCache.create(512);
 
 	private UriRoutingRegistry() {
 	}
