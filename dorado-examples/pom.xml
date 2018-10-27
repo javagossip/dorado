@@ -5,21 +5,19 @@
     <artifactId>dorado</artifactId>
     <version>0.0.16-SNAPSHOT</version>
   </parent>
-  <artifactId>dorado-swagger-ui</artifactId>
-  <name>dorado-swagger-ui</name>
-  <description>swagger-ui model for dorado</description>
-  
+  <artifactId>dorado-examples</artifactId>
+  <name>dorado-examples</name>
+  <description>the examples module for dorado</description>
   <dependencies>
   	<dependency>
   		<groupId>ai.houyi</groupId>
-  		<artifactId>dorado-swagger</artifactId>
+  		<artifactId>dorado-spring-boot-starter</artifactId>
   		<version>0.0.16-SNAPSHOT</version>
-  		<exclusions>
-  			<exclusion>
-  				<groupId>javax.validation</groupId>
-  				<artifactId>validation-api</artifactId>
-  			</exclusion>
-  		</exclusions>
+  	</dependency>
+  	<dependency>
+  		<groupId>ai.houyi</groupId>
+  		<artifactId>dorado-swagger-ui</artifactId>
+  		<version>0.0.16-SNAPSHOT</version>
   	</dependency>
   </dependencies>
 </project>
