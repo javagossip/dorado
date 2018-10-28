@@ -15,10 +15,13 @@
  */
 package mobi.f2time.dorado.rest.router;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 
 import mobi.f2time.dorado.exception.DoradoException;
+import mobi.f2time.dorado.rest.http.Filter;
 import mobi.f2time.dorado.rest.http.HttpRequest;
 import mobi.f2time.dorado.rest.http.HttpResponse;
 
@@ -30,8 +33,10 @@ public class Router {
 	private final UriRoutingController controller;
 	private final String[] pathVariables;
 	private final String httpMethod;
+	private final List<Filter> filters;
 
 	private Router(UriRoutingController controller, MatchResult matchResult, String httpMethod) {
+		this.filters = new ArrayList<>();
 		this.httpMethod = httpMethod;
 		this.controller = controller;
 		pathVariables = new String[matchResult.groupCount()];
@@ -51,9 +56,18 @@ public class Router {
 
 	public Object invoke(HttpRequest request, HttpResponse response) {
 		try {
+			for (Filter filter : filters) {
+				if (!filter.preFilter(request, response)) {
+					return null;
+				}
+			}
 			return this.controller.invoke(request, response, pathVariables);
 		} catch (Exception ex) {
 			throw new DoradoException(ex);
+		} finally {
+			for (Filter filter : filters) {
+				filter.postFilter(request, response);
+			}
 		}
 	}
 
