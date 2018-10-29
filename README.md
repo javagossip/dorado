@@ -120,6 +120,37 @@ public class CampaignController {
 	}
 }
 ```
+* Filter 
+
+```java
+@FilterPath(include = "/campaign/*")
+public class DemoFilter implements Filter {
+
+	@Override
+	public boolean preFilter(HttpRequest request, HttpResponse response) {
+		System.out.println("execute demo filter");
+		response.sendError(403, "Forbidden");
+		return false;
+	}
+}
+
+```
+* 文件上传支持  
+支持文件上传很简单，只需要将controller方法的参数设置未MultipartFile或者MultipartFile[]即可，单文件用MultipartFile,  
+多文件用MultipartFile[]
+
+```java
+@Path("/file/upload")
+@POST
+public String uploadFile(MultipartFile[] fs,String name) {
+	for(MultipartFile f:fs) {
+		System.out.println(f.getName());
+		System.out.println(f.getContentType());
+		System.out.println(f.getSize());
+	}
+	return String.format("name: %s, file info: %s", name,f.toString());
+}
+```
 * More examples 
 
 Please visit https://github.com/javagossip/dorado-examples
