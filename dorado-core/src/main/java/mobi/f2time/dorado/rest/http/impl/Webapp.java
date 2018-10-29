@@ -16,11 +16,14 @@
 package mobi.f2time.dorado.rest.http.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import mobi.f2time.dorado.Dorado;
 import mobi.f2time.dorado.exception.DoradoException;
 import mobi.f2time.dorado.rest.ResourceRegister;
 import mobi.f2time.dorado.rest.ResourceRegisters;
+import mobi.f2time.dorado.rest.annotation.FilterPath;
 import mobi.f2time.dorado.rest.controller.RootController;
 import mobi.f2time.dorado.rest.http.Filter;
 import mobi.f2time.dorado.rest.router.UriRoutingRegistry;
@@ -83,9 +86,17 @@ public class Webapp {
 	};
 
 	private void registerWebComponent(Class<?> type) {
-		if(Filter.class.isAssignableFrom(type)) {
-			//TODO
-		}else {
+		if (Filter.class.isAssignableFrom(type)) {
+			FilterPath filterPath = type.getAnnotation(FilterPath.class);
+			if (filterPath == null) {
+				return;
+			}
+			FilterConfiguration filterConfiguration = FilterConfiguration.builder()
+					.withPathPatterns(Arrays.asList(filterPath.include()))
+					.withExcludePathPatterns(Arrays.asList(filterPath.exclude()))
+					.withFilter((Filter) Dorado.beanContainer.getBean(type)).build();
+			FilterManager.getInstance().addFilterConfiguration(filterConfiguration);
+		} else {
 			initializeUriRouting(type);
 		}
 	}

@@ -54,6 +54,10 @@ public class Router {
 		return this.controller;
 	}
 
+	public void addFilters(List<Filter> filters) {
+		this.filters.addAll(filters);
+	}
+
 	public Object invoke(HttpRequest request, HttpResponse response) {
 		try {
 			for (Filter filter : filters) {

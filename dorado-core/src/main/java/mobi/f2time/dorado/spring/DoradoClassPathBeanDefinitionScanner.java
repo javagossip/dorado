@@ -15,11 +15,14 @@
  */
 package mobi.f2time.dorado.spring;
 
+import java.util.logging.Filter;
+
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.core.type.filter.AssignableTypeFilter;
 
 import mobi.f2time.dorado.rest.annotation.Controller;
 
@@ -51,5 +54,6 @@ public class DoradoClassPathBeanDefinitionScanner extends ClassPathBeanDefinitio
 	protected void registerDefaultFilters() {
 		super.registerDefaultFilters();
 		this.addIncludeFilter(new AnnotationTypeFilter(Controller.class));
+		this.addIncludeFilter(new AssignableTypeFilter(Filter.class));
 	}
 }

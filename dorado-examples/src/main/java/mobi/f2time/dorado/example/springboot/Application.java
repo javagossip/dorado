@@ -17,7 +17,7 @@ import mobi.f2time.dorado.swagger.EnableSwagger;
 @EnableDorado
 @SpringBootApplication
 @EnableSwagger
-@ComponentScan({"mobi.f2time.dorado.example.controller"})
+@ComponentScan({"mobi.f2time.dorado.example"})
 public class Application {
 
 	public static void main(String[] args) throws Exception {

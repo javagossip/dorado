@@ -27,6 +27,7 @@ import mobi.f2time.dorado.rest.annotation.Controller;
 import mobi.f2time.dorado.rest.annotation.HttpMethod;
 import mobi.f2time.dorado.rest.annotation.Path;
 import mobi.f2time.dorado.rest.http.HttpRequest;
+import mobi.f2time.dorado.rest.http.impl.FilterManager;
 import mobi.f2time.dorado.rest.util.SimpleLRUCache;
 import mobi.f2time.dorado.rest.util.StringUtils;
 
@@ -108,6 +109,7 @@ public class UriRoutingRegistry {
 
 			if (matchResult.matches() && matchMethod(routingMethod, request.getMethod())) {
 				router = Router.create(uriRouting.controller, matchResult, request.getMethod());
+				router.addFilters(FilterManager.getInstance().match(request.getRequestURI()));
 				cache.put(key, router);
 				return router;
 			}
