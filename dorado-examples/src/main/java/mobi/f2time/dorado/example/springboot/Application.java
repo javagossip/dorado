@@ -1,9 +1,11 @@
 /*
  * Copyright 2014-2018 f2time.com All right reserved.
  */
-package mobi.f2time.dorado.example;
+package mobi.f2time.dorado.example.springboot;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 import mobi.f2time.dorado.springboot.EnableDorado;
 import mobi.f2time.dorado.swagger.EnableSwagger;
@@ -13,11 +15,12 @@ import mobi.f2time.dorado.swagger.EnableSwagger;
  *
  */
 @EnableDorado
-@org.springframework.boot.autoconfigure.SpringBootApplication
+@SpringBootApplication
 @EnableSwagger
-public class SpringBootApplication {
+@ComponentScan({"mobi.f2time.dorado.example.controller"})
+public class Application {
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SpringBootApplication.class, args);
+		SpringApplication.run(Application.class, args);
 	}
 }
