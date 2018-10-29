@@ -11,6 +11,7 @@
 * Spring框架支持，默认支持注解方式初始化spring容器
 * SpringBoot集成
 * 集成swagger restful API文档生成工具
+* 过滤器支持，实现类似于spring mvc的interceptor功能
 
 
 ## Maven
@@ -130,6 +131,7 @@ Please visit https://github.com/javagossip/dorado-examples
 |:-------------: |:---------------:|
 | Controller    | 控制器 | 
 | Path      | 控制器访问Path|
+| FilterPath |过滤器过滤路径,包括include以及exclude属性|
 
 ### 方法注解
 
