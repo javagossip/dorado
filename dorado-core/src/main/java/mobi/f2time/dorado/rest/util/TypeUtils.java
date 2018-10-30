@@ -18,6 +18,7 @@ package mobi.f2time.dorado.rest.util;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -91,7 +92,6 @@ public final class TypeUtils {
 			if (_annotations != null)
 				return hasAnnotationByName(annotation.annotationType(), annotationName);
 		}
-
 		return false;
 	}
 }

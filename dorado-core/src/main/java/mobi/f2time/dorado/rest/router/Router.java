@@ -81,7 +81,7 @@ public class Router {
 
 	public String pathVariable(int index) {
 		if (index <= 0 || index > pathVariables.length) {
-			throw new IllegalArgumentException("");
+			throw new IndexOutOfBoundsException();
 		}
 		return pathVariables[index - 1];
 	}
