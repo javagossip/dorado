@@ -37,8 +37,11 @@ public class SwaggerFactory {
 		apiInfoBuilder = apiInfoBuilders.iterator().hasNext() ? apiInfoBuilders.iterator().next() : null;
 
 		try {
+
 			if (apiInfoBuilder == null) {
-				apiInfoBuilder = Dorado.beanContainer.getBean(ApiInfoBuilder.class);
+				if (Dorado.isEnableSpring) {
+					apiInfoBuilder = Dorado.beanContainer.getBean(ApiInfoBuilder.class);
+				}
 			}
 		} catch (Throwable ex) {
 			// ignore this exception

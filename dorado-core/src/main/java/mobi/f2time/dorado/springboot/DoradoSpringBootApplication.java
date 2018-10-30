@@ -13,29 +13,21 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package mobi.f2time.dorado.example.controller;
+package mobi.f2time.dorado.springboot;
 
-import mobi.f2time.dorado.rest.annotation.Controller;
-import mobi.f2time.dorado.rest.annotation.POST;
-import mobi.f2time.dorado.rest.annotation.Path;
-import mobi.f2time.dorado.rest.annotation.Produce;
-import mobi.f2time.dorado.rest.http.MultipartFile;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-/**
- * @author weiping wang
- *
- */
-@Controller
-@Path("/file/upload")
-public class FileUploadController {
-	
-	@Produce("image/jpeg")
-	@POST
-	public byte[] upload(MultipartFile file) {
-		System.out.println(file);
-		System.out.println(file.getContent().length);
-		
-		//saveFile(file);
-		return file.getContent();
-	}
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@Documented
+@Retention(RUNTIME)
+@Target(TYPE)
+@EnableDorado
+@SpringBootApplication
+public @interface DoradoSpringBootApplication {
 }

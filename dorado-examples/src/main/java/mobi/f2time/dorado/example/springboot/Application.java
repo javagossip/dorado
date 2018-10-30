@@ -4,18 +4,16 @@
 package mobi.f2time.dorado.example.springboot;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
-import mobi.f2time.dorado.springboot.EnableDorado;
+import mobi.f2time.dorado.springboot.DoradoSpringBootApplication;
 import mobi.f2time.dorado.swagger.EnableSwagger;
 
 /**
  * @author wangweiping
  *
  */
-@EnableDorado
-@SpringBootApplication
+@DoradoSpringBootApplication
 @EnableSwagger
 @ComponentScan({"mobi.f2time.dorado.example"})
 public class Application {
