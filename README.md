@@ -215,6 +215,17 @@ Please visit https://github.com/javagossip/dorado-examples
 		}
 	}
 	```
+	或者直接使用DoradoSpringBootApplication来替换SpringBootApplication和EnableDorado,如下：
+	
+	```
+	@DoradoSpringBootApplication
+	public class SpringBootApplication {
+	
+		public static void main(String[] args) throws Exception {
+			SpringApplication.run(SpringBootApplication.class, args);
+		}
+	}
+	```
 * Dorado框架的spring-boot配置参数
 
 	|参数名|描述|默认值|
