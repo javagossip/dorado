@@ -66,6 +66,12 @@ public interface ObjectSerializer {
 	ObjectSerializer DEFAULT = new ObjectSerializer() {
 		@Override
 		public byte[] serialize(Object t) {
+			if(t instanceof byte[]) {
+				return (byte[])t;
+			}
+			if(t instanceof InputStream) {
+				return IOUtils.readBytes((InputStream) t);
+			}
 			if (TypeUtils.isProtobufMessage(t.getClass())) {
 				return ((Message) t).toByteArray();
 			}
