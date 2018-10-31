@@ -20,6 +20,8 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import ai.houyi.dorado.rest.util.SimpleLRUCache;
+
 /**
  * 
  * @author wangwp
@@ -34,7 +36,7 @@ public class SimpleLRUCacheTest {
 	}
 
 	/**
-	 * Test method for {@link mobi.f2time.dorado.rest.util.SimpleLRUCache#create(int)}.
+	 * Test method for {@link ai.houyi.dorado.rest.util.SimpleLRUCache#create(int)}.
 	 */
 	@Test
 	public void testCreate() {
@@ -43,7 +45,7 @@ public class SimpleLRUCacheTest {
 	}
 
 	/**
-	 * Test method for {@link mobi.f2time.dorado.rest.util.SimpleLRUCache#put(java.lang.Object, java.lang.Object)}.
+	 * Test method for {@link ai.houyi.dorado.rest.util.SimpleLRUCache#put(java.lang.Object, java.lang.Object)}.
 	 */
 	@Test
 	public void testPut() {
@@ -61,7 +63,7 @@ public class SimpleLRUCacheTest {
 	}
 
 	/**
-	 * Test method for {@link mobi.f2time.dorado.rest.util.SimpleLRUCache#get(java.lang.Object)}.
+	 * Test method for {@link ai.houyi.dorado.rest.util.SimpleLRUCache#get(java.lang.Object)}.
 	 */
 	@Test
 	public void testGet() {
