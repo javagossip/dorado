@@ -21,8 +21,7 @@
 		<protobuf-java.version>2.6.1</protobuf-java.version>
 		<asm.version>6.2</asm.version>
 		<fastjson.version>1.2.47</fastjson.version>
-		<spring.version>4.3.18.RELEASE</spring.version>
-		<spring-boot.version>1.5.15.RELEASE</spring-boot.version>
+		<spring-boot.version>2.1.1.RELEASE</spring-boot.version>
 	</properties>
 
 	<licenses>
