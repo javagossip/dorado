@@ -20,7 +20,7 @@
 <dependency>
     <groupId>ai.houyi</groupId>
     <artifactId>dorado-core</artifactId>
-    <version>0.0.17</version>
+    <version>0.0.22</version>
 </dependency>
 ```
 
@@ -200,7 +200,7 @@ Please visit https://github.com/javagossip/dorado-examples
 	<dependency>
 	    <groupId>ai.houyi</groupId>
 	    <artifactId>dorado-spring-boot-starter</artifactId>
-	    <version>0.0.17</version>
+	    <version>0.0.22</version>
     </dependency>
 	```
 * 基于springboot的dorado应用
