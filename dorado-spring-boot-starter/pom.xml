@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>ai.houyi</groupId>
 		<artifactId>dorado</artifactId>
-		<version>0.0.22-SNAPSHOT</version>
+		<version>0.0.22</version>
 	</parent>
 	<artifactId>dorado-spring-boot-starter</artifactId>
 	<name>dorado-spring-boot-starter</name>
@@ -30,7 +30,7 @@
 		<dependency>
 			<groupId>ai.houyi</groupId>
 			<artifactId>dorado-core</artifactId>
-			<version>0.0.22-SNAPSHOT</version>
+			<version>0.0.22</version>
 		</dependency>
 	</dependencies>
 </project>
