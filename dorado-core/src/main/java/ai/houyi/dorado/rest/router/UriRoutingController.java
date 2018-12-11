@@ -70,6 +70,8 @@ public class UriRoutingController {
 			invokeMethod.invoke(methodDescriptor.getInvokeTarget(), args);
 		} else {
 			Object result = invokeMethod.invoke(methodDescriptor.getInvokeTarget(), args);
+			//支持对controller返回结果进行统一处理
+			//ControllerMethodReturnValueHandler 
 			MediaType mediaType = MediaTypeUtils.defaultForType(methodDescriptor.getReturnType(),
 					methodDescriptor.produce());
 
