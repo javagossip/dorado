@@ -15,23 +15,29 @@
  */
 package ai.houyi.dorado.rest.http;
 
+import ai.houyi.dorado.rest.util.MethodDescriptor;
+
 /**
  * @author weiping wang
  *
  */
-public interface ControllerMethodReturnValueHandler {
+public interface MethodReturnValueHandler {
 	/**
 	 * 方法调用正常返回结果处理器
 	 * 
-	 * @param value 方法执行结果
+	 * @param value
+	 *            方法执行结果
+	 * @param methodDescriptor
+	 *            方法描述
 	 * @return 处理后的返回结果
 	 */
-	Object handleMethodReturnValue(Object value);
+	Object handleMethodReturnValue(Object value, MethodDescriptor methodDescriptor);
 
 	/**
 	 * 异常统一处理器
 	 * 
-	 * @param exception 方法执行抛出异常
+	 * @param exception
+	 *            方法执行抛出异常
 	 * @return 包装异常为自定义的响应实体对象
 	 */
 	Object handleException(Exception exception, HttpResponse response);

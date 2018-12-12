@@ -25,6 +25,7 @@ import ai.houyi.dorado.rest.http.impl.HttpRequestImpl;
 import ai.houyi.dorado.rest.http.impl.HttpResponseImpl;
 import ai.houyi.dorado.rest.http.impl.Webapp;
 import ai.houyi.dorado.rest.router.Router;
+import ai.houyi.dorado.rest.util.ExceptionUtils;
 import ai.houyi.dorado.rest.util.LogUtils;
 import ai.houyi.dorado.rest.util.TracingThreadPoolExecutor;
 import io.netty.buffer.ByteBufUtil;
@@ -99,7 +100,7 @@ public class DoradoServerHandler extends ChannelInboundHandlerAdapter {
 		} catch (Throwable ex) {
 			LogUtils.error("handle http request error", ex);
 			response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
-			ByteBufUtil.writeUtf8(response.content(), "500 Internal Server Error");
+			ByteBufUtil.writeUtf8(response.content(), ExceptionUtils.toString(ex));
 		} finally {
 			unset();
 			if (isKeepAlive) {

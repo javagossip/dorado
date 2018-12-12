@@ -25,7 +25,9 @@ import ai.houyi.dorado.rest.ResourceRegister;
 import ai.houyi.dorado.rest.ResourceRegisters;
 import ai.houyi.dorado.rest.annotation.FilterPath;
 import ai.houyi.dorado.rest.controller.RootController;
+import ai.houyi.dorado.rest.http.ExceptionHandler;
 import ai.houyi.dorado.rest.http.Filter;
+import ai.houyi.dorado.rest.http.MethodReturnValueHandler;
 import ai.houyi.dorado.rest.router.UriRoutingRegistry;
 import ai.houyi.dorado.rest.util.LogUtils;
 import ai.houyi.dorado.rest.util.PackageScanner;
@@ -38,6 +40,8 @@ public class Webapp {
 	private static Webapp webapp;
 
 	private final String[] packages;
+	private MethodReturnValueHandler methodReturnValueHandler;
+	private ExceptionHandler exceptionHandler;
 
 	private Webapp(String[] packages, boolean springOn) {
 		this.packages = packages;
@@ -57,6 +61,14 @@ public class Webapp {
 			throw new IllegalStateException("webapp not initialized, please create it first");
 		}
 		return webapp;
+	}
+
+	public MethodReturnValueHandler getMethodReturnValueHandler() {
+		return this.methodReturnValueHandler;
+	}
+
+	public ExceptionHandler getExceptionHandler() {
+		return this.exceptionHandler;
 	}
 
 	public void initialize() {
@@ -86,11 +98,26 @@ public class Webapp {
 	};
 
 	private void registerWebComponent(Class<?> type) {
+		if (ExceptionHandler.class.isAssignableFrom(type)) {
+			if (this.exceptionHandler != null) {
+				throw new IllegalStateException("Only one instance for [ExceptionHandler] is allowed");
+			}
+			this.exceptionHandler = (ExceptionHandler) Dorado.beanContainer.getBean(type);
+		}
+
+		if (MethodReturnValueHandler.class.isAssignableFrom(type)) {
+			if (this.methodReturnValueHandler != null) {
+				throw new IllegalStateException("Only one instance for [MethodReturnValueHandler] is allowed");
+			}
+			this.methodReturnValueHandler = (MethodReturnValueHandler) Dorado.beanContainer.getBean(type);
+		}
+
 		if (Filter.class.isAssignableFrom(type)) {
 			FilterPath filterPath = type.getAnnotation(FilterPath.class);
 			if (filterPath == null) {
 				return;
 			}
+
 			FilterConfiguration filterConfiguration = FilterConfiguration.builder()
 					.withPathPatterns(Arrays.asList(filterPath.include()))
 					.withExcludePathPatterns(Arrays.asList(filterPath.exclude()))

@@ -23,9 +23,12 @@ import ai.houyi.dorado.rest.MessageBodyConverter;
 import ai.houyi.dorado.rest.MessageBodyConverters;
 import ai.houyi.dorado.rest.ParameterValueResolver;
 import ai.houyi.dorado.rest.ParameterValueResolvers;
+import ai.houyi.dorado.rest.http.ExceptionHandler;
 import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.http.HttpResponse;
+import ai.houyi.dorado.rest.http.MethodReturnValueHandler;
 import ai.houyi.dorado.rest.http.impl.HttpHeaderNames;
+import ai.houyi.dorado.rest.http.impl.Webapp;
 import ai.houyi.dorado.rest.util.MediaTypeUtils;
 import ai.houyi.dorado.rest.util.MethodDescriptor;
 import ai.houyi.dorado.rest.util.MethodDescriptor.MethodParameter;
@@ -66,18 +69,30 @@ public class UriRoutingController {
 		}
 
 		Object[] args = resolveParameters(request, response, pathVariables);
-		if (methodDescriptor.getReturnType() == void.class) {
-			invokeMethod.invoke(methodDescriptor.getInvokeTarget(), args);
-		} else {
-			Object result = invokeMethod.invoke(methodDescriptor.getInvokeTarget(), args);
-			//支持对controller返回结果进行统一处理
-			//ControllerMethodReturnValueHandler 
-			MediaType mediaType = MediaTypeUtils.defaultForType(methodDescriptor.getReturnType(),
-					methodDescriptor.produce());
+		
+		try {
+			if (methodDescriptor.getReturnType() == void.class) {
+				invokeMethod.invoke(methodDescriptor.getInvokeTarget(), args);
+			} else {
+				Object result = invokeMethod.invoke(methodDescriptor.getInvokeTarget(), args);
+				// 支持对controller返回结果进行统一处理
+				MethodReturnValueHandler methodReturnValueHandler = Webapp.get().getMethodReturnValueHandler();
+				if (methodReturnValueHandler != null) {
+					result = methodReturnValueHandler.handleMethodReturnValue(result, methodDescriptor);
+				}
+				MediaType mediaType = MediaTypeUtils.defaultForType(methodDescriptor.getReturnType(),
+						methodDescriptor.produce());
 
-			MessageBodyConverter messageBodyConverter = MessageBodyConverters.getMessageBodyConverter(mediaType);
-			response.setHeader(HttpHeaderNames.CONTENT_TYPE, mediaType.toString());
-			response.write(messageBodyConverter.writeMessageBody(result));
+				MessageBodyConverter messageBodyConverter = MessageBodyConverters.getMessageBodyConverter(mediaType);
+				response.setHeader(HttpHeaderNames.CONTENT_TYPE, mediaType.toString());
+				response.write(messageBodyConverter.writeMessageBody(result));
+			}
+		} catch (Exception ex) {
+			ExceptionHandler exceptionHandler = Webapp.get().getExceptionHandler();
+			if (exceptionHandler == null) {
+				throw ex;
+			}
+			exceptionHandler.handleException(ex, response);
 		}
 		return null;
 	}

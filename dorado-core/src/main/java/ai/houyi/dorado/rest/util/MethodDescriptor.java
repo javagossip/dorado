@@ -135,6 +135,15 @@ public class MethodDescriptor {
 		return this.consume;
 	}
 
+	public boolean hasAnnotation(Annotation annotation) {
+		for (Annotation _anno : annotations) {
+			if (_anno.equals(annotation)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private String guessConsume() {
 		for (MethodParameter param : this.methodParameters) {
 			if (param.annotationType == MultipartFile.class) {
