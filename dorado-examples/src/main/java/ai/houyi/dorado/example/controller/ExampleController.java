@@ -3,6 +3,7 @@
  */
 package ai.houyi.dorado.example.controller;
 
+import ai.houyi.dorado.example.controller.helper.MyException;
 import ai.houyi.dorado.example.model.Campaign;
 import ai.houyi.dorado.rest.annotation.Controller;
 import ai.houyi.dorado.rest.annotation.DELETE;
@@ -48,5 +49,17 @@ public class ExampleController {
 	@Path("/{id}")
 	public Campaign getCampaign(int id) {
 		return Campaign.builder().withId(12).withName("网易考拉推广计划").build();
+	}
+	
+	@GET
+	@Path("/exception/my")
+	public Campaign testMyException(int id) throws MyException {
+		throw new MyException("my exception");
+	}
+
+	@GET
+	@Path("/exception/default")
+	public Campaign testDefaultException(int id) throws Exception {
+		throw new Exception("default exception");
 	}
 }

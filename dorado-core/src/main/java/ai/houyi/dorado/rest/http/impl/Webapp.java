@@ -96,7 +96,7 @@ public class Webapp {
 	private void registerWebComponent(Class<?> type) {
 		Annotation exceptionAdvice = type.getAnnotation(ExceptionAdvice.class);
 		if (exceptionAdvice != null) {
-			registerExceptionAdvice(exceptionAdvice);
+			registerExceptionAdvice(type);
 		}
 
 		if (MethodReturnValueHandler.class.isAssignableFrom(type)) {
@@ -122,8 +122,8 @@ public class Webapp {
 		}
 	}
 
-	private void registerExceptionAdvice(Annotation exceptionAdvice) {
-		// TODO Auto-generated method stub
+	private void registerExceptionAdvice(Class<?> type) {
+		WebComponentRegistry.getWebComponentRegistry().registerExceptionHandlers(type);
 	}
 
 	private void initializeUriRouting(Class<?> c) {

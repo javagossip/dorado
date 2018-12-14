@@ -15,21 +15,60 @@
  */
 package ai.houyi.dorado.rest.http.impl;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
+import ai.houyi.dorado.Dorado;
+import ai.houyi.dorado.rest.annotation.ExceptionAdvice;
+import ai.houyi.dorado.rest.annotation.ExceptionType;
 
 /**
  * @author weiping wang
  *
  */
 public final class WebComponentRegistry {
-	private static final WebComponentRegistry registry=new WebComponentRegistry();
-	
+	private static final WebComponentRegistry registry = new WebComponentRegistry();
+
 	private final ConcurrentMap<Class<? extends Throwable>, ExceptionHandler> exceptionHandlerRegistry = new ConcurrentHashMap<>();
-	
-	private WebComponentRegistry() {}
-	
+
+	private WebComponentRegistry() {
+	}
+
+	public static WebComponentRegistry getWebComponentRegistry() {
+		return registry;
+	}
+
 	public ExceptionHandler getExceptionHandler(Class<? extends Throwable> exceptionType) {
-		return registry.getExceptionHandler(exceptionType);
+		ExceptionHandler handler = exceptionHandlerRegistry.get(exceptionType);
+
+		if (handler == null) {
+			handler = registry.getExceptionHandler(Exception.class);
+		}
+		if (handler == null) {
+			return registry.getExceptionHandler(Throwable.class);
+		}
+		return handler;
+	}
+
+	public void registerExceptionHandlers(Class<?> type) {
+		Annotation exceptionAdvice = type.getAnnotation(ExceptionAdvice.class);
+
+		if (exceptionAdvice == null) {
+			return;
+		}
+
+		Object exceptionAdvicor = Dorado.beanContainer.getBean(type);
+		Method[] methods = type.getMethods();
+		for (Method method : methods) {
+			ExceptionType exceptionType = method.getAnnotation(ExceptionType.class);
+			if (exceptionType == null) {
+				continue;
+			}
+
+			ExceptionHandler handler = ExceptionHandler.newExceptionHandler(exceptionAdvicor, method);
+			exceptionHandlerRegistry.put(exceptionType.value(), handler);
+		}
 	}
 }

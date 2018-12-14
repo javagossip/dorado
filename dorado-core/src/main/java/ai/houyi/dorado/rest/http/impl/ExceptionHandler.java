@@ -25,10 +25,10 @@ import ai.houyi.dorado.exception.DoradoException;
  */
 public class ExceptionHandler {
 	private final Method exceptionHandleMethod;
-	private final Class<?> exceptionAdvicorType;
+	private final Object exceptionAdvicor;
 
-	private ExceptionHandler(Class<?> type, Method exceptionHandleMethod) {
-		this.exceptionAdvicorType = type;
+	private ExceptionHandler(Object exceptionAdvicor, Method exceptionHandleMethod) {
+		this.exceptionAdvicor = exceptionAdvicor;
 		this.exceptionHandleMethod = exceptionHandleMethod;
 
 		if (!exceptionHandleMethod.isAccessible()) {
@@ -36,9 +36,13 @@ public class ExceptionHandler {
 		}
 	}
 
-	public void handleException(Throwable throwable) {
+	public static ExceptionHandler newExceptionHandler(Object exceptionAdvicor, Method exceptionHandleMethod) {
+		return new ExceptionHandler(exceptionAdvicor, exceptionHandleMethod);
+	}
+
+	public Object handleException(Throwable throwable) {
 		try {
-			exceptionHandleMethod.invoke(exceptionAdvicorType, throwable);
+			return exceptionHandleMethod.invoke(exceptionAdvicor, throwable);
 		} catch (Throwable ex) {
 			throw new DoradoException(ex);
 		}

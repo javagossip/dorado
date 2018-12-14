@@ -15,6 +15,7 @@
  */
 package ai.houyi.dorado.rest.router;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import ai.houyi.dorado.exception.DoradoException;
@@ -26,7 +27,9 @@ import ai.houyi.dorado.rest.ParameterValueResolvers;
 import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.http.HttpResponse;
 import ai.houyi.dorado.rest.http.MethodReturnValueHandler;
+import ai.houyi.dorado.rest.http.impl.ExceptionHandler;
 import ai.houyi.dorado.rest.http.impl.HttpHeaderNames;
+import ai.houyi.dorado.rest.http.impl.WebComponentRegistry;
 import ai.houyi.dorado.rest.http.impl.Webapp;
 import ai.houyi.dorado.rest.util.MediaTypeUtils;
 import ai.houyi.dorado.rest.util.MethodDescriptor;
@@ -50,7 +53,6 @@ public class UriRoutingController {
 		return new UriRoutingController(uriRoutingPath, clazz, method);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Object invoke(HttpRequest request, HttpResponse response, String[] pathVariables) throws Exception {
 		Method invokeMethod = methodDescriptor.getMethod();
 		MediaType expectedMediaType = MediaType.valueOf(methodDescriptor.consume());
@@ -68,28 +70,49 @@ public class UriRoutingController {
 		}
 
 		Object[] args = resolveParameters(request, response, pathVariables);
-		
 		try {
 			if (methodDescriptor.getReturnType() == void.class) {
 				invokeMethod.invoke(methodDescriptor.getInvokeTarget(), args);
 			} else {
-				Object result = invokeMethod.invoke(methodDescriptor.getInvokeTarget(), args);
+				Object invokeResult = invokeMethod.invoke(methodDescriptor.getInvokeTarget(), args);
 				// 支持对controller返回结果进行统一处理
-				MethodReturnValueHandler methodReturnValueHandler = Webapp.get().getMethodReturnValueHandler();
-				if (methodReturnValueHandler != null) {
-					result = methodReturnValueHandler.handleMethodReturnValue(result, methodDescriptor);
-				}
 				MediaType mediaType = MediaTypeUtils.defaultForType(methodDescriptor.getReturnType(),
 						methodDescriptor.produce());
 
-				MessageBodyConverter messageBodyConverter = MessageBodyConverters.getMessageBodyConverter(mediaType);
-				response.setHeader(HttpHeaderNames.CONTENT_TYPE, mediaType.toString());
-				response.write(messageBodyConverter.writeMessageBody(result));
+				MethodReturnValueHandler methodReturnValueHandler = Webapp.get().getMethodReturnValueHandler();
+				if (methodReturnValueHandler != null) {
+					invokeResult = methodReturnValueHandler.handleMethodReturnValue(invokeResult, methodDescriptor);
+					mediaType = MediaTypeUtils.defaultForType(invokeResult.getClass(), methodDescriptor.produce());
+				}
+				writeResponseBody(invokeResult, mediaType, response);
 			}
 		} catch (Exception ex) {
-			//TODO
+			Throwable targetException = ex;
+			if(ex instanceof InvocationTargetException) {
+				targetException = ((InvocationTargetException)ex).getTargetException();
+			}
+			ExceptionHandler exceptionHandler = WebComponentRegistry.getWebComponentRegistry()
+					.getExceptionHandler(targetException.getClass());
+			if (exceptionHandler == null) {
+				throw new DoradoException(ex);
+			}
+
+			Object exceptionHandleResult = exceptionHandler.handleException(targetException);
+			if (exceptionHandleResult == null) {
+				throw new DoradoException(ex);
+			}
+			MediaType mediaType = MediaTypeUtils.defaultForType(exceptionHandleResult.getClass(),
+					methodDescriptor.produce());
+			writeResponseBody(exceptionHandleResult, mediaType, response);
 		}
 		return null;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void writeResponseBody(Object body, MediaType mediaType, HttpResponse response) {
+		MessageBodyConverter messageBodyConverter = MessageBodyConverters.getMessageBodyConverter(mediaType);
+		response.setHeader(HttpHeaderNames.CONTENT_TYPE, mediaType.toString());
+		response.write(messageBodyConverter.writeMessageBody(body));
 	}
 
 	private Object[] resolveParameters(HttpRequest request, HttpResponse response, String[] pathVariables) {
