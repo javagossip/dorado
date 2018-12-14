@@ -3,7 +3,7 @@
   <parent>
     <groupId>ai.houyi</groupId>
     <artifactId>dorado</artifactId>
-    <version>0.0.25-SNAPSHOT</version>
+    <version>0.0.25</version>
   </parent>
   <artifactId>dorado-examples</artifactId>
   <name>dorado-examples</name>
@@ -12,12 +12,12 @@
   	<dependency>
   		<groupId>ai.houyi</groupId>
   		<artifactId>dorado-spring-boot-starter</artifactId>
-  		<version>0.0.25-SNAPSHOT</version>
+  		<version>0.0.25</version>
   	</dependency>
   	<dependency>
   		<groupId>ai.houyi</groupId>
   		<artifactId>dorado-swagger-ui</artifactId>
-  		<version>0.0.25-SNAPSHOT</version>
+  		<version>0.0.25</version>
   	</dependency>
   </dependencies>
 </project>
