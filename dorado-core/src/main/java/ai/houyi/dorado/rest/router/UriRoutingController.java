@@ -23,7 +23,6 @@ import ai.houyi.dorado.rest.MessageBodyConverter;
 import ai.houyi.dorado.rest.MessageBodyConverters;
 import ai.houyi.dorado.rest.ParameterValueResolver;
 import ai.houyi.dorado.rest.ParameterValueResolvers;
-import ai.houyi.dorado.rest.http.ExceptionHandler;
 import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.http.HttpResponse;
 import ai.houyi.dorado.rest.http.MethodReturnValueHandler;
@@ -88,11 +87,7 @@ public class UriRoutingController {
 				response.write(messageBodyConverter.writeMessageBody(result));
 			}
 		} catch (Exception ex) {
-			ExceptionHandler exceptionHandler = Webapp.get().getExceptionHandler();
-			if (exceptionHandler == null) {
-				throw ex;
-			}
-			exceptionHandler.handleException(ex, response);
+			//TODO
 		}
 		return null;
 	}

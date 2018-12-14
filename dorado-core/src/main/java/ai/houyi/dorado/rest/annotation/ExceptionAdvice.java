@@ -1,7 +1,7 @@
 /*
- * Copyright 2017 The OpenDSP Project
+ * Copyright 2017 The OpenAds Project
  *
- * The OpenDSP Project licenses this file to you under the Apache License,
+ * The OpenAds Project licenses this file to you under the Apache License,
  * version 2.0 (the "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at:
  *
@@ -13,13 +13,22 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package ai.houyi.dorado.rest.http;
+package ai.houyi.dorado.rest.annotation;
 
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+@Documented
+@Retention(RUNTIME)
+@Target(TYPE)
 /**
- * 异常处理器
- * 
- * @author wangwp
+ * @author weiping wang
+ *
  */
-public interface ExceptionHandler {
-	Object handleException(Exception exception, HttpResponse response);
+public @interface ExceptionAdvice {
+
 }

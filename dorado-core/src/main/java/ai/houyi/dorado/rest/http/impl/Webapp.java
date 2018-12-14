@@ -15,6 +15,7 @@
  */
 package ai.houyi.dorado.rest.http.impl;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,9 +24,9 @@ import ai.houyi.dorado.Dorado;
 import ai.houyi.dorado.exception.DoradoException;
 import ai.houyi.dorado.rest.ResourceRegister;
 import ai.houyi.dorado.rest.ResourceRegisters;
+import ai.houyi.dorado.rest.annotation.ExceptionAdvice;
 import ai.houyi.dorado.rest.annotation.FilterPath;
 import ai.houyi.dorado.rest.controller.RootController;
-import ai.houyi.dorado.rest.http.ExceptionHandler;
 import ai.houyi.dorado.rest.http.Filter;
 import ai.houyi.dorado.rest.http.MethodReturnValueHandler;
 import ai.houyi.dorado.rest.router.UriRoutingRegistry;
@@ -41,7 +42,6 @@ public class Webapp {
 
 	private final String[] packages;
 	private MethodReturnValueHandler methodReturnValueHandler;
-	private ExceptionHandler exceptionHandler;
 
 	private Webapp(String[] packages, boolean springOn) {
 		this.packages = packages;
@@ -65,10 +65,6 @@ public class Webapp {
 
 	public MethodReturnValueHandler getMethodReturnValueHandler() {
 		return this.methodReturnValueHandler;
-	}
-
-	public ExceptionHandler getExceptionHandler() {
-		return this.exceptionHandler;
 	}
 
 	public void initialize() {
@@ -98,11 +94,9 @@ public class Webapp {
 	};
 
 	private void registerWebComponent(Class<?> type) {
-		if (ExceptionHandler.class.isAssignableFrom(type)) {
-			if (this.exceptionHandler != null) {
-				throw new IllegalStateException("Only one instance for [ExceptionHandler] is allowed");
-			}
-			this.exceptionHandler = (ExceptionHandler) Dorado.beanContainer.getBean(type);
+		Annotation exceptionAdvice = type.getAnnotation(ExceptionAdvice.class);
+		if (exceptionAdvice != null) {
+			registerExceptionAdvice(exceptionAdvice);
 		}
 
 		if (MethodReturnValueHandler.class.isAssignableFrom(type)) {
@@ -126,6 +120,10 @@ public class Webapp {
 		} else {
 			initializeUriRouting(type);
 		}
+	}
+
+	private void registerExceptionAdvice(Annotation exceptionAdvice) {
+		// TODO Auto-generated method stub
 	}
 
 	private void initializeUriRouting(Class<?> c) {
