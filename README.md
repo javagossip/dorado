@@ -181,46 +181,33 @@ Please visit https://github.com/javagossip/dorado-examples
 
 ### 类注解
 
-    注解类型                      描述
-  ------------ -------------------------------------------
-   Controller                    控制器
-      Path                   控制器访问Path
-   FilterPath   过滤器过滤路径,包括include以及exclude属性
+| 注解类型  | 描述  | 
+|:-------------: |:---------------:|
+| Controller    | 控制器 | 
+| Path      | 控制器访问Path|
+| FilterPath |过滤器过滤路径,包括include以及exclude属性|
 
 ### 方法注解
 
-   注解类型                            描述
-  ---------- ---------------------------------------------------------
-     Path     资源访问路径，实际访问path为：controllerPath+methodPath
-     GET                      方法仅支持Http GET请求
-     POST                     方法仅支持Http POST请求
-     PUT                      方法仅支持HTTP PUT请求
-    DELETE                   方法仅支持HTTP DELETE请求
-   Consume         方法参数支持的MediaType, 如：application/json
-   Produce            方法响应MediaType, 如：application/json
-
+| 注解类型  | 描述  | 
+|:-------------: |:---------------:|
+| Path      | 资源访问路径，实际访问path为：controllerPath+methodPath |
+|GET|方法仅支持Http GET请求|
+|POST|方法仅支持Http POST请求|
+|PUT|方法仅支持HTTP PUT请求|
+|DELETE|方法仅支持HTTP DELETE请求|
+|Consume | 方法参数支持的MediaType, 如：application/json|
+|Produce | 方法响应MediaType, 如：application/json|
 ### 方法参数注解
 
-  -------------------------------------------------------------------------
-         注解类型                    描述               参数支持数据类型
-  ----------------------- -------------------------- ----------------------
-       RequestParam        Query or Form parameter   Primitive type&wrapper
-                                                          class,String
+| 注解类型  | 描述  |参数支持数据类型|
+|:-------------: |:---------------:|:------------:|
+|RequestParam|Query or Form parameter|Primitive type&wrapper class,String|
+|PathVariable|Uri path variable, example: {var}|Primitive type&wrapper class,String|
+|HeaderParam|Request header value|Primitive type&wrapper class,String|
+|CookieParam|Request cookie value|Primitive type&wrapper class,String|
+|RequestBody|Http request body|String, byte[],InputStream or any serializable type|
 
-       PathVariable           Uri path variable,     Primitive type&wrapper
-                                example: {var}            class,String
-
-        HeaderParam          Request header value    Primitive type&wrapper
-                                                          class,String
-
-        CookieParam          Request cookie value    Primitive type&wrapper
-                                                          class,String
-
-        RequestBody           Http request body             String,
-                                                      byte\[\],InputStream
-                                                      or any serializable
-                                                              type
-  -------------------------------------------------------------------------
 
 内置服务
 --------
@@ -267,21 +254,21 @@ SpringBoot集成
 
 -   Dorado框架的spring-boot配置参数
 
-      参数名                                 描述               默认值
-      ---------------------------- ------------------------ --------------
-      dorado.port                   dorado server监听端口       18888
-      dorado.backlog                   backlog队列大小          10000
-      dorado.acceptors              dorado acceptor count    cpu核心数\*2
-      dorado.io-workers             dorado io worker count   cpu核心数\*2
-      dorado.min-workers             业务线程池最小线程数        100
-      dorado.max-workers             业务线程池最大线程数        100
-      dorado.max-connections           服务器最大连接数         100000
-      dorado.max-pending-request      业务线程池队列长度        10000
-      dorado.send-buffer               send buffer size          256k
-      dorado.recv-buffer               recv buffer size          256k
-      dorado.max-idle-time             连接最大空闲时间           8h
-      dorado.max-packet-length         http请求包体大小           1M
-
+	|参数名|描述|默认值|
+	|:-----------|:----------:|:-----------:|
+	|dorado.port|dorado server监听端口|18888|
+	|dorado.backlog|backlog队列大小|10000|
+	|dorado.acceptors|dorado acceptor count|cpu核心数*2|
+	|dorado.io-workers|dorado io worker count|cpu核心数*2|
+	|dorado.min-workers|业务线程池最小线程数|100|
+	|dorado.max-workers|业务线程池最大线程数|100|
+	|dorado.max-connections|服务器最大连接数|100000|
+	|dorado.max-pending-request|业务线程池队列长度|10000|
+	|dorado.send-buffer|send buffer size|256k|
+	|dorado.recv-buffer|recv buffer size|256k|
+	|dorado.max-idle-time|连接最大空闲时间|8h|
+	|dorado.max-packet-length|http请求包体大小|1M|
+	
 swagger集成
 -----------
 
