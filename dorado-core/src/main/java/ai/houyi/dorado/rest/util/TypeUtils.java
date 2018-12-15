@@ -42,17 +42,13 @@ public final class TypeUtils {
 	}
 
 	public static boolean isPrimitive(Class<?> type) {
-		return type.isPrimitive();
+		return (type != void.class || type != Void.class) 
+				&& type.isPrimitive();
 	}
 
 	public static boolean isWrapper(Class<?> type) {
-		return (type == Integer.class) ||
-				(type == Long.class) || 
-				(type == Short.class) ||
-				(type == Float.class)
-				|| (type == Double.class) 
-				|| (type == Boolean.class) 
-				|| (type == Character.class)
+		return (type == Integer.class) || (type == Long.class) || (type == Short.class) || (type == Float.class)
+				|| (type == Double.class) || (type == Boolean.class) || (type == Character.class)
 				|| (type == Byte.class);
 	}
 
