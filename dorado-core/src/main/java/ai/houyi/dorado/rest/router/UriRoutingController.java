@@ -70,26 +70,22 @@ public class UriRoutingController {
 		}
 
 		Object[] args = resolveParameters(request, response, pathVariables);
-		try {
-			if (methodDescriptor.getReturnType() == void.class) {
-				invokeMethod.invoke(methodDescriptor.getInvokeTarget(), args);
-			} else {
-				Object invokeResult = invokeMethod.invoke(methodDescriptor.getInvokeTarget(), args);
-				// 支持对controller返回结果进行统一处理
-				MediaType mediaType = MediaTypeUtils.defaultForType(methodDescriptor.getReturnType(),
-						methodDescriptor.produce());
+		MethodReturnValueHandler methodReturnValueHandler = Webapp.get().getMethodReturnValueHandler();
 
-				MethodReturnValueHandler methodReturnValueHandler = Webapp.get().getMethodReturnValueHandler();
-				if (methodReturnValueHandler != null) {
-					invokeResult = methodReturnValueHandler.handleMethodReturnValue(invokeResult, methodDescriptor);
-					mediaType = MediaTypeUtils.defaultForType(invokeResult.getClass(), methodDescriptor.produce());
-				}
-				writeResponseBody(invokeResult, mediaType, response);
+		try {
+			Object invokeResult = invokeMethod.invoke(methodDescriptor.getInvokeTarget(), args);
+			// 支持对controller返回结果进行统一处理
+			MediaType mediaType = MediaTypeUtils.defaultForType(methodDescriptor.getReturnType(),
+					methodDescriptor.produce());
+			if (methodReturnValueHandler != null) {
+				invokeResult = methodReturnValueHandler.handleMethodReturnValue(invokeResult, methodDescriptor);
+				mediaType = MediaTypeUtils.defaultForType(invokeResult.getClass(), methodDescriptor.produce());
 			}
+			writeResponseBody(invokeResult, mediaType, response);
 		} catch (Exception ex) {
 			Throwable targetException = ex;
-			if(ex instanceof InvocationTargetException) {
-				targetException = ((InvocationTargetException)ex).getTargetException();
+			if (ex instanceof InvocationTargetException) {
+				targetException = ((InvocationTargetException) ex).getTargetException();
 			}
 			ExceptionHandler exceptionHandler = WebComponentRegistry.getWebComponentRegistry()
 					.getExceptionHandler(targetException.getClass());
