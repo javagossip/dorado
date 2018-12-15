@@ -42,7 +42,7 @@ public final class TypeUtils {
 	}
 
 	public static boolean isPrimitive(Class<?> type) {
-		return (type != void.class || type != Void.class) 
+		return (type != void.class && type != Void.class) 
 				&& type.isPrimitive();
 	}
 
