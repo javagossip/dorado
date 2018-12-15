@@ -13,7 +13,6 @@ import ai.houyi.dorado.swagger.EnableSwagger;
 @EnableSwagger
 public class Application {
 	public static void main(String[] args) throws Exception {
-		System.out.println("hello".indexOf("llo"));
 		DoradoServerBuilder.forPort(18889).build().start();
 	}
 }

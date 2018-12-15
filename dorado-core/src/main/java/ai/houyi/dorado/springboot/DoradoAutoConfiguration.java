@@ -22,8 +22,6 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -41,6 +39,7 @@ import org.springframework.util.ClassUtils;
 
 import ai.houyi.dorado.rest.server.DoradoServer;
 import ai.houyi.dorado.rest.server.DoradoServerBuilder;
+import ai.houyi.dorado.rest.util.LogUtils;
 import ai.houyi.dorado.spring.SpringContainer;
 
 /**
@@ -52,8 +51,6 @@ import ai.houyi.dorado.spring.SpringContainer;
 @EnableConfigurationProperties(DoradoConfig.class)
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class DoradoAutoConfiguration {
-	static final Log LOG = LogFactory.getLog("dorado-spring-boot-starter");
-
 	@Autowired
 	private DoradoConfig config;
 
@@ -65,7 +62,7 @@ public class DoradoAutoConfiguration {
 		boolean isSpringBootApp = applicationContext.containsBean("springApplicationArguments");
 
 		if (!isSpringBootApp) {
-			LOG.info("Not SpringBoot Application launch, unstart dorado server!");
+			LogUtils.info("Not SpringBoot Application launch, unstart dorado server!");
 			return;
 		}
 
