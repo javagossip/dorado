@@ -44,10 +44,10 @@ public final class WebComponentRegistry {
 		ExceptionHandler handler = exceptionHandlerRegistry.get(exceptionType);
 
 		if (handler == null) {
-			handler = registry.getExceptionHandler(Exception.class);
+			handler = exceptionHandlerRegistry.get(Exception.class);
 		}
 		if (handler == null) {
-			return registry.getExceptionHandler(Throwable.class);
+			return exceptionHandlerRegistry.get(Throwable.class);
 		}
 		return handler;
 	}
