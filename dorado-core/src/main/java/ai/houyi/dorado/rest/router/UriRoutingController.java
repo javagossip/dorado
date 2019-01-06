@@ -106,6 +106,8 @@ public class UriRoutingController {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void writeResponseBody(Object body, MediaType mediaType, HttpResponse response) {
+		if (body == null)
+			return;
 		MessageBodyConverter messageBodyConverter = MessageBodyConverters.getMessageBodyConverter(mediaType);
 		response.setHeader(HttpHeaderNames.CONTENT_TYPE, mediaType.toString());
 		response.write(messageBodyConverter.writeMessageBody(body));
