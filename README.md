@@ -37,7 +37,7 @@ Maven
 <dependency>
     <groupId>ai.houyi</groupId>
     <artifactId>dorado-core</artifactId>
-    <version>0.0.22</version>
+    <version>0.0.33</version>
 </dependency>
 ```
 
