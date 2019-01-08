@@ -78,8 +78,9 @@ public class HttpRequestImpl implements HttpRequest {
 	}
 
 	private void parseHttpPostRequest(FullHttpRequest request) {
+		HttpPostRequestDecoder decoder = null;
 		try {
-			HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(request);
+			decoder = new HttpPostRequestDecoder(request);
 			for (InterfaceHttpData httpData : decoder.getBodyHttpDatas()) {
 				HttpDataType _type = httpData.getHttpDataType();
 				if (_type == HttpDataType.Attribute) {
@@ -92,6 +93,9 @@ public class HttpRequestImpl implements HttpRequest {
 			}
 		} catch (Exception ex) {
 			LogUtils.warn(ex.getMessage());
+		} finally {
+			if (decoder != null)
+				decoder.destroy();
 		}
 	}
 
