@@ -39,7 +39,7 @@ Features
 Maven
 -----
 
-``` {.xml}
+```xml
 <dependency>
     <groupId>ai.houyi</groupId>
     <artifactId>dorado-core</artifactId>
@@ -52,7 +52,7 @@ Quick start
 
 -   最简单的Dorado rest server
 
-``` {.java}
+```java
 public class Application {
 
     public static void main(String[] args) throws Exception {
@@ -65,7 +65,7 @@ public class Application {
 
 -   更多定制化参数服务器
 
-``` {.java}
+```java
 
 public class Application {
 
@@ -89,7 +89,7 @@ public class Application {
 
     由于框架本身不直接依赖spring框架，如果启用spring之后，务必自行添加spring框架相关依赖到项目中，否则系统启动会出现ClassNotFoundException
 
-``` {.java}
+```java
 
 public class Application {
 
@@ -104,7 +104,7 @@ public class Application {
 
 -   Rest Controller
 
-``` {.java}
+```java
 @Controller
 @Path("/campaign")
 public class CampaignController {
@@ -165,7 +165,7 @@ public class DemoFilter implements Filter {
     支持文件上传很简单，只需要将controller方法的参数设置未MultipartFile或者MultipartFile[]即可，单文件用MultipartFile,  
     多文件用MultipartFile[]
 
-``` {.java}
+```java
 @Path("/file/upload")
 @POST
 public String uploadFile(MultipartFile[] fs,String name) {
