@@ -17,6 +17,7 @@ package ai.houyi.dorado.example.controller.helper;
 
 import ai.houyi.dorado.rest.annotation.ExceptionAdvice;
 import ai.houyi.dorado.rest.annotation.ExceptionType;
+import ai.houyi.dorado.rest.annotation.Status;
 
 /**
  * 
@@ -26,6 +27,7 @@ import ai.houyi.dorado.rest.annotation.ExceptionType;
 public class TestExceptionAdvice {
 
 	@ExceptionType(MyException.class)
+	@Status(400)
 	public String handleException(MyException ex) {
 		return "cause: " + ex.getClass().getName() + "," + ex.getMessage();
 	}

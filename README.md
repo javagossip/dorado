@@ -29,6 +29,12 @@ Features
 -   SpringBoot集成
 -   集成swagger restful API文档生成工具
 -   过滤器支持，实现类似于spring mvc的interceptor功能
+-   支持全局异常处理
+-   支持统一响应格式处理
+
+## Latest version
+
+**0.0.34**
 
 Maven
 -----
@@ -37,7 +43,7 @@ Maven
 <dependency>
     <groupId>ai.houyi</groupId>
     <artifactId>dorado-core</artifactId>
-    <version>0.0.33</version>
+    <version>${dorado.version}</version>
 </dependency>
 ```
 
@@ -142,7 +148,7 @@ public class CampaignController {
 
 -   Filter
 
-``` {.java}
+```java
 @FilterPath(include = "/campaign/*")
 public class DemoFilter implements Filter {
 
@@ -155,9 +161,9 @@ public class DemoFilter implements Filter {
 }
 ```
 
--   文件上传支持\
-    支持文件上传很简单，只需要将controller方法的参数设置未MultipartFile或者MultipartFile\[\]即可，单文件用MultipartFile,\
-    多文件用MultipartFile\[\]
+-   文件上传支持  
+    支持文件上传很简单，只需要将controller方法的参数设置未MultipartFile或者MultipartFile[]即可，单文件用MultipartFile,  
+    多文件用MultipartFile[]
 
 ``` {.java}
 @Path("/file/upload")
@@ -172,6 +178,51 @@ public String uploadFile(MultipartFile[] fs,String name) {
 }
 ```
 
+-   全局异常处理  
+	dorado支持用户通过自定义的类来进行全局异常处理，处理异常的方法名必须是handleException，类上面增加ExceptionAdvice注解  
+	
+	```java
+	@ExceptionAdvice
+	public class TestExceptionAdvice {
+
+		@ExceptionType(MyException.class)
+		@Status(400) //Status注解来指定http响应状态码
+		public String handleException(MyException ex) {
+			return "cause: " + ex.getClass().getName() + "," + ex.getMessage();
+		}
+	
+		@ExceptionType(Exception.class)
+		public String handleException(Exception ex) {
+			return "use default exception handler,cause: " + ex.getClass().getName() + "," + ex.getMessage();
+		}
+	}
+
+	```
+	
+-	全局统一响应格式处理  
+	在实际项目开发中，基于rest的服务一般都会定义统一的响应格式，如下面所示格式：  
+	
+	```json
+	{
+		"code": 0,
+		"data": data,
+		"msg": "OK"
+	}
+	```
+	
+	为了避免在每个方法的时候都要执行相同的处理操作，dorado支持定义一个ai.houyi.dorado.rest.http.MethodReturnValueHandler来  
+	实现这个功能
+	
+	```java
+	public class TestMethodReturnValueHandler implements MethodReturnValueHandler {
+
+		@Override
+		public Object handleMethodReturnValue(Object value, MethodDescriptor methodDescriptor) {
+			return TestResp.builder().withCode(0).withMsg("OK").withData(value).build();
+		}
+	}
+	```
+	
 -   More examples
 
 Please visit https://github.com/javagossip/dorado-examples
@@ -225,7 +276,7 @@ SpringBoot集成
     <dependency>
         <groupId>ai.houyi</groupId>
         <artifactId>dorado-spring-boot-starter</artifactId>
-        <version>0.0.22</version>
+        <version>${dorado.version}</version>
     </dependency>
     ```
 
@@ -280,7 +331,7 @@ swagger集成
    <dependency>
        <groupId>ai.houyi</groupId>
        <artifactId>dorado-swagger-ui</artifactId>
-       <version>0.0.17</version>
+       <version>${dorado.version}</version>
    </dependency>
 ```
 
@@ -317,7 +368,7 @@ public class ApiInfoBuilderImpl implements ApiInfoBuilder {
 }
 ```
 
-非spring环境需要在resources/META-INF/services下的mobi.f2time.dorado.swagger.ext.ApiInfoBuilder文件中增加如下配置：\
+非spring环境需要在resources/META-INF/services下的mobi.f2time.dorado.swagger.ext.ApiInfoBuilder文件中增加如下配置：  
 **mobi.f2time.dorado.demo.ApiInfoBuilderImpl**
 
 -   在controller实现里面增加swagger相关的注解即可自动生成在线的api doc

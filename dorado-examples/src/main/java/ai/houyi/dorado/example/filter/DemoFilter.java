@@ -12,7 +12,6 @@ import ai.houyi.dorado.rest.http.HttpResponse;
  * @author weiping wang
  *
  */
-@FilterPath(include = "/campaign/*")
 public class DemoFilter implements Filter {
 
 	@Override
