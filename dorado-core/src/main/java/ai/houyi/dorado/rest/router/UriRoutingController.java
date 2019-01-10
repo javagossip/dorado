@@ -24,6 +24,7 @@ import ai.houyi.dorado.rest.MessageBodyConverter;
 import ai.houyi.dorado.rest.MessageBodyConverters;
 import ai.houyi.dorado.rest.ParameterValueResolver;
 import ai.houyi.dorado.rest.ParameterValueResolvers;
+import ai.houyi.dorado.rest.annotation.Status;
 import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.http.HttpResponse;
 import ai.houyi.dorado.rest.http.MethodReturnValueHandler;
@@ -79,29 +80,41 @@ public class UriRoutingController {
 					methodDescriptor.produce());
 			if (methodReturnValueHandler != null) {
 				invokeResult = methodReturnValueHandler.handleMethodReturnValue(invokeResult, methodDescriptor);
-				mediaType = MediaTypeUtils.defaultForType(invokeResult.getClass(), methodDescriptor.produce());
+				if (invokeResult != null) {
+					mediaType = MediaTypeUtils.defaultForType(invokeResult.getClass(), methodDescriptor.produce());
+				}
 			}
 			writeResponseBody(invokeResult, mediaType, response);
 		} catch (Exception ex) {
-			Throwable targetException = ex;
-			if (ex instanceof InvocationTargetException) {
-				targetException = ((InvocationTargetException) ex).getTargetException();
-			}
-			ExceptionHandler exceptionHandler = WebComponentRegistry.getWebComponentRegistry()
-					.getExceptionHandler(targetException.getClass());
-			if (exceptionHandler == null) {
-				throw new DoradoException(ex);
-			}
-
-			Object exceptionHandleResult = exceptionHandler.handleException(targetException);
-			if (exceptionHandleResult == null) {
-				throw new DoradoException(ex);
-			}
-			MediaType mediaType = MediaTypeUtils.defaultForType(exceptionHandleResult.getClass(),
-					methodDescriptor.produce());
-			writeResponseBody(exceptionHandleResult, mediaType, response);
+			handleException(ex, request, response);
 		}
 		return null;
+	}
+
+	private void handleException(Exception ex, HttpRequest request, HttpResponse response) {
+		Throwable targetException = ex;
+		if (ex instanceof InvocationTargetException) {
+			targetException = ((InvocationTargetException) ex).getTargetException();
+		}
+		
+		ExceptionHandler exceptionHandler = WebComponentRegistry.getWebComponentRegistry()
+				.getExceptionHandler(targetException.getClass());
+		if (exceptionHandler == null) {
+			throw new DoradoException(ex);
+		}
+
+		Object exceptionHandleResult = exceptionHandler.handleException(targetException);
+		if (exceptionHandleResult == null) {
+			throw new DoradoException(ex);
+		}
+		
+		MediaType mediaType = MediaTypeUtils.defaultForType(exceptionHandleResult.getClass(),
+				exceptionHandler.produce());
+		Status status = exceptionHandler.status();
+		if (status != null)
+			response.setStatus(status.value());
+		
+		writeResponseBody(exceptionHandleResult, mediaType, response);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

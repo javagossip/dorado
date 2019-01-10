@@ -15,9 +15,12 @@
  */
 package ai.houyi.dorado.rest.http.impl;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import ai.houyi.dorado.exception.DoradoException;
+import ai.houyi.dorado.rest.annotation.Status;
+import ai.houyi.dorado.rest.util.MethodDescriptor;
 
 /**
  * @author weiping wang
@@ -26,10 +29,12 @@ import ai.houyi.dorado.exception.DoradoException;
 public class ExceptionHandler {
 	private final Method exceptionHandleMethod;
 	private final Object exceptionAdvicor;
+	private final MethodDescriptor descriptor;
 
 	private ExceptionHandler(Object exceptionAdvicor, Method exceptionHandleMethod) {
 		this.exceptionAdvicor = exceptionAdvicor;
 		this.exceptionHandleMethod = exceptionHandleMethod;
+		this.descriptor = MethodDescriptor.create(exceptionAdvicor.getClass(), exceptionHandleMethod);
 
 		if (!exceptionHandleMethod.isAccessible()) {
 			exceptionHandleMethod.setAccessible(true);
@@ -38,6 +43,19 @@ public class ExceptionHandler {
 
 	public static ExceptionHandler newExceptionHandler(Object exceptionAdvicor, Method exceptionHandleMethod) {
 		return new ExceptionHandler(exceptionAdvicor, exceptionHandleMethod);
+	}
+
+	public Status status() {
+		Annotation[] annotations = descriptor.getAnnotations();
+		for (Annotation annotation : annotations) {
+			if (annotation.annotationType() == Status.class)
+				return (Status) annotation;
+		}
+		return null;
+	}
+
+	public String produce() {
+		return descriptor.produce();
 	}
 
 	public Object handleException(Throwable throwable) {
