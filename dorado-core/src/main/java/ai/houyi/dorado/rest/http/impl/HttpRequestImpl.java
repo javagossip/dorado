@@ -94,6 +94,8 @@ public class HttpRequestImpl implements HttpRequest {
 		} catch (Exception ex) {
 			LogUtils.warn(ex.getMessage());
 		} finally {
+			//注意这个地方，一定要调用destroy方法，如果不调用
+			//会导致内存溢出
 			if (decoder != null)
 				decoder.destroy();
 		}
