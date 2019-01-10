@@ -272,7 +272,7 @@ SpringBoot集成
 
 -   添加dorado-spring-boot-starter核心依赖
 
-    ``` {.xml}
+    ```xml
     <dependency>
         <groupId>ai.houyi</groupId>
         <artifactId>dorado-spring-boot-starter</artifactId>
@@ -282,7 +282,7 @@ SpringBoot集成
 
 -   基于springboot的dorado应用
 
-    ``` {.java}
+    ```java
     @SpringBootApplication
     @EnableDorado       //用这个注解开启dorado server
     public class SpringBootApplication {
@@ -327,7 +327,7 @@ swagger集成
 
 -   添加dorado-swagger-ui依赖
 
-``` {.xml}
+```xml
    <dependency>
        <groupId>ai.houyi</groupId>
        <artifactId>dorado-swagger-ui</artifactId>
@@ -337,7 +337,7 @@ swagger集成
 
 -   项目启动类中使用EnableSwagger注解启用swagger
 
-``` {.java}
+```java
 @EnableSwagger
 public class Application {
     public static void main(String[] args) throws Exception {
@@ -351,7 +351,7 @@ public class Application {
 -   设置Api文档全局信息\
     实现**mobi.f2time.dorado.swagger.ext.ApiInfoBuilder**接口
 
-``` {.java}
+```java
 @Component //如果是集成spring或springboot环境的话，直接增加component注解即可
 public class ApiInfoBuilderImpl implements ApiInfoBuilder {
 
@@ -373,7 +373,7 @@ public class ApiInfoBuilderImpl implements ApiInfoBuilder {
 
 -   在controller实现里面增加swagger相关的注解即可自动生成在线的api doc
 
-``` {.java}
+```java
 @Controller
 @Path("/campaign")
 @Api(tags = { "营销活动管理" })
