@@ -27,6 +27,7 @@ import ai.houyi.dorado.rest.ParameterValueResolvers;
 import ai.houyi.dorado.rest.annotation.Status;
 import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.http.HttpResponse;
+import ai.houyi.dorado.rest.http.MethodReturnValueHandler;
 import ai.houyi.dorado.rest.http.MethodReturnValueHandlerConfig;
 import ai.houyi.dorado.rest.http.impl.ExceptionHandler;
 import ai.houyi.dorado.rest.http.impl.HttpHeaderNames;
@@ -79,19 +80,35 @@ public class UriRoutingController {
 			// 支持对controller返回结果进行统一处理
 			MediaType mediaType = MediaTypeUtils.defaultForType(methodDescriptor.getReturnType(),
 					methodDescriptor.produce());
-			if (methodReturnValueHandlerConfig != null
-					&& !methodReturnValueHandlerConfig.exclude(request.getRequestURI())) {
+
+			if (supportHandleMethodReturnValue(request, methodDescriptor, methodReturnValueHandlerConfig)) {
 				invokeResult = methodReturnValueHandlerConfig.getHandler().handleMethodReturnValue(invokeResult,
 						methodDescriptor);
 				if (invokeResult != null) {
-					mediaType = MediaTypeUtils.defaultForType(invokeResult.getClass(), methodDescriptor.produce());
+					mediaType = MediaTypeUtils.defaultForType(invokeResult.getClass(), null);
 				}
+			}
+			if (methodReturnValueHandlerConfig != null
+					&& !methodReturnValueHandlerConfig.exclude(request.getRequestURI())) {
 			}
 			writeResponseBody(invokeResult, mediaType, response);
 		} catch (Exception ex) {
 			handleException(ex, request, response);
 		}
 		return null;
+	}
+
+	private boolean supportHandleMethodReturnValue(HttpRequest request, MethodDescriptor methodDescriptor,
+			MethodReturnValueHandlerConfig methodReturnValueHandlerConfig) {
+		if (methodReturnValueHandlerConfig == null)
+			return false;
+
+		MethodReturnValueHandler handler = methodReturnValueHandlerConfig.getHandler();
+		if (!methodReturnValueHandlerConfig.exclude(request.getRequestURI())
+				&& handler.supportsReturnType(methodDescriptor)) {
+			return true;
+		}
+		return false;
 	}
 
 	private void handleException(Exception ex, HttpRequest request, HttpResponse response) {

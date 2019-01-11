@@ -31,4 +31,9 @@ public class TestMethodReturnValueHandler implements MethodReturnValueHandler {
 			return value;
 		return TestResp.builder().withCode(0).withMsg("OK").withData(value).build();
 	}
+
+	@Override
+	public boolean supportsReturnType(MethodDescriptor returnType) {
+		return returnType.getReturnType()!=byte[].class;
+	}
 }

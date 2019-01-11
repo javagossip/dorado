@@ -29,8 +29,7 @@ import io.netty.util.CharsetUtil;
 public final class MediaTypeUtils {
 
 	public static MediaType forType(Class<?> type) {
-		if (TypeUtils.isPrimitiveOrWrapper(type) || String.class == type 
-				|| BigDecimal.class == type
+		if (TypeUtils.isPrimitiveOrWrapper(type) || String.class == type || BigDecimal.class == type
 				|| BigInteger.class == type) {
 			return MediaType.TEXT_HTML_TYPE.withCharset(CharsetUtil.UTF_8.name());
 		}
@@ -47,7 +46,7 @@ public final class MediaTypeUtils {
 	}
 
 	public static MediaType defaultForType(Class<?> type, String defaultType) {
-		if (MediaType.WILDCARD.equals(defaultType)) {
+		if (MediaType.WILDCARD.equals(defaultType) || StringUtils.isBlank(defaultType)) {
 			return forType(type);
 		}
 		return MediaType.valueOf(defaultType);

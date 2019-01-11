@@ -3,7 +3,6 @@
  */
 package ai.houyi.dorado.example;
 
-import ai.houyi.dorado.rest.http.impl.Webapp;
 import ai.houyi.dorado.rest.server.DoradoServer;
 import ai.houyi.dorado.rest.server.DoradoServerBuilder;
 import ai.houyi.dorado.swagger.EnableSwagger;

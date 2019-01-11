@@ -25,11 +25,18 @@ public interface MethodReturnValueHandler {
 	/**
 	 * 方法调用正常返回结果处理器
 	 * 
-	 * @param value
-	 *            方法执行结果
-	 * @param methodDescriptor
-	 *            方法描述
+	 * @param value            方法执行结果
+	 * @param methodDescriptor 方法描述
 	 * @return 处理后的返回结果
 	 */
 	Object handleMethodReturnValue(Object value, MethodDescriptor methodDescriptor);
+
+	/**
+	 * 判断指定返回类型是否需要被此handler支持
+	 * 
+	 * @param returnType the MethodDescriptor for this method
+	 * @return {@code true} if this handler supports the supplied return type;
+	 *         {@code false} otherwise
+	 */
+	public boolean supportsReturnType(MethodDescriptor returnType);
 }

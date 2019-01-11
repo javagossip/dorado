@@ -34,6 +34,7 @@ public class MethodReturnValueHandlerConfig {
 	public MethodReturnValueHandlerConfig(MethodReturnValueHandler handler) {
 		this.excludePaths = new ArrayList<>();
 
+		this.excludePaths.add("/");
 		this.excludePaths.add("/status");
 		this.excludePaths.add("/config");
 		this.excludePaths.add("/services");
