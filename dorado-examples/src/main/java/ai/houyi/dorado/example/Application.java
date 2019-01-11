@@ -3,6 +3,8 @@
  */
 package ai.houyi.dorado.example;
 
+import ai.houyi.dorado.rest.http.impl.Webapp;
+import ai.houyi.dorado.rest.server.DoradoServer;
 import ai.houyi.dorado.rest.server.DoradoServerBuilder;
 import ai.houyi.dorado.swagger.EnableSwagger;
 
@@ -13,6 +15,9 @@ import ai.houyi.dorado.swagger.EnableSwagger;
 @EnableSwagger
 public class Application {
 	public static void main(String[] args) throws Exception {
-		DoradoServerBuilder.forPort(18889).build().start();
+		DoradoServer server = DoradoServerBuilder.forPort(18889).build();
+		//Webapp.get().getMethodReturnValueHandlerConfig().addExcludePath("/file/upload/*");
+		
+		server.start();
 	}
 }

@@ -27,6 +27,8 @@ public class TestMethodReturnValueHandler implements MethodReturnValueHandler {
 
 	@Override
 	public Object handleMethodReturnValue(Object value, MethodDescriptor methodDescriptor) {
+		if (value.getClass() == byte[].class)
+			return value;
 		return TestResp.builder().withCode(0).withMsg("OK").withData(value).build();
 	}
 }

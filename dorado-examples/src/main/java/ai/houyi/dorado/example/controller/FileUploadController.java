@@ -34,7 +34,7 @@ public class FileUploadController {
 
 	@Produce("image/jpeg")
 	@POST
-	@Path("/singile")
+	@Path("/single")
 	@ApiOperation("文件上传测试")
 	public byte[] upload(MultipartFile file) {
 		System.out.println(file);
@@ -47,6 +47,7 @@ public class FileUploadController {
 	@POST
 	@Path("/multi")
 	@ApiOperation("多文件上传")
+	@Produce("application/json")
 	public String multiUpload(MultipartFile[] files) {
 		for (MultipartFile mf : files) {
 			System.out.println(mf.getName() + "," + mf.getContentType());
