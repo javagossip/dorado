@@ -27,6 +27,7 @@ import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.PathParameter;
 import io.swagger.models.parameters.QueryParameter;
 import io.swagger.models.properties.ArrayProperty;
+import io.swagger.models.properties.FileProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import io.swagger.models.properties.StringProperty;
@@ -80,13 +81,18 @@ public class DefaultParameterExtension implements SwaggerExtension {
 
 		List<Parameter> parameters = new ArrayList<Parameter>();
 		for (MethodParameter _parameter : methodDescriptor.getParameters()) {
+			Class<?> parameterType = _parameter.getType();
 			Parameter parameter = null;
 			Class<?> annotationType = _parameter.getAnnotationType();
 			if (annotationType == MultipartFile.class) {
-				FormParameter fp = new FormParameter().type("file").name(_parameter.getName());
-				Property schema = createProperty(type);
-				if (schema != null)
-					fp.setProperty(schema);
+				FormParameter fp = null;
+				if (parameterType.isArray()) {
+					fp = new FormParameter().type("array").name(_parameter.getName());
+					Property property = new FileProperty();
+					fp.setItems(property);
+				} else {
+					fp = new FormParameter().type("file").name(_parameter.getName());
+				}
 				parameter = fp;
 			} else if (annotationType == RequestParam.class) {
 				QueryParameter fp = new QueryParameter().name(_parameter.getName());
@@ -144,6 +150,7 @@ public class DefaultParameterExtension implements SwaggerExtension {
 			}
 		}
 		return parameters;
+
 	}
 
 	private boolean isRequestBodyParam(MethodParameter _parameter) {

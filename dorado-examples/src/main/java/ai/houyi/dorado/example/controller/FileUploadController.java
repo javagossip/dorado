@@ -29,17 +29,28 @@ import io.swagger.annotations.ApiOperation;
  */
 @Controller
 @Path("/file/upload")
-@Api(tags= {"文件上传"})
+@Api(tags = { "文件上传" })
 public class FileUploadController {
-	
+
 	@Produce("image/jpeg")
 	@POST
+	@Path("/singile")
 	@ApiOperation("文件上传测试")
 	public byte[] upload(MultipartFile file) {
 		System.out.println(file);
 		System.out.println(file.getContent().length);
-		
-		//saveFile(file);
+
+		// saveFile(file);
 		return file.getContent();
+	}
+
+	@POST
+	@Path("/multi")
+	@ApiOperation("多文件上传")
+	public String multiUpload(MultipartFile[] files) {
+		for (MultipartFile mf : files) {
+			System.out.println(mf.getName() + "," + mf.getContentType());
+		}
+		return "OK";
 	}
 }

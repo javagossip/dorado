@@ -86,9 +86,11 @@ public class HttpRequestImpl implements HttpRequest {
 				if (_type == HttpDataType.Attribute) {
 					Attribute attribute = (Attribute) httpData;
 					parseAttribute(attribute);
+					attribute.release();
 				} else if (_type == HttpDataType.FileUpload) {
 					FileUpload upload = (FileUpload) httpData;
 					multipartFiles.add(MultipartFileFactory.create(upload));
+					upload.release();
 				}
 			}
 		} catch (Exception ex) {
@@ -96,8 +98,8 @@ public class HttpRequestImpl implements HttpRequest {
 		} finally {
 			//注意这个地方，一定要调用destroy方法，如果不调用
 			//会导致内存溢出
-			if (decoder != null)
-				decoder.destroy();
+			/*if (decoder != null)
+				decoder.destroy();*/
 		}
 	}
 

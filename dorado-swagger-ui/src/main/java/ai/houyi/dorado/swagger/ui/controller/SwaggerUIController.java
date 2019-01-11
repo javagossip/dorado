@@ -22,7 +22,6 @@ import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.http.HttpResponse;
 import ai.houyi.dorado.rest.util.ClassLoaderUtils;
 import ai.houyi.dorado.rest.util.IOUtils;
-import ai.houyi.dorado.rest.util.LogUtils;
 
 /**
  * @author weiping wang
@@ -36,7 +35,6 @@ public class SwaggerUIController {
 	@GET
 	public void readStaticResource(HttpRequest request, HttpResponse response) {
 		String uri = request.getRequestURI();
-		LogUtils.info(String.format("access static resource uri: %s", uri));
 
 		String resource = String.format("%s%s", RESOURCE_PREFIX, uri);
 		byte[] data = IOUtils.readBytes(ClassLoaderUtils.getStream(resource));
@@ -48,7 +46,7 @@ public class SwaggerUIController {
 		} else if (uri.endsWith(".js")) {
 			response.setHeader("content-type", "text/javascript;charset=UTF-8");
 		} else if (uri.endsWith(".map")) {
-			//
+			//DO NOTHING
 		}
 		response.write(data);
 	}

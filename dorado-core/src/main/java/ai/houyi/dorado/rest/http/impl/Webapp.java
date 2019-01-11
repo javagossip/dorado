@@ -29,6 +29,7 @@ import ai.houyi.dorado.rest.annotation.FilterPath;
 import ai.houyi.dorado.rest.controller.RootController;
 import ai.houyi.dorado.rest.http.Filter;
 import ai.houyi.dorado.rest.http.MethodReturnValueHandler;
+import ai.houyi.dorado.rest.http.MethodReturnValueHandlerConfig;
 import ai.houyi.dorado.rest.router.UriRoutingRegistry;
 import ai.houyi.dorado.rest.util.LogUtils;
 import ai.houyi.dorado.rest.util.PackageScanner;
@@ -41,7 +42,7 @@ public class Webapp {
 	private static Webapp webapp;
 
 	private final String[] packages;
-	private MethodReturnValueHandler methodReturnValueHandler;
+	private MethodReturnValueHandlerConfig methodReturnValueHandlerConfig;
 
 	private Webapp(String[] packages, boolean springOn) {
 		this.packages = packages;
@@ -63,8 +64,8 @@ public class Webapp {
 		return webapp;
 	}
 
-	public MethodReturnValueHandler getMethodReturnValueHandler() {
-		return this.methodReturnValueHandler;
+	public MethodReturnValueHandlerConfig getMethodReturnValueHandlerConfig() {
+		return this.methodReturnValueHandlerConfig;
 	}
 
 	public void initialize() {
@@ -100,10 +101,12 @@ public class Webapp {
 		}
 
 		if (MethodReturnValueHandler.class.isAssignableFrom(type)) {
-			if (this.methodReturnValueHandler != null) {
+			if (this.methodReturnValueHandlerConfig != null) {
 				throw new IllegalStateException("Only one instance for [MethodReturnValueHandler] is allowed");
 			}
-			this.methodReturnValueHandler = (MethodReturnValueHandler) Dorado.beanContainer.getBean(type);
+
+			MethodReturnValueHandler returnValueHandler = (MethodReturnValueHandler) Dorado.beanContainer.getBean(type);
+			this.methodReturnValueHandlerConfig = new MethodReturnValueHandlerConfig(returnValueHandler);
 		}
 
 		if (Filter.class.isAssignableFrom(type)) {

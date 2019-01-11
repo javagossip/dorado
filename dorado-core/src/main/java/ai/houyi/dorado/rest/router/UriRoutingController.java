@@ -27,7 +27,7 @@ import ai.houyi.dorado.rest.ParameterValueResolvers;
 import ai.houyi.dorado.rest.annotation.Status;
 import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.http.HttpResponse;
-import ai.houyi.dorado.rest.http.MethodReturnValueHandler;
+import ai.houyi.dorado.rest.http.MethodReturnValueHandlerConfig;
 import ai.houyi.dorado.rest.http.impl.ExceptionHandler;
 import ai.houyi.dorado.rest.http.impl.HttpHeaderNames;
 import ai.houyi.dorado.rest.http.impl.WebComponentRegistry;
@@ -71,15 +71,18 @@ public class UriRoutingController {
 		}
 
 		Object[] args = resolveParameters(request, response, pathVariables);
-		MethodReturnValueHandler methodReturnValueHandler = Webapp.get().getMethodReturnValueHandler();
+		MethodReturnValueHandlerConfig methodReturnValueHandlerConfig = Webapp.get()
+				.getMethodReturnValueHandlerConfig();
 
 		try {
 			Object invokeResult = invokeMethod.invoke(methodDescriptor.getInvokeTarget(), args);
 			// 支持对controller返回结果进行统一处理
 			MediaType mediaType = MediaTypeUtils.defaultForType(methodDescriptor.getReturnType(),
 					methodDescriptor.produce());
-			if (methodReturnValueHandler != null) {
-				invokeResult = methodReturnValueHandler.handleMethodReturnValue(invokeResult, methodDescriptor);
+			if (methodReturnValueHandlerConfig != null
+					&& !methodReturnValueHandlerConfig.exclude(request.getRequestURI())) {
+				invokeResult = methodReturnValueHandlerConfig.getHandler().handleMethodReturnValue(invokeResult,
+						methodDescriptor);
 				if (invokeResult != null) {
 					mediaType = MediaTypeUtils.defaultForType(invokeResult.getClass(), methodDescriptor.produce());
 				}
@@ -96,7 +99,7 @@ public class UriRoutingController {
 		if (ex instanceof InvocationTargetException) {
 			targetException = ((InvocationTargetException) ex).getTargetException();
 		}
-		
+
 		ExceptionHandler exceptionHandler = WebComponentRegistry.getWebComponentRegistry()
 				.getExceptionHandler(targetException.getClass());
 		if (exceptionHandler == null) {
@@ -107,13 +110,13 @@ public class UriRoutingController {
 		if (exceptionHandleResult == null) {
 			throw new DoradoException(ex);
 		}
-		
+
 		MediaType mediaType = MediaTypeUtils.defaultForType(exceptionHandleResult.getClass(),
 				exceptionHandler.produce());
 		Status status = exceptionHandler.status();
 		if (status != null)
 			response.setStatus(status.value());
-		
+
 		writeResponseBody(exceptionHandleResult, mediaType, response);
 	}
 
