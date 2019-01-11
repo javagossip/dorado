@@ -20,6 +20,8 @@ import ai.houyi.dorado.rest.annotation.POST;
 import ai.houyi.dorado.rest.annotation.Path;
 import ai.houyi.dorado.rest.annotation.Produce;
 import ai.houyi.dorado.rest.http.MultipartFile;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 /**
  * @author weiping wang
@@ -27,10 +29,12 @@ import ai.houyi.dorado.rest.http.MultipartFile;
  */
 @Controller
 @Path("/file/upload")
+@Api(tags= {"文件上传"})
 public class FileUploadController {
 	
 	@Produce("image/jpeg")
 	@POST
+	@ApiOperation("文件上传测试")
 	public byte[] upload(MultipartFile file) {
 		System.out.println(file);
 		System.out.println(file.getContent().length);

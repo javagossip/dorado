@@ -84,6 +84,9 @@ public class DefaultParameterExtension implements SwaggerExtension {
 			Class<?> annotationType = _parameter.getAnnotationType();
 			if (annotationType == MultipartFile.class) {
 				FormParameter fp = new FormParameter().type("file").name(_parameter.getName());
+				Property schema = createProperty(type);
+				if (schema != null)
+					fp.setProperty(schema);
 				parameter = fp;
 			} else if (annotationType == RequestParam.class) {
 				QueryParameter fp = new QueryParameter().name(_parameter.getName());
