@@ -91,8 +91,4 @@ public class SwaggerFactory {
 		swagger = _swagger;
 		return _swagger;
 	}
-
-	public static void main(String[] args) throws Exception {
-
-	}
 }

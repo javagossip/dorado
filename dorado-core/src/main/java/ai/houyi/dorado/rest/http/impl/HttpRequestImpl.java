@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import ai.houyi.dorado.netty.ext.HttpPostRequestDecoder;
 import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.http.MultipartFile;
 import ai.houyi.dorado.rest.util.LogUtils;
@@ -36,7 +37,6 @@ import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import io.netty.handler.codec.http.multipart.Attribute;
 import io.netty.handler.codec.http.multipart.FileUpload;
-import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData.HttpDataType;
 
@@ -86,20 +86,17 @@ public class HttpRequestImpl implements HttpRequest {
 				if (_type == HttpDataType.Attribute) {
 					Attribute attribute = (Attribute) httpData;
 					parseAttribute(attribute);
-					attribute.release();
 				} else if (_type == HttpDataType.FileUpload) {
 					FileUpload upload = (FileUpload) httpData;
 					multipartFiles.add(MultipartFileFactory.create(upload));
-					upload.release();
 				}
 			}
 		} catch (Exception ex) {
 			LogUtils.warn(ex.getMessage());
 		} finally {
-			//注意这个地方，一定要调用destroy方法，如果不调用
-			//会导致内存溢出
-			/*if (decoder != null)
-				decoder.destroy();*/
+			// 注意这个地方，一定要调用destroy方法，如果不调用会导致内存泄漏
+			if (decoder != null)
+				decoder.destroy();
 		}
 	}
 
