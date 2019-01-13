@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ai.houyi</groupId>
 	<artifactId>dorado</artifactId>
@@ -22,6 +24,8 @@
 		<asm.version>6.2</asm.version>
 		<fastjson.version>1.2.47</fastjson.version>
 		<spring-boot.version>2.1.1.RELEASE</spring-boot.version>
+
+		<additionalparam>-Xdoclint:none</additionalparam>
 	</properties>
 
 	<licenses>
@@ -44,8 +48,8 @@
 		<connection>scm:git:https://github.com/javagossip/dorado.git</connection>
 		<developerConnection>scm:git:https://github.com/javagossip/dorado.git</developerConnection>
 		<url>https://github.com/javagossip/dorado</url>
-	  <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
 
 	<build>
 		<resources>
