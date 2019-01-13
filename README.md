@@ -220,6 +220,11 @@ public String uploadFile(MultipartFile[] fs,String name) {
 		public Object handleMethodReturnValue(Object value, MethodDescriptor methodDescriptor) {
 			return TestResp.builder().withCode(0).withMsg("OK").withData(value).build();
 		}
+		
+		//自定义这个方法实现，用来控制哪些返回值需要被这个类进行处理
+		public boolean supportsReturnType(MethodDescriptor returnType) {
+		    return true;
+		}
 	}
 	```
 	
