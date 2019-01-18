@@ -30,7 +30,6 @@ import java.lang.annotation.Target;
  *
  */
 public @interface FilterPath {
-	String[] exclude();
-
-	String[] include();
+	String[] exclude() default {};
+	String[] include() default {};
 }

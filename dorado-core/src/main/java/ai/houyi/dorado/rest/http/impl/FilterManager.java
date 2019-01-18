@@ -39,19 +39,23 @@ public class FilterManager {
 			List<String> excludePathPatterns = config.getExcludePathPatterns();
 			List<String> pathPatterns = config.getPathPatterns();
 
-			if (excludePathPatterns != null) {
+			// 如果在排除路径中忽略
+			if (excludePathPatterns != null && !excludePathPatterns.isEmpty()) {
 				for (String excluePathPattern : excludePathPatterns) {
 					if (pathMatcher.match(excluePathPattern, uri)) {
 						continue filterLoop;
 					}
 				}
 			}
-
-			if (pathPatterns != null) {
-				for (String pathPattern : pathPatterns) {
-					if (pathMatcher.match(pathPattern, uri)) {
-						filters.add(config.getFilter());
-					}
+			// 如果只有排除路径没有include路径的话直接加入此过滤器
+			if (pathPatterns == null || pathPatterns.isEmpty()) {
+				filters.add(config.getFilter());
+				continue filterLoop;
+			}
+			// 如果存在include路径，则再判断是否匹配include路径，匹配则加入
+			for (String pathPattern : pathPatterns) {
+				if (pathMatcher.match(pathPattern, uri)) {
+					filters.add(config.getFilter());
 				}
 			}
 		}
