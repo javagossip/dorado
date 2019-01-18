@@ -115,11 +115,24 @@ public class Webapp {
 				return;
 			}
 
-			FilterConfiguration filterConfiguration = FilterConfiguration.builder()
-					.withPathPatterns(Arrays.asList(filterPath.include()))
-					.withExcludePathPatterns(Arrays.asList(filterPath.exclude()))
-					.withFilter((Filter) Dorado.beanContainer.getBean(type)).build();
-			FilterManager.getInstance().addFilterConfiguration(filterConfiguration);
+			String[] include = filterPath.include();
+			String[] exclude = filterPath.exclude();
+
+			if (include == null && exclude == null) {
+				return;
+			}
+
+			FilterConfiguration.Builder fcb = FilterConfiguration.builder();
+			if (include != null && include.length > 0) {
+				fcb.withPathPatterns(Arrays.asList(include));
+			}
+
+			if (exclude != null && exclude.length > 0) {
+				fcb.withExcludePathPatterns(Arrays.asList(exclude));
+			}
+
+			fcb.withFilter((Filter) Dorado.beanContainer.getBean(type));
+			FilterManager.getInstance().addFilterConfiguration(fcb.build());
 		} else {
 			initializeUriRouting(type);
 		}
