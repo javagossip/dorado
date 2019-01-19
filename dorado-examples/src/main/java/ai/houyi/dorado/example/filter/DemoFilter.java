@@ -3,7 +3,6 @@
  */
 package ai.houyi.dorado.example.filter;
 
-import ai.houyi.dorado.rest.annotation.FilterPath;
 import ai.houyi.dorado.rest.http.Filter;
 import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.http.HttpResponse;
