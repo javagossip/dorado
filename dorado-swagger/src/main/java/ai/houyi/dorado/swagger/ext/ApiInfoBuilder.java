@@ -29,6 +29,6 @@ public interface ApiInfoBuilder {
 	Info buildInfo();
 
 	default List<Scheme> schemes() {
-		return Arrays.asList(Scheme.HTTP, Scheme.HTTPS);
+		return Arrays.asList(Scheme.HTTP,Scheme.HTTPS);
 	}
 }
