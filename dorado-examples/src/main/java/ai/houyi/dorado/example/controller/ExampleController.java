@@ -30,7 +30,6 @@ public class ExampleController {
 		return campaign;
 	}
 
-	@GET
 	@Path("/name/{name}")
 	public String campaignName(String name) {
 		return String.format("hello_campaign, %s", name);

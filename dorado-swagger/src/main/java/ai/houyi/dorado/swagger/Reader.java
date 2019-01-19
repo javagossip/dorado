@@ -996,26 +996,19 @@ public class Reader {
 		} else if (method.getAnnotation(HttpMethod.class) != null) {
 			HttpMethod httpMethod = method.getAnnotation(HttpMethod.class);
 			return httpMethod.value().toLowerCase();
-		} else if (!StringUtils.isEmpty(getHttpMethodFromCustomAnnotations(method))) {
-			return getHttpMethodFromCustomAnnotations(method);
-		} else if ((ReflectionUtils.getOverriddenMethod(method)) != null) {
-			return extractOperationMethod(apiOperation, ReflectionUtils.getOverriddenMethod(method), chain);
-		} else if (chain != null && chain.hasNext()) {
-			return chain.next().extractOperationMethod(apiOperation, method, chain);
-		} else {
-			return null;
+		}  else {
+			return "get";
 		}
 	}
 
-	private String getHttpMethodFromCustomAnnotations(Method method) {
-		for (Annotation methodAnnotation : method.getAnnotations()) {
-			HttpMethod httpMethod = methodAnnotation.annotationType().getAnnotation(HttpMethod.class);
-			if (httpMethod != null) {
-				return httpMethod.value().toLowerCase();
-			}
-		}
-		return null;
-	}
+	/*
+	 * private String getHttpMethodFromCustomAnnotations(Method method) { for
+	 * (Annotation methodAnnotation : method.getAnnotations()) { HttpMethod
+	 * httpMethod =
+	 * methodAnnotation.annotationType().getAnnotation(HttpMethod.class); if
+	 * (httpMethod != null) { return httpMethod.value().toLowerCase(); } } return
+	 * null; }
+	 */
 
 	private static Set<Scheme> parseSchemes(String schemes) {
 		final Set<Scheme> result = EnumSet.noneOf(Scheme.class);
