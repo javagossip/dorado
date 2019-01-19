@@ -10,6 +10,7 @@ import ai.houyi.dorado.rest.annotation.DELETE;
 import ai.houyi.dorado.rest.annotation.GET;
 import ai.houyi.dorado.rest.annotation.POST;
 import ai.houyi.dorado.rest.annotation.Path;
+import io.swagger.annotations.Api;
 
 /**
  * @author wangweiping
@@ -17,6 +18,7 @@ import ai.houyi.dorado.rest.annotation.Path;
  */
 @Controller
 @Path("/campaign")
+@Api(tags="推广活动管理")
 public class ExampleController {
 	@Path("/{id:[0-9]+}")
 	@GET
@@ -28,9 +30,10 @@ public class ExampleController {
 		return campaign;
 	}
 
-	@Path("/name")
-	public String campaignName() {
-		return String.format("hello_campaign", "");
+	@GET
+	@Path("/name/{name}")
+	public String campaignName(String name) {
+		return String.format("hello_campaign, %s", name);
 	}
 
 	@POST

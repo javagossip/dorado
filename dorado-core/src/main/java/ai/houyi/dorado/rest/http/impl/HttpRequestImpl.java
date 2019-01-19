@@ -65,12 +65,12 @@ public class HttpRequestImpl implements HttpRequest {
 		this.multipartFiles = new ArrayList<>();
 
 		this.uriParser = new URIParser();
-		uriParser.parse(request.uri());
 
 		// 解析querystring上面的参数
-		this.queryStringDecoder = new QueryStringDecoder(request.uri());
-		this.parameters.putAll(queryStringDecoder.parameters());
-		this.in = new InputStreamImpl(request);
+		queryStringDecoder = new QueryStringDecoder(request.uri());
+		uriParser.parse(queryStringDecoder.path());
+		parameters.putAll(queryStringDecoder.parameters());
+		in = new InputStreamImpl(request);
 
 		if (request.method() == HttpMethod.POST) {
 			parseHttpPostRequest(request);

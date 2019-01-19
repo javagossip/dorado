@@ -12,7 +12,6 @@ import ai.houyi.dorado.rest.http.HttpResponse;
  * @author weiping wang
  *
  */
-@FilterPath(exclude= {"/api-docs/*"})
 public class DemoFilter implements Filter {
 
 	@Override
