@@ -16,6 +16,7 @@
 package ai.houyi.dorado.swagger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -23,7 +24,10 @@ import java.util.Set;
 
 import ai.houyi.dorado.Dorado;
 import ai.houyi.dorado.rest.util.PackageScanner;
-import ai.houyi.dorado.swagger.ext.ApiInfoBuilder;
+import ai.houyi.dorado.swagger.ext.ApiContext;
+import ai.houyi.dorado.swagger.ext.ApiContextBuilder;
+import ai.houyi.dorado.swagger.ext.ApiKey;
+import io.swagger.models.Scheme;
 import io.swagger.models.SecurityRequirement;
 import io.swagger.models.Swagger;
 import io.swagger.models.auth.ApiKeyAuthDefinition;
@@ -35,17 +39,17 @@ import io.swagger.models.auth.In;
  */
 public class SwaggerFactory {
 	private static Swagger swagger;
-	private static ApiInfoBuilder apiInfoBuilder;
+	private static ApiContextBuilder apiContextBuilder;
 
 	static {
-		ServiceLoader<ApiInfoBuilder> apiInfoBuilders = ServiceLoader.load(ApiInfoBuilder.class);
-		apiInfoBuilder = apiInfoBuilders.iterator().hasNext() ? apiInfoBuilders.iterator().next() : null;
+		ServiceLoader<ApiContextBuilder> apiContextBuilders = ServiceLoader.load(ApiContextBuilder.class);
+		apiContextBuilder = apiContextBuilders.iterator().hasNext() ? apiContextBuilders.iterator().next() : null;
 
 		try {
 
-			if (apiInfoBuilder == null) {
+			if (apiContextBuilder == null) {
 				if (Dorado.isEnableSpring) {
-					apiInfoBuilder = Dorado.beanContainer.getBean(ApiInfoBuilder.class);
+					apiContextBuilder = Dorado.beanContainer.getBean(ApiContextBuilder.class);
 				}
 			}
 		} catch (Throwable ex) {
@@ -89,20 +93,34 @@ public class SwaggerFactory {
 		}
 
 		Swagger _swagger = reader.read(classes);
-		
-		ApiKeyAuthDefinition apiKeyAuth = new ApiKeyAuthDefinition("token", In.HEADER);
-		_swagger.securityDefinition("auth", apiKeyAuth);
-		
-		List<SecurityRequirement> securityRequirements = new ArrayList<>();
-		SecurityRequirement sr = new SecurityRequirement();
-		sr.requirement("auth");
-		securityRequirements.add(sr);
-		_swagger.setSecurity(securityRequirements);
-		
-		if (apiInfoBuilder != null) {
-			_swagger.setInfo(apiInfoBuilder.buildInfo());
-			_swagger.setSchemes(apiInfoBuilder.schemes());
+		_swagger.setSchemes(Arrays.asList(Scheme.HTTP, Scheme.HTTPS));
+
+		if (apiContextBuilder == null) {
+			swagger = _swagger;
+			return _swagger;
 		}
+
+		ApiContext apiContext = apiContextBuilder.buildApiContext();
+		if (apiContext == null) {
+			swagger = _swagger;
+			return _swagger;
+		}
+
+		ApiKey apiKey = apiContext.getApiKey();
+		if (apiKey != null) {
+			ApiKeyAuthDefinition apiKeyAuth = new ApiKeyAuthDefinition(apiKey.getName(),
+					In.forValue(apiKey.getIn() == null ? "header" : apiKey.getIn()));
+			_swagger.securityDefinition("auth", apiKeyAuth);
+
+			List<SecurityRequirement> securityRequirements = new ArrayList<>();
+			SecurityRequirement sr = new SecurityRequirement();
+			sr.requirement("auth");
+			securityRequirements.add(sr);
+			_swagger.setSecurity(securityRequirements);
+		}
+		if (apiContext.getInfo() != null)
+			_swagger.setInfo(apiContext.getInfo());
+
 		swagger = _swagger;
 		return _swagger;
 	}

@@ -1,7 +1,7 @@
 /*
- * Copyright 2017 The OpenDSP Project
+ * Copyright 2017-2019 The OpenAds Project
  *
- * The OpenDSP Project licenses this file to you under the Apache License,
+ * The OpenAds Project licenses this file to you under the Apache License,
  * version 2.0 (the "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at:
  *
@@ -15,20 +15,10 @@
  */
 package ai.houyi.dorado.swagger.ext;
 
-import java.util.Arrays;
-import java.util.List;
-
-import io.swagger.models.Info;
-import io.swagger.models.Scheme;
-
 /**
  * @author weiping wang
  *
  */
-public interface ApiInfoBuilder {
-	Info buildInfo();
-
-	default List<Scheme> schemes() {
-		return Arrays.asList(Scheme.HTTP,Scheme.HTTPS);
-	}
+public interface ApiContextBuilder {
+	ApiContext buildApiContext();
 }
