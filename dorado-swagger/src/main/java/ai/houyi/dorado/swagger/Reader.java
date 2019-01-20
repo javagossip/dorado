@@ -106,8 +106,7 @@ public class Reader {
 	 * found listeners will be instantiated before any of the classes are scanned
 	 * for Swagger annotations - so they can be invoked accordingly.
 	 *
-	 * @param classes
-	 *            a set of classes to scan
+	 * @param classes a set of classes to scan
 	 * @return the generated Swagger definition
 	 */
 	public Swagger read(Set<Class<?>> classes) {
@@ -243,6 +242,7 @@ public class Reader {
 			}
 			ai.houyi.dorado.rest.annotation.Path methodPath = ReflectionUtils.getAnnotation(method,
 					ai.houyi.dorado.rest.annotation.Path.class);
+			// if(methodPath==null) continue;
 
 			String operationPath = getPath(apiPath, methodPath);
 			Map<String, String> regexMap = new LinkedHashMap<String, String>();
@@ -254,7 +254,8 @@ public class Reader {
 
 				final ApiOperation apiOperation = ReflectionUtils.getAnnotation(method, ApiOperation.class);
 				String httpMethod = extractOperationMethod(apiOperation, method, SwaggerExtensions.chain());
-
+				if (methodPath == null && httpMethod == null)
+					continue;
 				Operation operation = null;
 				if (apiOperation != null || httpMethod != null || methodPath != null) {
 					operation = parseMethod(cls, method, annotatedMethod, globalParameters, classApiResponses);
@@ -804,14 +805,13 @@ public class Reader {
 
 		operation.operationId(operationId);
 
-		
 		if (operation.getConsumes() == null || operation.getConsumes().isEmpty()) {
 			final Consume consumes = ReflectionUtils.getAnnotation(method, Consume.class);
 			if (consumes != null) {
 				// for (String mediaType : ReaderUtils.splitContentValues(consumes.value())) {
 				operation.consumes(Arrays.asList(consumes.value()));
 				// }
-			}else {
+			} else {
 				operation.consumes(methodDescriptor.consume());
 			}
 		}
@@ -822,7 +822,7 @@ public class Reader {
 				// for (String mediaType : ReaderUtils.splitContentValues(produces.value())) {
 				operation.produces(produces.value());
 				// }
-			}else {
+			} else {
 				operation.produces(methodDescriptor.produce());
 			}
 		}
@@ -862,7 +862,7 @@ public class Reader {
 		}
 
 		Annotation[][] paramAnnotations = ReflectionUtils.getParameterAnnotations(method);
-		//MethodDescriptor methodDescriptor = MethodDescriptor.create(cls, method);
+		// MethodDescriptor methodDescriptor = MethodDescriptor.create(cls, method);
 
 		if (annotatedMethod == null) {
 			Type[] genericParameterTypes = method.getGenericParameterTypes();
@@ -996,8 +996,8 @@ public class Reader {
 		} else if (method.getAnnotation(HttpMethod.class) != null) {
 			HttpMethod httpMethod = method.getAnnotation(HttpMethod.class);
 			return httpMethod.value().toLowerCase();
-		}  else {
-			return "get";
+		} else {
+			return null;
 		}
 	}
 
