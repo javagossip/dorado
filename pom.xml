@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ai.houyi</groupId>
 	<artifactId>dorado</artifactId>
-	<version>0.0.42-SNAPSHOT</version>
+	<version>0.0.42</version>
 	<name>dorado</name>
 	<description>The restful server based netty4&amp;jdk8</description>
 	<url>https://github.com/javagossip/dorado</url>
@@ -46,7 +46,7 @@
 		<connection>scm:git:https://github.com/javagossip/dorado.git</connection>
 		<developerConnection>scm:git:https://github.com/javagossip/dorado.git</developerConnection>
 		<url>https://github.com/javagossip/dorado</url>
-		<tag>HEAD</tag>
+		<tag>v0.0.42</tag>
 	</scm>
 
 	<build>
