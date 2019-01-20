@@ -26,7 +26,9 @@ public class ApiContextBuilderImpl implements ApiContextBuilder{
 				.termsOfService("http://swagger.io/terms/").description("Dorado服务框架api接口文档")
 				.title("dorado demo api接口文档").version("1.0.0");
 
-		ApiContext apiContext = ApiContext.builder().withApiKey(ApiKey.builder().withName("Authorization").build())
+		//构造api访问授权的apiKey
+		ApiKey apiKey = ApiKey.builder().withName("Authorization").withIn("header").build();
+		ApiContext apiContext = ApiContext.builder().withApiKey(apiKey)
 				.withInfo(info).build();
 
 		return apiContext;
