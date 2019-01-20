@@ -65,7 +65,7 @@ public class UriRoutingController {
 			String contentType = request.getHeader(HttpHeaderNames.CONTENT_TYPE);
 			MediaType requestMediaType = MediaType.valueOf(contentType);
 
-			if (!requestMediaType.isCompatible(expectedMediaType) || requestMediaType == null) {
+			if (requestMediaType != null && !requestMediaType.isCompatible(expectedMediaType)) {
 				throw new DoradoException(String.format("Invalid request content_type, expected: [%s], actual: [%s]",
 						methodDescriptor.consume(), contentType));
 			}
