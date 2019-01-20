@@ -302,12 +302,12 @@ SpringBoot集成
     
     ```java
       @DoradoSpringBootApplication
-        public class SpringBootApplication {
+      public class SpringBootApplication {
 
             public static void main(String[] args) throws Exception {
                 SpringApplication.run(SpringBootApplication.class, args);
             }
-        }
+       }
     ```
     
 -   Dorado框架的spring-boot配置参数
