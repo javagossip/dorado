@@ -37,7 +37,7 @@ public class SwaggerAutoConfiguration {
 	@Autowired
 	private SwaggerProperties swaggerConfig;
 
-	@Bean
+	@Bean(name = "swaggerApiContext")
 	public ApiContext buildApiContext() {
 		Info info = new Info();
 		info.title(swaggerConfig.getTitle()).description(swaggerConfig.getDescription())
@@ -50,10 +50,15 @@ public class SwaggerAutoConfiguration {
 
 		info.setLicense(new License().name(swaggerConfig.getLicense()).url(swaggerConfig.getLicenseUrl()));
 
-		ApiKey apiKey = ApiKey.builder().withIn(swaggerConfig.getApiKey().getIn())
-				.withName(swaggerConfig.getApiKey().getName()).build();
+		ApiContext.Builder apiContextBuilder = ApiContext.builder().withInfo(info);
 
-		ApiContext apiContext = ApiContext.builder().withInfo(info).withApiKey(apiKey).build();
-		return apiContext;
+		ai.houyi.dorado.swagger.springboot.SwaggerProperties.ApiKey apiKey = swaggerConfig.getApiKey();
+		if (apiKey != null) {
+			ApiKey _apiKey = ApiKey.builder().withIn(swaggerConfig.getApiKey().getIn())
+					.withName(swaggerConfig.getApiKey().getName()).build();
+			apiContextBuilder.withApiKey(_apiKey);
+		}
+
+		return apiContextBuilder.build();
 	}
 }

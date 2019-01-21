@@ -29,9 +29,18 @@ public interface BeanContainer {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T> T getBean(Class<T> beanType) {
+			if (beanType.isInterface())
+				return null;
 			return (T) ClassLoaderUtils.newInstance(beanType);
+		}
+
+		@Override
+		public <T> T getBean(String name) {
+			return null;
 		}
 	};
 
 	<T> T getBean(Class<T> beanType);
+
+	<T> T getBean(String name);
 }

@@ -68,11 +68,15 @@ public final class SpringContainer implements BeanContainer {
 		if (type == RootController.class) {
 			return BeanContainer.DEFAULT.getBean(type);
 		}
+
 		try {
 			return applicationContext.getBean(type);
 		} catch (Throwable ex) {
-			return BeanContainer.DEFAULT.getBean(type);
+			if (!type.isInterface()) {
+				return BeanContainer.DEFAULT.getBean(type);
+			}
 		}
+		return null;
 	}
 
 	public static void create(String[] scanPackages) {
@@ -83,5 +87,14 @@ public final class SpringContainer implements BeanContainer {
 		DoradoApplicationContext applicationContext = new DoradoApplicationContext(scanPackages);
 		create(applicationContext);
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> applicationContext.close()));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T getBean(String name) {
+		if (applicationContext.containsBean(name))
+			return (T) applicationContext.getBean(name);
+		else
+			return null;
 	}
 }

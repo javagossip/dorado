@@ -52,7 +52,7 @@ public class SwaggerFactory {
 		try {
 			if (Dorado.isEnableSpring) {
 				apiContextBuilder = Dorado.beanContainer.getBean(ApiContextBuilder.class);
-				apiContext = Dorado.beanContainer.getBean(ApiContext.class);
+				apiContext = Dorado.beanContainer.getBean("swaggerApiContext");
 				if (apiContextBuilder == null)
 					apiContextBuilder = default_ctx_builder;
 			} else {
@@ -73,7 +73,7 @@ public class SwaggerFactory {
 	public static Swagger getSwagger() {
 		if (!swaggerEnable)
 			return new Swagger();
-		
+
 		if (swagger != null)
 			return swagger;
 
