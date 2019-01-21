@@ -40,24 +40,40 @@ import io.swagger.models.auth.In;
 public class SwaggerFactory {
 	private static Swagger swagger;
 	private static ApiContextBuilder apiContextBuilder;
+	private static ApiContext apiContext;
+	private static boolean swaggerEnable = true;
 
 	static {
 		ServiceLoader<ApiContextBuilder> apiContextBuilders = ServiceLoader.load(ApiContextBuilder.class);
-		apiContextBuilder = apiContextBuilders.iterator().hasNext() ? apiContextBuilders.iterator().next() : null;
+		ApiContextBuilder default_ctx_builder = apiContextBuilders.iterator().hasNext()
+				? apiContextBuilders.iterator().next()
+				: null;
 
 		try {
-
-			if (apiContextBuilder == null) {
-				if (Dorado.isEnableSpring) {
-					apiContextBuilder = Dorado.beanContainer.getBean(ApiContextBuilder.class);
-				}
+			if (Dorado.isEnableSpring) {
+				apiContextBuilder = Dorado.beanContainer.getBean(ApiContextBuilder.class);
+				apiContext = Dorado.beanContainer.getBean(ApiContext.class);
+				if (apiContextBuilder == null)
+					apiContextBuilder = default_ctx_builder;
+			} else {
+				apiContextBuilder = default_ctx_builder;
 			}
+
+			if (apiContext == null && apiContextBuilder != null) {
+				apiContext = apiContextBuilder.buildApiContext();
+			}
+
+			if (apiContext == null)
+				swaggerEnable = false;
 		} catch (Throwable ex) {
 			// ignore this exception
 		}
 	}
 
 	public static Swagger getSwagger() {
+		if (!swaggerEnable)
+			return new Swagger();
+		
 		if (swagger != null)
 			return swagger;
 
@@ -94,17 +110,6 @@ public class SwaggerFactory {
 
 		Swagger _swagger = reader.read(classes);
 		_swagger.setSchemes(Arrays.asList(Scheme.HTTP, Scheme.HTTPS));
-
-		if (apiContextBuilder == null) {
-			swagger = _swagger;
-			return _swagger;
-		}
-
-		ApiContext apiContext = apiContextBuilder.buildApiContext();
-		if (apiContext == null) {
-			swagger = _swagger;
-			return _swagger;
-		}
 
 		ApiKey apiKey = apiContext.getApiKey();
 		if (apiKey != null) {

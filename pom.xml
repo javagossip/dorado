@@ -158,5 +158,6 @@
 		<module>dorado-swagger</module>
 		<module>dorado-swagger-ui</module>
 		<module>dorado-examples</module>
+		<module>dorado-swagger-spring-boot-starter</module>
 	</modules>
 </project>
