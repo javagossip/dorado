@@ -40,6 +40,7 @@ public class MethodReturnValueHandlerConfig {
 		this.excludePaths.add("/services");
 		this.excludePaths.add("/swagger*");
 		this.excludePaths.add("/api-docs/*");
+		this.excludePaths.add("/api-docs*");
 
 		this.returnValueHandler = handler;
 	}

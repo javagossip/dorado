@@ -36,7 +36,18 @@ public class SwaggerV2Controller {
 	static {
 		mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 	}
-
+	
+	@Path
+	@Produce("application/json")
+	public String defaultJSON() {
+		try {
+			return mapper.writeValueAsString(SwaggerFactory.getSwagger());
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	@Path("/swagger.yaml")
 	@Produce("application/yaml")
 	public Swagger listingWithYaml() {
