@@ -34,7 +34,7 @@ Features
 
 ## Latest version
 
-**0.0.42**
+**0.0.47**
 
 Maven
 -----
@@ -404,6 +404,32 @@ public class CampaignController {
     }
 }
 ```
+
+* spring-boot环境，可以直接引入dorado-swagger-spring-boot-starter依赖来进一步简化swagger的使用  
+
+	```xml
+	<dependency>
+	  		<groupId>ai.houyi</groupId>
+	  		<artifactId>dorado-swagger-spring-boot-starter</artifactId>
+	  		<version>${dorado.version}</version>
+	  	</dependency> 
+	```
+	
+	然后在application.properties配置文件中增加如下配置即可：
+
+	```java
+	dorado.swagger.title=Zhuque's dashboard api
+	dorado.swagger.description=${dorado.swagger.title}
+	dorado.swagger.license=Apache License
+	dorado.swagger.licenseUrl=http://www.apache.org/licenses/LICENSE-2.0
+	dorado.swagger.contact.name=weiping wang
+	dorado.swagger.contact.email=javagossip@gmail.com
+	dorado.swagger.contact.url=https://github.com/javagossip
+	
+	//API全局认证配置
+	dorado.swagger.apiKey.name=Authorization
+	dorado.swagger.apiKey.in=header
+	```
 
 -   浏览器访问如下地址即可  
     http://{host}:{port}/swagger-ui.html
