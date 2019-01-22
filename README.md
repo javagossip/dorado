@@ -361,22 +361,22 @@ public class Application {
 ```java
 @Component //如果是集成spring或springboot环境的话，直接增加component注解即可
 @Override
-	// 这里定制Api全局信息，如文档描述、license,contact等信息
-	public ApiContext buildApiContext() {
-		Info info = new Info()
-				.contact(new Contact().email("javagossip@gmail.com").name("weiping wang")
-						.url("http://github.com/javagossip/dorado"))
-				.license(new License().name("apache v2.0").url("http://www.apache.org"))
-				.termsOfService("http://swagger.io/terms/").description("Dorado服务框架api接口文档")
-				.title("dorado demo api接口文档").version("1.0.0");
+// 这里定制Api全局信息，如文档描述、license,contact等信息
+public ApiContext buildApiContext() {
+	Info info = new Info()
+			.contact(new Contact().email("javagossip@gmail.com").name("weiping wang")
+					.url("http://github.com/javagossip/dorado"))
+			.license(new License().name("apache v2.0").url("http://www.apache.org"))
+			.termsOfService("http://swagger.io/terms/").description("Dorado服务框架api接口文档")
+			.title("dorado demo api接口文档").version("1.0.0");
 
-		//构造api访问授权的apiKey
-		ApiKey apiKey = ApiKey.builder().withName("Authorization").withIn("header").build();
-		ApiContext apiContext = ApiContext.builder().withApiKey(apiKey)
-				.withInfo(info).build();
+	//构造api访问授权的apiKey
+	ApiKey apiKey = ApiKey.builder().withName("Authorization").withIn("header").build();
+	ApiContext apiContext = ApiContext.builder().withApiKey(apiKey)
+			.withInfo(info).build();
 
-		return apiContext;
-	}
+	return apiContext;
+}
 ```
 
 非spring环境需要在resources/META-INF/services下的ai.houyi.dorado.swagger.ext.ApiInfoBuilder文件中增加如下配置：  
