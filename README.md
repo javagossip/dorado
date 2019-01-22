@@ -409,10 +409,10 @@ public class CampaignController {
 
 	```xml
 	<dependency>
-	  		<groupId>ai.houyi</groupId>
-	  		<artifactId>dorado-swagger-spring-boot-starter</artifactId>
-	  		<version>${dorado.version}</version>
-	  	</dependency> 
+  		<groupId>ai.houyi</groupId>
+  		<artifactId>dorado-swagger-spring-boot-starter</artifactId>
+  		<version>${dorado.version}</version>
+	</dependency> 
 	```
 	
 	然后在application.properties配置文件中增加如下配置即可：
