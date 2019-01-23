@@ -428,7 +428,7 @@ public class CampaignController {
 	
 	//API全局认证配置
 	dorado.swagger.apiKey.name=Authorization
-	dorado.swagger.apiKey.in=header
+	dorado.swagger.apiKey.in=header or query
 	```
 
 -   浏览器访问如下地址即可  
