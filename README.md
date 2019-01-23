@@ -379,7 +379,7 @@ public ApiContext buildApiContext() {
 }
 ```
 
-非spring环境需要在resources/META-INF/services下的ai.houyi.dorado.swagger.ext.ApiInfoBuilder文件中增加如下配置：  
+非spring环境需要在resources/META-INF/services下的ai.houyi.dorado.swagger.ext.ApiContextBuilder文件中增加如下配置：  
 **ai.houyi.dorado.demo.ApiContextBuilderImpl**
 
 -   在controller实现里面增加swagger相关的注解即可自动生成在线的api doc
