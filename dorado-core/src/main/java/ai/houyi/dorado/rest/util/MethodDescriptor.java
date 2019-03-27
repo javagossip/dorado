@@ -150,9 +150,11 @@ public class MethodDescriptor {
 				return MediaType.MULTIPART_FORM_DATA;
 			} else if (TypeUtils.isProtobufMessage(param.getType())) {
 				return MediaType.APPLICATION_PROTOBUF;
+			}else if(TypeUtils.isSerializableType(param.getType())) {
+				return MediaType.APPLICATION_JSON;
 			}
 		}
-		return MediaType.APPLICATION_JSON;
+		return MediaType.WILDCARD;
 	}
 
 	public String produce() {
