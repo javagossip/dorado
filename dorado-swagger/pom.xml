@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>ai.houyi</groupId>
 		<artifactId>dorado</artifactId>
-		<version>0.0.49</version>
+		<version>0.0.50-SNAPSHOT</version>
 	</parent>
 	<artifactId>dorado-swagger</artifactId>
 	<name>dorado-swagger</name>
@@ -12,7 +12,7 @@
 		<dependency>
 			<groupId>ai.houyi</groupId>
 			<artifactId>dorado-core</artifactId>
-			<version>0.0.49</version>
+			<version>0.0.50-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>io.swagger</groupId>
