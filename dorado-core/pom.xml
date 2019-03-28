@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>ai.houyi</groupId>
 		<artifactId>dorado</artifactId>
-		<version>0.0.50-SNAPSHOT</version>
+		<version>0.0.49-SNAPSHOT</version>
 	</parent>
 	<artifactId>dorado-core</artifactId>
 	<name>dorado-core</name>
