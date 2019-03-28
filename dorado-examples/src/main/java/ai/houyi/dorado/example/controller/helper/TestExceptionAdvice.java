@@ -36,4 +36,9 @@ public class TestExceptionAdvice {
 	public String handleException(Exception ex) {
 		return "use default exception handler,cause: " + ex.getClass().getName() + "," + ex.getMessage();
 	}
+	
+	@ExceptionType(Throwable.class)
+	public String handleException(Throwable ex) {
+		return "use default exception handler,cause: " + ex.getClass().getName() + "," + ex.getMessage();
+	}
 }

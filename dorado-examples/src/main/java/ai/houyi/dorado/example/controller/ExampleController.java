@@ -10,6 +10,7 @@ import ai.houyi.dorado.rest.annotation.DELETE;
 import ai.houyi.dorado.rest.annotation.GET;
 import ai.houyi.dorado.rest.annotation.POST;
 import ai.houyi.dorado.rest.annotation.Path;
+import ai.houyi.dorado.rest.annotation.RequestParam;
 import io.swagger.annotations.Api;
 
 /**
@@ -30,6 +31,12 @@ public class ExampleController {
 		return campaign;
 	}
 
+	@GET
+	@Path("/qtest")
+	public String queryTest(@RequestParam("q") String query) {
+		return "QQ";
+	}
+	
 	@Path("/name/{name}")
 	public String campaignName(String name) {
 		return String.format("hello_campaign, %s", name);

@@ -43,9 +43,27 @@ public final class WebComponentRegistry {
 	public ExceptionHandler getExceptionHandler(Class<? extends Throwable> exceptionType) {
 		ExceptionHandler handler = exceptionHandlerRegistry.get(exceptionType);
 
-		if (handler == null) {
-			handler = exceptionHandlerRegistry.get(Exception.class);
+		if (Exception.class.isAssignableFrom(exceptionType)) {
+			return getExceptionHandler();
 		}
+		
+		if (Error.class.isAssignableFrom(exceptionType)) {
+			return getErrorHandler();
+		}
+		return handler;
+	}
+
+	private ExceptionHandler getExceptionHandler() {
+		ExceptionHandler handler = exceptionHandlerRegistry.get(Exception.class);
+
+		if (handler == null) {
+			return exceptionHandlerRegistry.get(Throwable.class);
+		}
+		return handler;
+	}
+
+	private ExceptionHandler getErrorHandler() {
+		ExceptionHandler handler = exceptionHandlerRegistry.get(Error.class);
 		if (handler == null) {
 			return exceptionHandlerRegistry.get(Throwable.class);
 		}

@@ -14,12 +14,12 @@
   		<groupId>ai.houyi</groupId>
   		<artifactId>dorado-swagger</artifactId>
   		<version>0.0.49-SNAPSHOT</version>
-  		<exclusions>
+  		<!-- <exclusions>
   			<exclusion>
   				<groupId>javax.validation</groupId>
   				<artifactId>validation-api</artifactId>
   			</exclusion>
-  		</exclusions>
+  		</exclusions> -->
   	</dependency>
   </dependencies>
 </project>
