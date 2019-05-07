@@ -111,7 +111,7 @@ public class SwaggerProperties {
 	}
 
 	public static class ApiKey {
-		private String name = "Authentication";
+		private String name = "Authorization";
 		private String in = "header";
 
 		/**
