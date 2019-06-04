@@ -34,7 +34,7 @@ Features
 
 ## Latest version
 
-**0.0.47**
+**0.0.50**
 
 Maven
 -----
@@ -416,7 +416,7 @@ public class CampaignController {
 	```
 	
 	然后在application.properties配置文件中增加如下配置即可：
-
+	
 	```java
 	dorado.swagger.title=Zhuque's dashboard api
 	dorado.swagger.description=${dorado.swagger.title}
