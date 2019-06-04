@@ -120,12 +120,12 @@ public class UriRoutingController {
 		ExceptionHandler exceptionHandler = WebComponentRegistry.getWebComponentRegistry()
 				.getExceptionHandler(targetException.getClass());
 		if (exceptionHandler == null) {
-			throw new DoradoException(ex);
+			throw new DoradoException(targetException);
 		}
 
 		Object exceptionHandleResult = exceptionHandler.handleException(targetException);
 		if (exceptionHandleResult == null) {
-			throw new DoradoException(ex);
+			throw new DoradoException(targetException);
 		}
 
 		MediaType mediaType = MediaTypeUtils.defaultForType(exceptionHandleResult.getClass(),
