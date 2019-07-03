@@ -28,6 +28,8 @@ import ai.houyi.dorado.netty.ext.HttpPostRequestDecoder;
 import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.http.MultipartFile;
 import ai.houyi.dorado.rest.util.LogUtils;
+import ai.houyi.dorado.rest.util.NetUtils;
+import ai.houyi.dorado.rest.util.StringUtils;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -128,13 +130,22 @@ public class HttpRequestImpl implements HttpRequest {
 
 	@Override
 	public String getRemoteAddr() {
+		InetSocketAddress addr = (InetSocketAddress) ChannelHolder.get().remoteAddress();
+		String fallbackAddr = addr.getAddress().getHostAddress();
+
 		String xForwardFor = headers.get("X-Forwarded-For");
-		if (xForwardFor == null) {
-			InetSocketAddress addr = (InetSocketAddress) ChannelHolder.get().remoteAddress();
-			return addr.getAddress().getHostAddress();
+		if (xForwardFor == null || StringUtils.isBlank(xForwardFor)) {
+			return fallbackAddr;
 		}
 
-		return xForwardFor.split(",")[0];
+		String[] proxyIpList = xForwardFor.split(",");
+		for (int i = proxyIpList.length - 1; i >= 0; i--) {
+			String proxyIp = proxyIpList[i];
+			if (!NetUtils.isInternalIp(proxyIp)) {
+				return proxyIp;
+			}
+		}
+		return fallbackAddr;
 	}
 
 	@Override
