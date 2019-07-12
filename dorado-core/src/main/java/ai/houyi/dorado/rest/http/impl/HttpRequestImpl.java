@@ -141,6 +141,8 @@ public class HttpRequestImpl implements HttpRequest {
 		String[] proxyIpList = xForwardFor.split(",");
 		for (int i = proxyIpList.length - 1; i >= 0; i--) {
 			String proxyIp = proxyIpList[i];
+			if (!StringUtils.isBlank(proxyIp))
+				proxyIp = proxyIp.trim();
 			if (!NetUtils.isInternalIp(proxyIp)) {
 				return proxyIp;
 			}
