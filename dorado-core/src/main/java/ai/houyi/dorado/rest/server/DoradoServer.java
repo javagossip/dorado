@@ -73,7 +73,7 @@ public class DoradoServer {
 
 			ChannelFuture f = bootstrap.bind(builder.getPort()).sync();
 			LogUtils.info(String.format("Dorado application initialized with port: %d (http)", builder.getPort()));
-			f.channel().closeFuture().sync();
+			f.channel().closeFuture().sync();     
 		} catch (Throwable ex) {
 			LogUtils.error("Start dorado application failed, cause: " + ex.getMessage(), ex);
 		} finally {

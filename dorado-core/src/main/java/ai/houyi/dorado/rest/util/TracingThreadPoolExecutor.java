@@ -33,6 +33,7 @@ public class TracingThreadPoolExecutor extends ThreadPoolExecutor {
 	public TracingThreadPoolExecutor(int corePoolSize, int maximumPoolSize, 
 			BlockingQueue<Runnable> workQueue) {
 		super(corePoolSize, maximumPoolSize, 0L, TimeUnit.MILLISECONDS, workQueue);
+		setThreadFactory(new NamedThreadFactory("dorado-worker", true));
 		serverStatus.workerPool(this);
 	}
 
