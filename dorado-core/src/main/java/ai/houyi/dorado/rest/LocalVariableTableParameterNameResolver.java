@@ -15,6 +15,7 @@
  */
 package ai.houyi.dorado.rest;
 
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -27,69 +28,81 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import ai.houyi.dorado.exception.DoradoException;
+import ai.houyi.dorado.rest.util.ClassLoaderUtils;
+import ai.houyi.dorado.rest.util.Constant;
 
 /**
  * 利用asm从类的局部变量表中获取方法参数名
- * 
+ *
  * @author wangwp
  */
 public class LocalVariableTableParameterNameResolver implements ParameterNameResolver {
 
-	@Override
-	public String[] getParameterNames(Method method) {
-		final String methodName = method.getName();
+    @Override
+    public String[] getParameterNames(Method method) {
+        final String methodName = method.getName();
 
-		final Class<?>[] parameterTypes = method.getParameterTypes();
-		final String[] parameterNames = new String[parameterTypes.length];
+        final Class<?>[] parameterTypes = method.getParameterTypes();
+        final String[] parameterNames = new String[parameterTypes.length];
 
-		if (parameterTypes == null || parameterTypes.length == 0) {
-			return null;
-		}
+        if (parameterTypes.length == 0) {
+            return null;
+        }
 
-		boolean isStatic = Modifier.isStatic(method.getModifiers());
+        boolean isStatic = Modifier.isStatic(method.getModifiers());
 
-		final Type[] types = new Type[parameterTypes.length];
-		final int[] lvtSlotIndex = new int[types.length];
-		int nextIndex = (isStatic ? 0 : 1);
+        final Type[] types = new Type[parameterTypes.length];
+        final int[] lvtSlotIndex = new int[types.length];
+        int nextIndex = (isStatic ? 0 : 1);
 
-		for (int i = 0; i < types.length; i++) {
-			types[i] = Type.getType(parameterTypes[i]);
-			lvtSlotIndex[i] = nextIndex;
-			if (types[i] == Type.LONG_TYPE || types[i] == Type.DOUBLE_TYPE) {
-				nextIndex += 2;
-			} else {
-				nextIndex++;
-			}
-		}
+        for (int i = 0; i < types.length; i++) {
+            types[i] = Type.getType(parameterTypes[i]);
+            lvtSlotIndex[i] = nextIndex;
+            if (types[i] == Type.LONG_TYPE || types[i] == Type.DOUBLE_TYPE) {
+                nextIndex += 2;
+            } else {
+                nextIndex++;
+            }
+        }
 
-		try {
-			ClassReader classReader = new ClassReader(method.getDeclaringClass().getName());
-			classReader.accept(new ClassVisitor(Opcodes.ASM6) {
-				@Override
-				public MethodVisitor visitMethod(int access, String name, String descriptor, String signature,
-						String[] exceptions) {
-					Type[] argumentTypes = Type.getArgumentTypes(descriptor);
-					if (!methodName.equals(name) || !Arrays.equals(argumentTypes, types)) {
-						return super.visitMethod(access, name, descriptor, signature, exceptions);
-					}
+        try {
+            String classPath =
+                    method.getDeclaringClass().getName().replace(Constant.DOT, Constant.SLASH) + Constant.CLASS_SUFFIX;
+            InputStream resourceStream = ClassLoaderUtils.getStream(classPath);
+            ClassReader classReader = new ClassReader(resourceStream);
+            classReader.accept(new ClassVisitor(Opcodes.ASM6) {
+                @Override
+                public MethodVisitor visitMethod(int access,
+                        String name,
+                        String descriptor,
+                        String signature,
+                        String[] exceptions) {
+                    Type[] argumentTypes = Type.getArgumentTypes(descriptor);
+                    if (!methodName.equals(name) || !Arrays.equals(argumentTypes, types)) {
+                        return super.visitMethod(access, name, descriptor, signature, exceptions);
+                    }
 
-					return new MethodVisitor(Opcodes.ASM6) {
-						@Override
-						public void visitLocalVariable(String name, String descriptor, String signature, Label start,
-								Label end, int index) {
-							for (int i = 0; i < lvtSlotIndex.length; i++) {
-								if (lvtSlotIndex[i] == index) {
-									parameterNames[i] = name;
-								}
-							}
-						}
-					};
-				}
-			}, 0);
-		} catch (Exception ex) {
-			String errorMsg = String.format("Get method parameter names error, method: %s", method.getName());
-			throw new DoradoException(errorMsg, ex);
-		}
-		return parameterNames;
-	}
+                    return new MethodVisitor(Opcodes.ASM6) {
+                        @Override
+                        public void visitLocalVariable(String name,
+                                String descriptor,
+                                String signature,
+                                Label start,
+                                Label end,
+                                int index) {
+                            for (int i = 0; i < lvtSlotIndex.length; i++) {
+                                if (lvtSlotIndex[i] == index) {
+                                    parameterNames[i] = name;
+                                }
+                            }
+                        }
+                    };
+                }
+            }, 0);
+        } catch (Exception ex) {
+            String errorMsg = String.format("Get method parameter names error, method: %s", method.getName());
+            throw new DoradoException(errorMsg, ex);
+        }
+        return parameterNames;
+    }
 }
