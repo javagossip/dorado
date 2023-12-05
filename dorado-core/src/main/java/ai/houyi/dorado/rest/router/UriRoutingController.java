@@ -104,12 +104,9 @@ public class UriRoutingController {
 			return false;
 
 		MethodReturnValueHandler handler = methodReturnValueHandlerConfig.getHandler();
-		if (!methodReturnValueHandlerConfig.exclude(request.getRequestURI())
-				&& handler.supportsReturnType(methodDescriptor)) {
-			return true;
-		}
-		return false;
-	}
+        return !methodReturnValueHandlerConfig.exclude(request.getRequestURI()) &&
+                handler.supportsReturnType(methodDescriptor);
+    }
 
 	private void handleException(Exception ex, HttpRequest request, HttpResponse response) {
 		Throwable targetException = ex;

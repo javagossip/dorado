@@ -30,108 +30,102 @@ import java.util.jar.JarInputStream;
 import ai.houyi.dorado.exception.DoradoException;
 
 /**
- * 
  * @author wangwp
  */
 public class PackageScanner {
 
-	public static List<Class<?>> scan(String packageName) throws ClassNotFoundException {
-		List<Class<?>> classes = new LinkedList<>();
-		try {
-			ClassLoader loader = Thread.currentThread().getContextClassLoader();
-			Enumeration<URL> urls = loader.getResources(packageName.replace('.', '/'));
-			while (urls.hasMoreElements()) {
-				URI uri = urls.nextElement().toURI();
-				switch (uri.getScheme().toLowerCase()) {
-				case "jar":
-					scanFromJarProtocol(loader, classes, uri.getRawSchemeSpecificPart());
-					break;
-				case "file":
-					scanFromFileProtocol(loader, classes, new File(uri).getPath(), packageName);
-					break;
-				default:
-					throw new URISyntaxException(uri.getScheme(), "unknown schema " + uri.getScheme());
-				}
-			}
-		} catch (URISyntaxException | IOException e) {
-			e.printStackTrace();
-		}
-		return classes;
-	}
+    public static List<Class<?>> scan(String packageName) throws ClassNotFoundException {
+        List<Class<?>> classes = new LinkedList<>();
+        try {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            Enumeration<URL> urls = classLoader.getResources(packageName.replace('.', '/'));
+            while (urls.hasMoreElements()) {
+                URI uri = urls.nextElement().toURI();
+                switch (uri.getScheme().toLowerCase()) {
+                    case "jar":
+                        scanFromJarProtocol(classLoader, classes, uri.getRawSchemeSpecificPart());
+                        break;
+                    case "file":
+                        scanFromFileProtocol(classLoader, classes, new File(uri).getPath(), packageName);
+                        break;
+                    default:
+                        throw new URISyntaxException(uri.getScheme(), "unknown schema " + uri.getScheme());
+                }
+            }
+        } catch (URISyntaxException | IOException e) {
+            e.printStackTrace();
+        }
+        return classes;
+    }
 
-	private static Class<?> loadClass(ClassLoader loader, String classPath) throws ClassNotFoundException {
-		try {
-			classPath = classPath.substring(0, classPath.length() - 6);
-			return loader.loadClass(classPath);
-		} catch (Throwable cause) {
-			LogUtils.error("", cause);
-		}
-		return null;
-	}
+    private static Class<?> loadClass(ClassLoader loader, String classPath) {
+        try {
+            classPath = classPath.substring(0, classPath.length() - 6);
+            return loader.loadClass(classPath);
+        } catch (Throwable cause) {
+            LogUtils.error("", cause);
+        }
+        return null;
+    }
 
-	private static void scanFromFileProtocol(ClassLoader loader, List<Class<?>> classes, String dir, String packageName)
-			throws ClassNotFoundException {
-		try {
-			List<String> classNames = listAllClassNames(dir);
-			classNames.forEach(className -> {
-				try {
-					classes.add(loadClass(loader, String.format("%s.%s", packageName,className)));
-				} catch (Throwable e) {
-					LogUtils.error(e.getMessage());
-				}
-			});
-		} catch (Exception ex) {
-			throw new DoradoException(ex);
-		}
-	}
+    private static void scanFromFileProtocol(ClassLoader loader,
+            List<Class<?>> classes,
+            String dir,
+            String packageName) {
+        try {
+            List<String> classNames = listAllClassNames(dir);
+            classNames.forEach(className -> {
+                try {
+                    classes.add(loadClass(loader, String.format("%s.%s", packageName, className)));
+                } catch (Throwable e) {
+                    LogUtils.error(e.getMessage());
+                }
+            });
+        } catch (Exception ex) {
+            throw new DoradoException(ex);
+        }
+    }
 
-	private static void scanFromJarProtocol(ClassLoader loader, List<Class<?>> classes, String fullPath)
-			throws ClassNotFoundException {
-		final String jar = fullPath.substring(0, fullPath.lastIndexOf('!'));
-		final String parent = fullPath.substring(fullPath.lastIndexOf('!') + 2);
-		JarEntry e = null;
+    private static void scanFromJarProtocol(ClassLoader loader, List<Class<?>> classes, String fullPath) {
+        final String jar = fullPath.substring(0, fullPath.indexOf('!'));
+        final String parent = fullPath.substring(fullPath.indexOf('!') + 2).replace("!", "");
+        JarEntry e;
 
-		JarInputStream jarReader = null;
-		try {
-			jarReader = new JarInputStream(new URL(jar).openStream());
-			while ((e = jarReader.getNextJarEntry()) != null) {
-				String className = e.getName();
-				if (!e.isDirectory() && className.startsWith(parent) && className.endsWith(Constant.CLASS_SUFFIX)
-						&& !className.contains("$")) {
-					className = className.replace('/', '.');
-					classes.add(loadClass(loader, className));
-				}
-				jarReader.closeEntry();
-			}
-		} catch (IOException error) {
-			error.printStackTrace();
-		} finally {
-			try {
-				if (jarReader != null)
-					jarReader.close();
-			} catch (IOException exp) {
-				exp.printStackTrace();
-			}
-		}
-	}
+        JarInputStream jarReader = null;
+        try {
+            jarReader = new JarInputStream(URI.create(jar).toURL().openStream());
+            while ((e = jarReader.getNextJarEntry()) != null) {
+                String className = e.getName();
+                if (!e.isDirectory() && className.startsWith(parent) && className.endsWith(Constant.CLASS_SUFFIX) &&
+                        !className.contains("$")) {
+                    className = className.replace('/', '.').replace("BOOT-INF.classes", "").replace("BOOT-INF.lib", "");
+                    classes.add(loadClass(loader, className));
+                }
+                jarReader.closeEntry();
+            }
+        } catch (IOException error) {
+            error.printStackTrace();
+        } finally {
+            try {
+                if (jarReader != null) {
+                    jarReader.close();
+                }
+            } catch (IOException exp) {
+                exp.printStackTrace();
+            }
+        }
+    }
 
-	public static List<String> listAllClassNames(String classpath) {
-		List<String> classNames = new ArrayList<>();
+    public static List<String> listAllClassNames(String classpath) {
+        List<String> classNames = new ArrayList<>();
 
-		List<File> allClassFiles = FileUtils.listFiles(new File(classpath), Constant.CLASS_SUFFIX, true);
-		int index = classpath.endsWith(File.separator) ? classpath.length() : classpath.length() + 1;
+        List<File> allClassFiles = FileUtils.listFiles(new File(classpath), Constant.CLASS_SUFFIX, true);
+        int index = classpath.endsWith(File.separator) ? classpath.length() : classpath.length() + 1;
 
-		for (File classFile : allClassFiles) {
-			String className = classFile.getAbsolutePath().substring(index).replace(File.separatorChar, '.');
-			classNames.add(className);
-		}
-		return classNames;
-	}
-
-	public static void main(String[] args) throws Exception {
-		String packageName = "mobi.f2time";
-
-		List<Class<?>> classes = PackageScanner.scan(packageName);
-		classes.forEach(type -> System.out.println(type.getName()));
-	}
+        for (File classFile : allClassFiles) {
+            String className = classFile.getAbsolutePath().substring(index).replace(File.separatorChar, '.');
+            classNames.add(className);
+        }
+        return classNames;
+    }
 }
