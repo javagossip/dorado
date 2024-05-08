@@ -164,12 +164,12 @@ public class MethodDescriptor {
 	}
 
 	public static class MethodParameter {
-		private String name;
-		private Class<?> type;
-		private Annotation annotation;
+		private final String name;
+		private final Class<?> type;
+		private final Annotation annotation;
 		private Class<?> annotationType;
 		private int methodParameterCount;
-		private Type parameterizedType;
+		private final Type parameterizedType;
 
 		private MethodParameter(String name, Class<?> type, Type parameterizedType, Annotation annotation) {
 			this.name = name;

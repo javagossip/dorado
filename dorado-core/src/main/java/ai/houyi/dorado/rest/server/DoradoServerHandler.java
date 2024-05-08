@@ -15,9 +15,6 @@
  */
 package ai.houyi.dorado.rest.server;
 
-import static ai.houyi.dorado.rest.http.impl.ChannelHolder.set;
-import static ai.houyi.dorado.rest.http.impl.ChannelHolder.unset;
-
 import ai.houyi.dorado.rest.controller.DoradoStatus;
 import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.http.HttpResponse;
@@ -29,15 +26,15 @@ import ai.houyi.dorado.rest.util.ExceptionUtils;
 import ai.houyi.dorado.rest.util.LogUtils;
 import ai.houyi.dorado.rest.util.TracingThreadPoolExecutor;
 import io.netty.buffer.ByteBufUtil;
-import io.netty.channel.*;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpUtil;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.codec.http.*;
 import io.netty.handler.timeout.IdleStateEvent;
-import io.netty.util.ReferenceCountUtil;
+
+import static ai.houyi.dorado.rest.http.impl.ChannelHolder.set;
+import static ai.houyi.dorado.rest.http.impl.ChannelHolder.unset;
 
 /**
  * @author wangwp
@@ -49,7 +46,7 @@ public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpReq
 
     private DoradoServerHandler(DoradoServerBuilder builder) {
         this.webapp = Webapp.get();
-        this.asyncExecutor = (TracingThreadPoolExecutor) builder.executor();
+        this.asyncExecutor = builder.executor();
         this.status = DoradoStatus.get();
     }
 
@@ -75,7 +72,7 @@ public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpReq
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html;charset=UTF-8");
         response.headers().set(HttpHeaderNames.SERVER, "Dorado");
 
-        ChannelFuture channelFuture = null;
+        ChannelFuture channelFuture;
         try {
             set(ctx.channel());
             HttpRequest _request = new HttpRequestImpl(request);
