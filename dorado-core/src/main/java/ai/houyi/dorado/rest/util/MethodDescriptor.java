@@ -41,13 +41,13 @@ public class MethodDescriptor {
 	private final Class<?> clazz;
 	private final Method method;
 
-	private Annotation[] annotations;
-	private Object invokeTarget;
-	private Class<?> returnType;
+	private final Annotation[] annotations;
+	private final Object invokeTarget;
+	private final Class<?> returnType;
 
-	private MethodParameter[] methodParameters;
-	private String consume;
-	private String produce;
+	private final MethodParameter[] methodParameters;
+	private final String consume;
+	private final String produce;
 
 	private MethodDescriptor(Class<?> clazz, Method method) {
 		this(clazz, method, new DefaultParameterNameResolver());
@@ -81,9 +81,7 @@ public class MethodDescriptor {
 			Type genericParameterType = genericParameterTypes[i];
 
 			MethodParameter methodParameter = MethodParameter.create(name, type, genericParameterType, annotation);
-			if (methodParameter.annotationType == MultipartFile.class) {
-			}
-			methodParameters[i] = methodParameter;
+            methodParameters[i] = methodParameter;
 			methodParameters[i].setMethodParameterCount(method.getParameterCount());
 			registerMessageDescriptorForTypeIfNeed(type);
 		}
@@ -103,8 +101,7 @@ public class MethodDescriptor {
 	}
 
 	public static MethodDescriptor create(Class<?> clazz, Method method) {
-		MethodDescriptor methodDescriptor = new MethodDescriptor(clazz, method);
-		return methodDescriptor;
+        return new MethodDescriptor(clazz, method);
 	}
 
 	public Class<?> getClazz() {

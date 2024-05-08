@@ -16,7 +16,6 @@ public class Application {
 	public static void main(String[] args) throws Exception {
 		DoradoServer server = DoradoServerBuilder.forPort(18889).minWorkers(5).maxWorkers(10).build();
 		//Webapp.get().getMethodReturnValueHandlerConfig().addExcludePath("/file/upload/*");
-		
 		server.start();
 	}
 }

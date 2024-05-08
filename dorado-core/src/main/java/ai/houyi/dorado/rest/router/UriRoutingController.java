@@ -60,6 +60,7 @@ public class UriRoutingController {
 		MediaType expectedMediaType = MediaType.valueOf(methodDescriptor.consume());
 
 		// 如果非GET、DELETE请求需要验证请求的内容类型是否匹配
+		assert expectedMediaType != null;
 		if (!HttpMethod.GET.name().equals(request.getMethod()) && !HttpMethod.DELETE.name().equals(request.getMethod())
 				&& (!expectedMediaType.isWildcardType())) {
 			String contentType = request.getHeader(HttpHeaderNames.CONTENT_TYPE);
@@ -87,9 +88,6 @@ public class UriRoutingController {
 				if (invokeResult != null) {
 					mediaType = MediaTypeUtils.defaultForType(invokeResult.getClass(), null);
 				}
-			}
-			if (methodReturnValueHandlerConfig != null
-					&& !methodReturnValueHandlerConfig.exclude(request.getRequestURI())) {
 			}
 			writeResponseBody(invokeResult, mediaType, response);
 		} catch (Exception ex) {

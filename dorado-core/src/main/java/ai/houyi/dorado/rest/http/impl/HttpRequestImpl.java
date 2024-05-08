@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import ai.houyi.dorado.netty.ext.HttpPostRequestDecoder;
 import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.http.MultipartFile;
 import ai.houyi.dorado.rest.util.LogUtils;
@@ -39,6 +38,7 @@ import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import io.netty.handler.codec.http.multipart.Attribute;
 import io.netty.handler.codec.http.multipart.FileUpload;
+import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData.HttpDataType;
 
@@ -51,9 +51,7 @@ public class HttpRequestImpl implements HttpRequest {
 
 	private final InputStreamImpl in;
 
-	private final QueryStringDecoder queryStringDecoder;
-
-	private final URIParser uriParser;
+    private final URIParser uriParser;
 
 	private final Map<String, List<String>> parameters;
 
@@ -69,7 +67,7 @@ public class HttpRequestImpl implements HttpRequest {
 		this.uriParser = new URIParser();
 
 		// 解析querystring上面的参数
-		queryStringDecoder = new QueryStringDecoder(request.uri());
+        QueryStringDecoder queryStringDecoder = new QueryStringDecoder(request.uri());
 		uriParser.parse(queryStringDecoder.path());
 		parameters.putAll(queryStringDecoder.parameters());
 		in = new InputStreamImpl(request);
@@ -155,7 +153,7 @@ public class HttpRequestImpl implements HttpRequest {
 		String cookieString = this.request.headers().get(HttpHeaderNames.COOKIE);
 		if (cookieString != null) {
 			Set<Cookie> cookies = ServerCookieDecoder.LAX.decode(cookieString);
-			return cookies.stream().map(cookie -> new CookieImpl(cookie)).collect(Collectors.toList())
+			return cookies.stream().map(CookieImpl::new).collect(Collectors.toList())
 					.toArray(new CookieImpl[] {});
 		}
 		return null;
