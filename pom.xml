@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>ai.houyi</groupId>
+	<groupId>io.github.javagossip</groupId>
 	<artifactId>dorado</artifactId>
 	<version>0.0.52-SNAPSHOT</version>
 	<name>dorado</name>
@@ -103,6 +103,17 @@
 			<id>release</id>
 			<build>
 				<plugins>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.4.0</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <tokenAuth>true</tokenAuth>
+                            <autoPublish>true</autoPublish>
+                        </configuration>
+                    </plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-release-plugin</artifactId>
@@ -114,7 +125,6 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-source-plugin</artifactId>
-
 						<executions>
 							<execution>
 								<phase>package</phase>
@@ -163,12 +173,12 @@
 
 	<distributionManagement>
 		<snapshotRepository>
-			<id>oss</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<id>central</id>
+			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
 		<repository>
-			<id>oss</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+			<id>central</id>
+			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
 	<modules>

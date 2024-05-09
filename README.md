@@ -41,7 +41,7 @@ Maven
 
 ```xml
 <dependency>
-    <groupId>ai.houyi</groupId>
+    <groupId>io.github.javagossip</groupId>
     <artifactId>dorado-core</artifactId>
     <version>${dorado.version}</version>
 </dependency>
@@ -210,7 +210,7 @@ public String uploadFile(MultipartFile[] fs,String name) {
 	}
 	```
 	
-	为了避免在每个方法的时候都要执行相同的处理操作，dorado支持定义一个ai.houyi.dorado.rest.http.MethodReturnValueHandler来  
+	为了避免在每个方法的时候都要执行相同的处理操作，dorado支持定义一个io.github.javagossip.dorado.rest.http.MethodReturnValueHandler来  
 	实现这个功能
 	
 	```java
@@ -279,7 +279,7 @@ SpringBoot集成
 
     ```xml
     <dependency>
-        <groupId>ai.houyi</groupId>
+        <groupId>io.github.javagossip</groupId>
         <artifactId>dorado-spring-boot-starter</artifactId>
         <version>${dorado.version}</version>
     </dependency>
@@ -336,7 +336,7 @@ swagger集成
 
 ```xml
    <dependency>
-       <groupId>ai.houyi</groupId>
+       <groupId>io.github.javagossip</groupId>
        <artifactId>dorado-swagger-ui</artifactId>
        <version>${dorado.version}</version>
    </dependency>
@@ -356,7 +356,7 @@ public class Application {
 ```
 
 -   设置Api文档全局信息\
-    实现**ai.houyi.dorado.swagger.ext.ApiContextBuilder**接口
+    实现**io.github.javagossip.dorado.swagger.ext.ApiContextBuilder**接口
 
 ```java
 @Component //如果是集成spring或springboot环境的话，直接增加component注解即可
@@ -379,8 +379,8 @@ public ApiContext buildApiContext() {
 }
 ```
 
-非spring环境需要在resources/META-INF/services下的ai.houyi.dorado.swagger.ext.ApiContextBuilder文件中增加如下配置：  
-**ai.houyi.dorado.demo.ApiContextBuilderImpl**
+非spring环境需要在resources/META-INF/services下的io.github.javagossip.dorado.swagger.ext.ApiContextBuilder文件中增加如下配置：  
+**io.github.javagossip.dorado.demo.ApiContextBuilderImpl**
 
 -   在controller实现里面增加swagger相关的注解即可自动生成在线的api doc
 
@@ -409,7 +409,7 @@ public class CampaignController {
 
 	```xml
 	<dependency>
-  		<groupId>ai.houyi</groupId>
+  		<groupId>io.github.javagossip</groupId>
   		<artifactId>dorado-swagger-spring-boot-starter</artifactId>
   		<version>${dorado.version}</version>
 	</dependency> 
