@@ -43,9 +43,9 @@
 	</developers>
 
 	<scm>
-		<connection>scm:git:https://github.com/javagossip/dorado.git</connection>
-		<developerConnection>scm:git:https://github.com/javagossip/dorado.git</developerConnection>
-		<url>https://github.com/javagossip/dorado</url>
+		<connection>scm:git:git@github.com:javagossip/dorado</connection>
+		<developerConnection>scm:git:git@github.com:javagossip/dorado</developerConnection>
+		<url>scm:git:git@github.com:javagossip/dorado</url>
 		<tag>HEAD</tag>
 	</scm>
 
