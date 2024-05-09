@@ -120,6 +120,7 @@
 						<configuration>
 							<tagNameFormat>v@{project.version}</tagNameFormat>
 							<autoVersionSubmodules>true</autoVersionSubmodules>
+                            <goals>deploy</goals>
 						</configuration>
 					</plugin>
 					<plugin>
