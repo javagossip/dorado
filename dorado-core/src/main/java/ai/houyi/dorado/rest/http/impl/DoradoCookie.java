@@ -21,10 +21,10 @@ import ai.houyi.dorado.rest.http.Cookie;
  * 
  * @author wangwp
  */
-public class CookieImpl implements Cookie {
+public class DoradoCookie implements Cookie {
 	private final io.netty.handler.codec.http.cookie.Cookie cookie;
 
-	public CookieImpl(io.netty.handler.codec.http.cookie.Cookie cookie) {
+	public DoradoCookie(io.netty.handler.codec.http.cookie.Cookie cookie) {
 		this.cookie = cookie;
 	}
 

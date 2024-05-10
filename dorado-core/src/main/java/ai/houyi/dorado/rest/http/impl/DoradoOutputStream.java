@@ -25,10 +25,10 @@ import io.netty.handler.codec.http.FullHttpResponse;
  * 
  * @author wangwp
  */
-public class OutputStreamImpl extends OutputStream {
+public class DoradoOutputStream extends OutputStream {
 	private ByteBufOutputStream out;
 	
-	public OutputStreamImpl(FullHttpResponse response) {
+	public DoradoOutputStream(FullHttpResponse response) {
 		this.out = new ByteBufOutputStream(response.content());
 	}
 	

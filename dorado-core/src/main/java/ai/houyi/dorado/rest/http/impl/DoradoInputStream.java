@@ -15,27 +15,26 @@
  */
 package ai.houyi.dorado.rest.http.impl;
 
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.IOException;
+import java.io.InputStream;
+
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.handler.codec.http.FullHttpRequest;
 
 /**
  * 
  * @author wangwp
  */
-public class PrintWriterImpl extends PrintWriter {
-	private boolean flushed;
-	
-	public PrintWriterImpl(OutputStream out) {
-		super(out);
+public class DoradoInputStream extends InputStream {
+
+	private final ByteBufInputStream in;
+
+	public DoradoInputStream(FullHttpRequest request) {
+		this.in = new ByteBufInputStream(request.content());
 	}
 
 	@Override
-	public void flush() {
-		super.flush();
-		this.flushed = true;
-	}
-
-	public boolean isFlushed() {
-		return flushed;
+	public int read() throws IOException {
+		return this.in.read();
 	}
 }

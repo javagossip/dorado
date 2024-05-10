@@ -30,13 +30,13 @@ import io.netty.handler.codec.http.HttpResponseStatus;
  * 
  * @author wangwp
  */
-public class HttpResponseImpl implements HttpResponse {
+public class DoradoHttpResponse implements HttpResponse {
 	private FullHttpResponse originalHttpResponse;
 
-	private OutputStreamImpl out;
-	private PrintWriterImpl writer;
+	private DoradoOutputStream out;
+	private DoradoPrintWriter writer;
 
-	public HttpResponseImpl(FullHttpResponse response) {
+	public DoradoHttpResponse(FullHttpResponse response) {
 		this.originalHttpResponse = response;
 		//out = new OutputStreamImpl(response);
 		//writer = new PrintWriterImpl(out);
@@ -74,7 +74,7 @@ public class HttpResponseImpl implements HttpResponse {
 	}
 
 	@Override
-	public OutputStreamImpl getOutputStream() throws IOException {
+	public DoradoOutputStream getOutputStream() throws IOException {
 		return out;
 	}
 

@@ -18,8 +18,8 @@ package ai.houyi.dorado.rest.server;
 import ai.houyi.dorado.rest.controller.DoradoStatus;
 import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.http.HttpResponse;
-import ai.houyi.dorado.rest.http.impl.HttpRequestImpl;
-import ai.houyi.dorado.rest.http.impl.HttpResponseImpl;
+import ai.houyi.dorado.rest.http.impl.DoradoHttpRequest;
+import ai.houyi.dorado.rest.http.impl.DoradoHttpResponse;
 import ai.houyi.dorado.rest.http.impl.Webapp;
 import ai.houyi.dorado.rest.router.Router;
 import ai.houyi.dorado.rest.util.ExceptionUtils;
@@ -75,8 +75,8 @@ public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpReq
         ChannelFuture channelFuture;
         try {
             set(ctx.channel());
-            HttpRequest _request = new HttpRequestImpl(request);
-            HttpResponse _response = new HttpResponseImpl(response);
+            HttpRequest _request = new DoradoHttpRequest(request);
+            HttpResponse _response = new DoradoHttpResponse(response);
 
             Router router = webapp.getUriRoutingRegistry().findRouteController(_request);
             if (router == null) {
