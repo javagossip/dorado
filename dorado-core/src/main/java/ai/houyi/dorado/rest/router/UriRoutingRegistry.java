@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 
@@ -89,12 +90,12 @@ public class UriRoutingRegistry {
 
 	public void register(UriRoutingPath routeMapping, UriRoutingController controller) {
 		uriRoutingRegistry.add(UriRouting.create(routeMapping, controller));
-		uriRoutingRegistry.sort((a, b) -> a.path.compareTo(b.path));
+		uriRoutingRegistry.sort(Comparator.comparing(a -> a.path));
 	}
 
 	public Router findRouteController(HttpRequest request) {
-		Matcher matchResult = null;
-		String routingMethod = null;
+		Matcher matchResult;
+		String routingMethod;
 
 		RoutingCacheKey key = new RoutingCacheKey(request.getRequestURI(), request.getMethod());
 		Router router = cache.get(key);
@@ -162,8 +163,8 @@ public class UriRoutingRegistry {
 	}
 
 	private class RoutingCacheKey {
-		private String uri;
-		private String method;
+		private final String uri;
+		private final String method;
 
 		public RoutingCacheKey(String uri, String method) {
 			this.uri = uri;
