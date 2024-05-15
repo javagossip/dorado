@@ -17,53 +17,51 @@ package ai.houyi.dorado.rest.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import ai.houyi.dorado.Dorado;
 import ai.houyi.dorado.rest.annotation.Controller;
 import ai.houyi.dorado.rest.annotation.Path;
-import ai.houyi.dorado.rest.router.UriRoutingPath;
-import ai.houyi.dorado.rest.router.UriRoutingRegistry;
-import ai.houyi.dorado.rest.router.UriRoutingRegistry.UriRouting;
+import ai.houyi.dorado.rest.router.trie.Route;
+import ai.houyi.dorado.rest.router.trie.Router;
+import ai.houyi.dorado.rest.router.trie.UriRoutingRegistry;
 import ai.houyi.dorado.rest.server.DoradoServerBuilder;
 import ai.houyi.dorado.rest.util.StringUtils;
 
 /**
- * 
  * @author wangwp
  */
 @Controller
 @Path("/")
 public class RootController {
-	private static final String DORADO_WELCOME = "Welcome to dorado!";
 
-	@Path
-	public String index() {
-		return DORADO_WELCOME;
-	}
+    private static final String DORADO_WELCOME = "Welcome to dorado!";
 
-	@Path("status")
-	public DoradoStatus status() {
-		return DoradoStatus.get();
-	}
+    @Path
+    public String index() {
+        return DORADO_WELCOME;
+    }
 
-	@Path("services")
-	public List<RestService> services() {
-		List<RestService> serviceList = new ArrayList<>();
+    @Path("status")
+    public DoradoStatus status() {
+        return DoradoStatus.get();
+    }
 
-		List<UriRouting> uriRoutings = UriRoutingRegistry.getInstance().uriRoutings();
-		for (UriRouting uriRouting : uriRoutings) {
-			UriRoutingPath routingPath = uriRouting.uriRoutingPath();
+    @Path("services")
+    public List<RestService> services() {
+        List<RestService> serviceList = new ArrayList<>();
 
-			String path = routingPath.routingPath();
-			String method = StringUtils.defaultString(routingPath.httpMethod(), "*");
+        Set<Route> allRoutes = Router.getInstance().getRoutes();
+        for (Route route : allRoutes) {
+            String path = route.getPath();
+            String method = StringUtils.defaultString(route.getMethod(), "*");
+            serviceList.add(RestService.builder().withPath(path).withMethod(method).build());
+        }
+        return serviceList;
+    }
 
-			serviceList.add(RestService.builder().withPath(path).withMethod(method).build());
-		}
-		return serviceList;
-	}
-
-	@Path("config")
-	public DoradoServerBuilder config() {
-		return Dorado.serverConfig;
-	}
+    @Path("config")
+    public DoradoServerBuilder config() {
+        return Dorado.serverConfig;
+    }
 }

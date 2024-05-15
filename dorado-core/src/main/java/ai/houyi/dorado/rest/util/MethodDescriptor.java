@@ -229,9 +229,4 @@ public class MethodDescriptor {
 					+ ", annotationType=" + annotationType + "]";
 		}
 	}
-
-	public static void main(String[] args) throws Exception {
-		MultipartFile[] a = new MultipartFile[] {};
-		System.out.println(a.getClass().isArray());
-	}
 }

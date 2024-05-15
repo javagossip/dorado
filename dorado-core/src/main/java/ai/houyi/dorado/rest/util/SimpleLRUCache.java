@@ -32,7 +32,7 @@ public final class SimpleLRUCache<K, V> {
 	private final Lock w;
 
 	private SimpleLRUCache(int capacity) {
-		this.cache = new LRUMap<K, V>(capacity);
+		this.cache = new LRUMap<>(capacity);
 		ReadWriteLock lock = new ReentrantReadWriteLock();
 
 		this.r = lock.readLock();
@@ -78,6 +78,7 @@ public final class SimpleLRUCache<K, V> {
 			w.unlock();
 		}
 	}
+
 
 	static class LRUMap<K, V> extends LinkedHashMap<K, V> {
 		private static final long serialVersionUID = 1L;
