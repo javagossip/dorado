@@ -16,7 +16,7 @@
 package ai.houyi.dorado.swagger.ui;
 
 import ai.houyi.dorado.rest.ResourceRegister;
-import ai.houyi.dorado.rest.router.UriRoutingRegistry;
+import ai.houyi.dorado.rest.router.trie.UriRoutingRegistry;
 import ai.houyi.dorado.swagger.ui.controller.SwaggerUIController;
 
 /**

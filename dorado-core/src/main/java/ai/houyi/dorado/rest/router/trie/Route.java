@@ -22,6 +22,7 @@ import ai.houyi.dorado.rest.util.Assert;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Route {
 
@@ -74,5 +75,21 @@ public class Route {
         Assert.notNull(pathParameter, "PathParameter '" + pathParameterName + "' not found");
 
         pathParameter.setValue(value);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Route route = (Route) o;
+        return Objects.equals(path, route.path) && Objects.equals(method, route.method) &&
+                Objects.equals(pathParameters, route.pathParameters);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(path, method, pathParameters);
     }
 }

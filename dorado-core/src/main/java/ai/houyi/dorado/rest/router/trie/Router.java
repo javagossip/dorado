@@ -18,8 +18,11 @@
 
 package ai.houyi.dorado.rest.router.trie;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.util.Assert;
@@ -37,6 +40,7 @@ public class Router {
     private static final String PATH_VARIABLE_SUFFIX = "}";
 
     private static final Router INSTANCE = new Router();
+    private Set<Route> routes = new HashSet<>();
 
     private final TrieNode root = new TrieNode();
 
@@ -48,8 +52,8 @@ public class Router {
     }
 
     public void addRoute(Route route) {
+        routes.add(route);
         TrieNode currentNode = _createOrGetRootNode(route.getMethod());
-
         for (String part : route.getPath().split(PATH_SEPARATOR)) {
             if (part.startsWith(PATH_VARIABLE_PREFIX) && part.endsWith(PATH_VARIABLE_SUFFIX)) {
                 if (!currentNode.children.containsKey(WILDCARD_TRIE_NODE_VALUE)) {
@@ -113,6 +117,10 @@ public class Router {
             }
         }
         return null;
+    }
+
+    public Set<Route> getRoutes() {
+        return Collections.unmodifiableSet(this.routes);
     }
 
     static class TrieNode {
