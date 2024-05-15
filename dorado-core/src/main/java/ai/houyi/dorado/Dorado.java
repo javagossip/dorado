@@ -21,51 +21,51 @@ import ai.houyi.dorado.rest.server.DoradoServerBuilder;
 import ai.houyi.dorado.rest.util.ClassLoaderUtils;
 
 /**
- * 
  * @author wangwp
  */
 public final class Dorado {
-	public static volatile ClassLoader classLoader;
-	public static volatile boolean springInitialized;
-	public static volatile BeanContainer beanContainer;
-	public static volatile DoradoServerBuilder serverConfig;
-	public static volatile Class<?> mainClass;
 
-	public static volatile boolean isEnableSwagger;
-	public static volatile boolean isEnableSpring;
-	public static volatile boolean isEnableProtobuf;
-	public static volatile boolean isEnableSwaggerUi;
+    public static volatile ClassLoader classLoader;
+    public static volatile boolean springInitialized;
+    public static volatile BeanContainer beanContainer;
+    public static volatile DoradoServerBuilder serverConfig;
+    public static volatile Class<?> mainClass;
 
-	static {
-		classLoader = Thread.currentThread().getContextClassLoader();
-		beanContainer = BeanContainer.DEFAULT;
+    public static volatile boolean isEnableSwagger;
+    public static volatile boolean isEnableSpring;
+    public static volatile boolean isEnableProtobuf;
+    public static volatile boolean isEnableSwaggerUi;
 
-		try {
-			Class.forName("com.google.protobuf.Message");
-			isEnableProtobuf = true;
-		} catch (Throwable ex) {
-			// ignore this ex
-		}
+    static {
+        classLoader = Thread.currentThread().getContextClassLoader();
+        beanContainer = BeanContainer.DEFAULT;
 
-		try {
-			Class.forName("org.springframework.context.ApplicationContext");
-			isEnableSpring = true;
-		} catch (Throwable ex) {
-			// ignore this ex
-		}
-		
-		try {
-			Class.forName("mobi.f2time.dorado.swagger.controller.SwaggerV2Controller");
-			isEnableSwagger = true;
-		} catch (Throwable ex) {
-			// ignore this ex
-		}
-		
-		try {
-			URL url = ClassLoaderUtils.getURL("META-INF/webjars/swagger-ui");
-			isEnableSwaggerUi = url!=null;
-		}catch(Throwable ex) {
-			//ignore this ex
-		}
-	}
+        try {
+            Class.forName("com.google.protobuf.Message");
+            isEnableProtobuf = true;
+        } catch (Throwable ex) {
+            // ignore this ex
+        }
+
+        try {
+            Class.forName("org.springframework.context.ApplicationContext");
+            isEnableSpring = true;
+        } catch (Throwable ex) {
+            // ignore this ex
+        }
+
+        try {
+            Class.forName("mobi.f2time.dorado.swagger.controller.SwaggerV2Controller");
+            isEnableSwagger = true;
+        } catch (Throwable ex) {
+            // ignore this ex
+        }
+
+        try {
+            URL url = ClassLoaderUtils.getURL("META-INF/webjars/swagger-ui");
+            isEnableSwaggerUi = url != null;
+        } catch (Throwable ex) {
+            //ignore this ex
+        }
+    }
 }
