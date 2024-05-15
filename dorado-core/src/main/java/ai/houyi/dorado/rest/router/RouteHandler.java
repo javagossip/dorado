@@ -16,7 +16,7 @@
  *
  */
 
-package ai.houyi.dorado.rest.router.trie;
+package ai.houyi.dorado.rest.router;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

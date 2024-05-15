@@ -16,7 +16,7 @@
  *
  */
 
-package ai.houyi.dorado.rest.router.trie;
+package ai.houyi.dorado.rest.router;
 
 import java.util.Collections;
 import java.util.HashMap;

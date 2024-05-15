@@ -30,8 +30,8 @@ import ai.houyi.dorado.rest.controller.RootController;
 import ai.houyi.dorado.rest.http.Filter;
 import ai.houyi.dorado.rest.http.MethodReturnValueHandler;
 import ai.houyi.dorado.rest.http.MethodReturnValueHandlerConfig;
-import ai.houyi.dorado.rest.router.trie.UriRoutingRegistry;
-import ai.houyi.dorado.rest.router.trie.Router;
+import ai.houyi.dorado.rest.router.UriRoutingRegistry;
+import ai.houyi.dorado.rest.router.Router;
 import ai.houyi.dorado.rest.util.PackageScanner;
 
 /**
