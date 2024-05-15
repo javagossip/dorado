@@ -31,122 +31,124 @@ import ai.houyi.dorado.rest.http.Filter;
 import ai.houyi.dorado.rest.http.MethodReturnValueHandler;
 import ai.houyi.dorado.rest.http.MethodReturnValueHandlerConfig;
 import ai.houyi.dorado.rest.router.UriRoutingRegistry;
+import ai.houyi.dorado.rest.router.trie.Router;
 import ai.houyi.dorado.rest.util.LogUtils;
 import ai.houyi.dorado.rest.util.PackageScanner;
 
 /**
- * 
  * @author wangwp
  */
 public class Webapp {
-	private static Webapp webapp;
 
-	private final String[] packages;
-	private MethodReturnValueHandlerConfig methodReturnValueHandlerConfig;
+    private static Webapp webapp;
 
-	private Webapp(String[] packages, boolean springOn) {
-		this.packages = packages;
-	}
+    private final String[] packages;
+    private MethodReturnValueHandlerConfig methodReturnValueHandlerConfig;
 
-	public static synchronized void create(String[] packages) {
-		create(packages, false);
-	}
+    private Webapp(String[] packages, boolean springOn) {
+        this.packages = packages;
+    }
 
-	public static synchronized void create(String[] packages, boolean springOn) {
-		webapp = new Webapp(packages, springOn);
-		webapp.initialize();
-	}
+    public static synchronized void create(String[] packages) {
+        create(packages, false);
+    }
 
-	public static Webapp get() {
-		if (webapp == null) {
-			throw new IllegalStateException("webapp not initialized, please create it first");
-		}
-		return webapp;
-	}
+    public static synchronized void create(String[] packages, boolean springOn) {
+        webapp = new Webapp(packages, springOn);
+        webapp.initialize();
+    }
 
-	public MethodReturnValueHandlerConfig getMethodReturnValueHandlerConfig() {
-		return this.methodReturnValueHandlerConfig;
-	}
+    public static Webapp get() {
+        if (webapp == null) {
+            throw new IllegalStateException("webapp not initialized, please create it first");
+        }
+        return webapp;
+    }
 
-	public void initialize() {
-		List<Class<?>> classes = new ArrayList<>();
+    public MethodReturnValueHandlerConfig getMethodReturnValueHandlerConfig() {
+        return this.methodReturnValueHandlerConfig;
+    }
 
-		for (ResourceRegister resourceRegister : ResourceRegisters.getInstance().getResourceRegisters()) {
-			resourceRegister.register();
-		}
+    public void initialize() {
+        List<Class<?>> classes = new ArrayList<>();
 
-		try {
-			for (String scanPackage : packages) {
-				classes.addAll(PackageScanner.scan(scanPackage));
-			}
+        for (ResourceRegister resourceRegister : ResourceRegisters.getInstance().getResourceRegisters()) {
+            resourceRegister.register();
+        }
 
-			initializeUriRouting(RootController.class);
-			classes.forEach(clazz -> {
-				registerWebComponent(clazz);
-			});
+        try {
+            for (String scanPackage : packages) {
+                classes.addAll(PackageScanner.scan(scanPackage));
+            }
 
-			UriRoutingRegistry registry = getUriRoutingRegistry();
-			if (registry.uriRoutings().isEmpty()) {
-				LogUtils.warn("No Controller are registered, please check first");
-			}
-		} catch (Exception ex) {
-			throw new DoradoException(ex);
-		}
-	};
+            initializeUriRouting(RootController.class);
+            classes.forEach(clazz -> {
+                registerWebComponent(clazz);
+            });
+        } catch (Exception ex) {
+            throw new DoradoException(ex);
+        }
+    }
 
-	private void registerWebComponent(Class<?> type) {
-		Annotation exceptionAdvice = type.getAnnotation(ExceptionAdvice.class);
-		if (exceptionAdvice != null) {
-			registerExceptionAdvice(type);
-		}
+    ;
 
-		if (MethodReturnValueHandler.class.isAssignableFrom(type)) {
-			if (this.methodReturnValueHandlerConfig != null) {
-				throw new IllegalStateException("Only one instance for [MethodReturnValueHandler] is allowed");
-			}
+    private void registerWebComponent(Class<?> type) {
+        Annotation exceptionAdvice = type.getAnnotation(ExceptionAdvice.class);
+        if (exceptionAdvice != null) {
+            registerExceptionAdvice(type);
+        }
 
-			MethodReturnValueHandler returnValueHandler = (MethodReturnValueHandler) Dorado.beanContainer.getBean(type);
-			this.methodReturnValueHandlerConfig = new MethodReturnValueHandlerConfig(returnValueHandler);
-		}
+        if (MethodReturnValueHandler.class.isAssignableFrom(type)) {
+            if (this.methodReturnValueHandlerConfig != null) {
+                throw new IllegalStateException("Only one instance for [MethodReturnValueHandler] is allowed");
+            }
 
-		if (Filter.class.isAssignableFrom(type)) {
-			FilterPath filterPath = type.getAnnotation(FilterPath.class);
-			if (filterPath == null) {
-				return;
-			}
+            MethodReturnValueHandler returnValueHandler = (MethodReturnValueHandler) Dorado.beanContainer.getBean(type);
+            this.methodReturnValueHandlerConfig = new MethodReturnValueHandlerConfig(returnValueHandler);
+        }
 
-			String[] include = filterPath.include();
-			String[] exclude = filterPath.exclude();
+        if (Filter.class.isAssignableFrom(type)) {
+            FilterPath filterPath = type.getAnnotation(FilterPath.class);
+            if (filterPath == null) {
+                return;
+            }
 
-			if (include == null && exclude == null) {
-				return;
-			}
+            String[] include = filterPath.include();
+            String[] exclude = filterPath.exclude();
 
-			FilterConfiguration.Builder fcb = FilterConfiguration.builder();
-			if (include != null && include.length > 0) {
-				fcb.withPathPatterns(Arrays.asList(include));
-			}
+            if (include == null && exclude == null) {
+                return;
+            }
 
-			if (exclude != null && exclude.length > 0) {
-				fcb.withExcludePathPatterns(Arrays.asList(exclude));
-			}
+            FilterConfiguration.Builder fcb = FilterConfiguration.builder();
+            if (include != null && include.length > 0) {
+                fcb.withPathPatterns(Arrays.asList(include));
+            }
 
-			fcb.withFilter((Filter) Dorado.beanContainer.getBean(type));
-			FilterManager.getInstance().addFilterConfiguration(fcb.build());
-		} else {
-			initializeUriRouting(type);
-		}
-	}
+            if (exclude != null && exclude.length > 0) {
+                fcb.withExcludePathPatterns(Arrays.asList(exclude));
+            }
 
-	private void registerExceptionAdvice(Class<?> type) {
-		WebComponentRegistry.getWebComponentRegistry().registerExceptionHandlers(type);
-	}
+            fcb.withFilter((Filter) Dorado.beanContainer.getBean(type));
+            FilterManager.getInstance().addFilterConfiguration(fcb.build());
+        } else {
+            initializeUriRouting(type);
+        }
+    }
 
-	private void initializeUriRouting(Class<?> c) {
-		UriRoutingRegistry.getInstance().register(c);
-	}
+    private void registerExceptionAdvice(Class<?> type) {
+        WebComponentRegistry.getWebComponentRegistry().registerExceptionHandlers(type);
+    }
 
-	public UriRoutingRegistry getUriRoutingRegistry() {
-		return UriRoutingRegistry.getInstance();
-	}
+    private void initializeUriRouting(Class<?> c) {
+        UriRoutingRegistry.getInstance().register(c);
+    }
+
+    public UriRoutingRegistry getUriRoutingRegistry() {
+        return UriRoutingRegistry.getInstance();
+    }
+
+    public Router getRouter() {
+        return Router.getInstance();
+    }
 }

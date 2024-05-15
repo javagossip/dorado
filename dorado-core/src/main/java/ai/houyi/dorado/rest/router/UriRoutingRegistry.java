@@ -29,192 +29,201 @@ import ai.houyi.dorado.rest.annotation.HttpMethod;
 import ai.houyi.dorado.rest.annotation.Path;
 import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.http.impl.FilterManager;
+import ai.houyi.dorado.rest.router.trie.Route;
+import ai.houyi.dorado.rest.router.trie.RouteHandler;
 import ai.houyi.dorado.rest.util.SimpleLRUCache;
 import ai.houyi.dorado.rest.util.StringUtils;
 
 /**
- * 
  * @author wangwp
  */
 public class UriRoutingRegistry {
-	private static final UriRoutingRegistry _instance = new UriRoutingRegistry();
 
-	private List<UriRouting> uriRoutingRegistry = new ArrayList<>();
-	private final SimpleLRUCache<RoutingCacheKey, Router> cache = SimpleLRUCache.create(512);
+    private static final UriRoutingRegistry _instance = new UriRoutingRegistry();
+    private static final ai.houyi.dorado.rest.router.trie.Router trieRouter =
+            ai.houyi.dorado.rest.router.trie.Router.getInstance();
 
-	private UriRoutingRegistry() {
-	}
+    private List<UriRouting> uriRoutingRegistry = new ArrayList<>();
+    private final SimpleLRUCache<RoutingCacheKey, Router> cache = SimpleLRUCache.create(512);
 
-	public static UriRoutingRegistry getInstance() {
-		return _instance;
-	}
+    private UriRoutingRegistry() {
+    }
 
-	public void register(Class<?> type) {
-		Controller controller = type.getAnnotation(Controller.class);
-		if (controller == null) {
-			return;
-		}
+    public static UriRoutingRegistry getInstance() {
+        return _instance;
+    }
 
-		Path classLevelPath = type.getAnnotation(Path.class);
-		String controllerPath = classLevelPath == null ? StringUtils.EMPTY : classLevelPath.value();
+    public void register(Class<?> type) {
+        Controller controller = type.getAnnotation(Controller.class);
+        if (controller == null) {
+            return;
+        }
 
-		Method[] controllerMethods = type.getDeclaredMethods();
-		for (Method method : controllerMethods) {
-			if (Modifier.isStatic(method.getModifiers()) || method.getAnnotations().length == 0
-					|| !Modifier.isPublic(method.getModifiers())) {
-				continue;
-			}
+        Path classLevelPath = type.getAnnotation(Path.class);
+        String controllerPath = classLevelPath == null ? StringUtils.EMPTY : classLevelPath.value();
 
-			Path methodLevelPath = method.getAnnotation(Path.class);
-			HttpMethod httpMethod = getHttpMethod(method.getAnnotations());
-			String methodPath = methodLevelPath == null ? StringUtils.EMPTY : methodLevelPath.value();
+        Method[] controllerMethods = type.getDeclaredMethods();
+        for (Method method : controllerMethods) {
+            if (Modifier.isStatic(method.getModifiers()) || method.getAnnotations().length == 0 ||
+                    !Modifier.isPublic(method.getModifiers())) {
+                continue;
+            }
 
-			UriRoutingPath uriRoutingPath = UriRoutingPath.create(String.format("%s%s", controllerPath, methodPath),
-					httpMethod);
-			UriRoutingController routeController = UriRoutingController.create(uriRoutingPath, type, method);
-			register(uriRoutingPath, routeController);
-		}
-	}
+            Path methodLevelPath = method.getAnnotation(Path.class);
+            HttpMethod httpMethod = getHttpMethod(method.getAnnotations());
+            String methodPath = methodLevelPath == null ? StringUtils.EMPTY : methodLevelPath.value();
 
-	private HttpMethod getHttpMethod(Annotation[] annotations) {
-		HttpMethod httpMethod = null;
+            String requestPath = String.format("%s%s", controllerPath, methodPath);
+            UriRoutingPath uriRoutingPath = UriRoutingPath.create(requestPath.replaceAll("/+", "/"), httpMethod);
+            UriRoutingController routeController = UriRoutingController.create(uriRoutingPath, type, method);
+            register(uriRoutingPath, routeController);
+            trieRouter.addRoute(new Route(requestPath,
+                    httpMethod == null ? null : httpMethod.value(),
+                    RouteHandler.create(method)));
+        }
+    }
 
-		for (Annotation annotation : annotations) {
-			httpMethod = annotation.annotationType().getAnnotation(HttpMethod.class);
-			if (httpMethod != null) {
-				return httpMethod;
-			}
-		}
-		return null;
-	}
+    private HttpMethod getHttpMethod(Annotation[] annotations) {
+        HttpMethod httpMethod;
 
-	public void register(UriRoutingPath routeMapping, UriRoutingController controller) {
-		uriRoutingRegistry.add(UriRouting.create(routeMapping, controller));
-		uriRoutingRegistry.sort(Comparator.comparing(a -> a.path));
-	}
+        for (Annotation annotation : annotations) {
+            httpMethod = annotation.annotationType().getAnnotation(HttpMethod.class);
+            if (httpMethod != null) {
+                return httpMethod;
+            }
+        }
+        return null;
+    }
 
-	public Router findRouteController(HttpRequest request) {
-		Matcher matchResult;
-		String routingMethod;
+    public void register(UriRoutingPath routeMapping, UriRoutingController controller) {
+        uriRoutingRegistry.add(UriRouting.create(routeMapping, controller));
+        uriRoutingRegistry.sort(Comparator.comparing(a -> a.path));
+    }
 
-		RoutingCacheKey key = new RoutingCacheKey(request.getRequestURI(), request.getMethod());
-		Router router = cache.get(key);
+    public Router findRouteController(HttpRequest request) {
+        Matcher matchResult;
+        String routingMethod;
 
-		if (router != null) {
-			return router;
-		}
+        RoutingCacheKey key = new RoutingCacheKey(request.getRequestURI(), request.getMethod());
+        Router router = cache.get(key);
 
-		for (UriRouting uriRouting : uriRoutingRegistry) {
-			routingMethod = uriRouting.path.httpMethod();
-			matchResult = uriRouting.path.routingPathPattern().matcher(request.getRequestURI());
+        if (router != null) {
+            return router;
+        }
 
-			if (matchResult.matches() && matchMethod(routingMethod, request.getMethod())) {
-				router = Router.create(uriRouting.controller, matchResult, request.getMethod());
-				router.addFilters(FilterManager.getInstance().match(request.getRequestURI()));
-				cache.put(key, router);
-				return router;
-			}
-		}
-		return null;
-	}
+        for (UriRouting uriRouting : uriRoutingRegistry) {
+            routingMethod = uriRouting.path.httpMethod();
+            matchResult = uriRouting.path.routingPathPattern().matcher(request.getRequestURI());
 
-	private boolean matchMethod(String routingMethod, String method) {
-		return routingMethod == null || method.equals(routingMethod);
-	}
+            if (matchResult.matches() && matchMethod(routingMethod, request.getMethod())) {
+                router = Router.create(uriRouting.controller, matchResult, request.getMethod());
+                router.addFilters(FilterManager.getInstance().match(request.getRequestURI()));
+                cache.put(key, router);
+                return router;
+            }
+        }
+        return null;
+    }
 
-	public List<UriRouting> uriRoutings() {
-		return Collections.unmodifiableList(uriRoutingRegistry);
-	}
+    private boolean matchMethod(String routingMethod, String method) {
+        return routingMethod == null || method.equals(routingMethod);
+    }
 
-	@Override
-	public String toString() {
-		return "UriRoutingRegistry [uriRouteMappingRegistry=" + uriRoutingRegistry + "]";
-	}
+    public List<UriRouting> uriRoutings() {
+        return Collections.unmodifiableList(uriRoutingRegistry);
+    }
 
-	public static class UriRouting {
-		private final UriRoutingPath path;
-		private final UriRoutingController controller;
+    @Override
+    public String toString() {
+        return "UriRoutingRegistry [uriRouteMappingRegistry=" + uriRoutingRegistry + "]";
+    }
 
-		private UriRouting(UriRoutingPath path, UriRoutingController controller) {
-			this.path = path;
-			this.controller = controller;
-		}
+    public static class UriRouting {
 
-		public static UriRouting create(UriRoutingPath path, UriRoutingController controller) {
-			return new UriRouting(path, controller);
-		}
+        private final UriRoutingPath path;
+        private final UriRoutingController controller;
 
-		public UriRoutingPath uriRoutingPath() {
-			return path;
-		}
+        private UriRouting(UriRoutingPath path, UriRoutingController controller) {
+            this.path = path;
+            this.controller = controller;
+        }
 
-		public UriRoutingController controller() {
-			return controller;
-		}
+        public static UriRouting create(UriRoutingPath path, UriRoutingController controller) {
+            return new UriRouting(path, controller);
+        }
 
-		@Override
-		public String toString() {
-			return "UriRouting [path=" + path + ", controller=" + controller + "]";
-		}
-	}
+        public UriRoutingPath uriRoutingPath() {
+            return path;
+        }
 
-	public void clear() {
-		uriRoutingRegistry.clear();
-	}
+        public UriRoutingController controller() {
+            return controller;
+        }
 
-	private class RoutingCacheKey {
-		private final String uri;
-		private final String method;
+        @Override
+        public String toString() {
+            return "UriRouting [path=" + path + ", controller=" + controller + "]";
+        }
+    }
 
-		public RoutingCacheKey(String uri, String method) {
-			this.uri = uri;
-			this.method = method;
-		}
+    public void clear() {
+        uriRoutingRegistry.clear();
+    }
 
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + getOuterType().hashCode();
-			result = prime * result + ((method == null) ? 0 : method.hashCode());
-			result = prime * result + ((uri == null) ? 0 : uri.hashCode());
-			return result;
-		}
+    private class RoutingCacheKey {
 
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null) {
-				return false;
-			}
-			if (getClass() != obj.getClass()) {
-				return false;
-			}
-			RoutingCacheKey other = (RoutingCacheKey) obj;
-			if (!getOuterType().equals(other.getOuterType())) {
-				return false;
-			}
-			if (method == null) {
-				if (other.method != null) {
-					return false;
-				}
-			} else if (!method.equals(other.method)) {
-				return false;
-			}
-			if (uri == null) {
-				if (other.uri != null) {
-					return false;
-				}
-			} else if (!uri.equals(other.uri)) {
-				return false;
-			}
-			return true;
-		}
+        private final String uri;
+        private final String method;
 
-		private UriRoutingRegistry getOuterType() {
-			return UriRoutingRegistry.this;
-		}
-	}
+        public RoutingCacheKey(String uri, String method) {
+            this.uri = uri;
+            this.method = method;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + getOuterType().hashCode();
+            result = prime * result + ((method == null) ? 0 : method.hashCode());
+            result = prime * result + ((uri == null) ? 0 : uri.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            RoutingCacheKey other = (RoutingCacheKey) obj;
+            if (!getOuterType().equals(other.getOuterType())) {
+                return false;
+            }
+            if (method == null) {
+                if (other.method != null) {
+                    return false;
+                }
+            } else if (!method.equals(other.method)) {
+                return false;
+            }
+            if (uri == null) {
+                if (other.uri != null) {
+                    return false;
+                }
+            } else if (!uri.equals(other.uri)) {
+                return false;
+            }
+            return true;
+        }
+
+        private UriRoutingRegistry getOuterType() {
+            return UriRoutingRegistry.this;
+        }
+    }
 }

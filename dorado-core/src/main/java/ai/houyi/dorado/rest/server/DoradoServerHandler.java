@@ -21,7 +21,8 @@ import ai.houyi.dorado.rest.http.HttpResponse;
 import ai.houyi.dorado.rest.http.impl.DoradoHttpRequest;
 import ai.houyi.dorado.rest.http.impl.DoradoHttpResponse;
 import ai.houyi.dorado.rest.http.impl.Webapp;
-import ai.houyi.dorado.rest.router.Router;
+import ai.houyi.dorado.rest.router.trie.Route;
+import ai.houyi.dorado.rest.router.trie.Router;
 import ai.houyi.dorado.rest.util.ExceptionUtils;
 import ai.houyi.dorado.rest.util.LogUtils;
 import ai.houyi.dorado.rest.util.TracingThreadPoolExecutor;
@@ -40,6 +41,7 @@ import static ai.houyi.dorado.rest.http.impl.ChannelHolder.unset;
  * @author wangwp
  */
 public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+
     private final TracingThreadPoolExecutor asyncExecutor;
     private final Webapp webapp;
     private final DoradoStatus status;
@@ -78,14 +80,15 @@ public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpReq
             HttpRequest _request = new DoradoHttpRequest(request);
             HttpResponse _response = new DoradoHttpResponse(response);
 
-            Router router = webapp.getUriRoutingRegistry().findRouteController(_request);
-            if (router == null) {
+            Route route = webapp.getRouter().matchRoute(_request);
+            if (route == null) {
                 response.setStatus(HttpResponseStatus.NOT_FOUND);
                 ByteBufUtil.writeUtf8(response.content(),
-                        String.format("Resource not found, url: [%s], http_method: [%s]", _request.getRequestURI(),
+                        String.format("Resource not found, url: [%s], http_method: [%s]",
+                                _request.getRequestURI(),
                                 _request.getMethod()));
             } else {
-                router.invoke(_request, _response);
+                route.getHandler().handle(route, _request, _response);
             }
         } catch (Throwable ex) {
             LogUtils.error("handle http request error", ex);
