@@ -20,6 +20,8 @@ package ai.houyi.dorado.rest.router.trie;
 
 import ai.houyi.dorado.rest.annotation.HttpMethod;
 
+import ai.houyi.dorado.rest.router.Route;
+import ai.houyi.dorado.rest.router.Router;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

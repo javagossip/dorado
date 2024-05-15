@@ -22,9 +22,8 @@ import java.util.Set;
 import ai.houyi.dorado.Dorado;
 import ai.houyi.dorado.rest.annotation.Controller;
 import ai.houyi.dorado.rest.annotation.Path;
-import ai.houyi.dorado.rest.router.trie.Route;
-import ai.houyi.dorado.rest.router.trie.Router;
-import ai.houyi.dorado.rest.router.trie.UriRoutingRegistry;
+import ai.houyi.dorado.rest.router.Route;
+import ai.houyi.dorado.rest.router.Router;
 import ai.houyi.dorado.rest.server.DoradoServerBuilder;
 import ai.houyi.dorado.rest.util.StringUtils;
 

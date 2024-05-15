@@ -15,7 +15,7 @@
  *  * under the License.
  *
  */
-package ai.houyi.dorado.rest.router.trie;
+package ai.houyi.dorado.rest.router;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;

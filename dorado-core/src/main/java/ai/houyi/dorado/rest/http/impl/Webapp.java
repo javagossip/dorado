@@ -30,8 +30,8 @@ import ai.houyi.dorado.rest.controller.RootController;
 import ai.houyi.dorado.rest.http.Filter;
 import ai.houyi.dorado.rest.http.MethodReturnValueHandler;
 import ai.houyi.dorado.rest.http.MethodReturnValueHandlerConfig;
-import ai.houyi.dorado.rest.router.trie.UriRoutingRegistry;
-import ai.houyi.dorado.rest.router.trie.Router;
+import ai.houyi.dorado.rest.router.UriRoutingRegistry;
+import ai.houyi.dorado.rest.router.Router;
 import ai.houyi.dorado.rest.util.PackageScanner;
 
 /**
@@ -44,16 +44,12 @@ public class Webapp {
     private final String[] packages;
     private MethodReturnValueHandlerConfig methodReturnValueHandlerConfig;
 
-    private Webapp(String[] packages, boolean springOn) {
+    private Webapp(String[] packages) {
         this.packages = packages;
     }
 
     public static synchronized void create(String[] packages) {
-        create(packages, false);
-    }
-
-    public static synchronized void create(String[] packages, boolean springOn) {
-        webapp = new Webapp(packages, springOn);
+        webapp = new Webapp(packages);
         webapp.initialize();
     }
 
@@ -81,15 +77,11 @@ public class Webapp {
             }
 
             initializeUriRouting(RootController.class);
-            classes.forEach(clazz -> {
-                registerWebComponent(clazz);
-            });
+            classes.forEach(this::registerWebComponent);
         } catch (Exception ex) {
             throw new DoradoException(ex);
         }
     }
-
-    ;
 
     private void registerWebComponent(Class<?> type) {
         Annotation exceptionAdvice = type.getAnnotation(ExceptionAdvice.class);

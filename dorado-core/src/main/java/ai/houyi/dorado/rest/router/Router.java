@@ -16,7 +16,7 @@
  *
  */
 
-package ai.houyi.dorado.rest.router.trie;
+package ai.houyi.dorado.rest.router;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,7 +40,7 @@ public class Router {
     private static final String PATH_VARIABLE_SUFFIX = "}";
 
     private static final Router INSTANCE = new Router();
-    private Set<Route> routes = new HashSet<>();
+    private final Set<Route> routes = new HashSet<>();
 
     private final TrieNode root = new TrieNode();
 
