@@ -43,7 +43,7 @@ Maven
 <dependency>
     <groupId>io.github.javagossip</groupId>
     <artifactId>dorado-core</artifactId>
-    <version>${dorado.version}</version>
+    <version>LATEST.VERSION</version>
 </dependency>
 ```
 
