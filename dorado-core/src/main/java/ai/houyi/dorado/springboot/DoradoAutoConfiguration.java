@@ -44,84 +44,91 @@ import ai.houyi.dorado.spring.SpringContainer;
 
 /**
  * @author weiping wang
- *
  */
 @Configuration
 @ConditionalOnBean(annotation = EnableDorado.class)
 @EnableConfigurationProperties(DoradoConfig.class)
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class DoradoAutoConfiguration {
-	@Autowired
-	private DoradoConfig config;
 
-	@Autowired
-	private ApplicationContext applicationContext;
+    @Autowired
+    private DoradoConfig config;
 
-	@PostConstruct
-	public void startDoradoServer() {
-		boolean isSpringBootApp = applicationContext.containsBean("springApplicationArguments");
+    @Autowired
+    private ApplicationContext applicationContext;
 
-		if (!isSpringBootApp) {
-			LogUtils.info("Not SpringBoot Application launch, unstart dorado server!");
-			return;
-		}
+    @PostConstruct
+    public void startDoradoServer() {
+        boolean isSpringBootApp = applicationContext.containsBean("springApplicationArguments");
 
-		DoradoServerBuilder builder = DoradoServerBuilder.forPort(config.getPort()).backlog(config.getBacklog())
-				.acceptors(config.getAcceptors()).ioWorkers(config.getIoWorkers()).minWorkers(config.getMinWorkers())
-				.maxWorkers(config.getMaxWorkers()).maxConnection(config.getMaxConnections())
-				.maxPendingRequest(config.getMaxPendingRequest()).maxIdleTime(config.getMaxIdleTime())
-				.sendBuffer(config.getSendBuffer()).recvBuffer(config.getRecvBuffer())
-				.maxPacketLength(config.getMaxPacketLength()).contextPath(config.getContextPath());
+        if (!isSpringBootApp) {
+            LogUtils.info("Not SpringBoot Application launch, unstart dorado server!");
+            return;
+        }
 
-		String[] scanPackages = config.getScanPackages();
-		if (config.getScanPackages() == null || config.getScanPackages().length == 0) {
-			scanPackages = getSpringBootAppScanPackages();
-		}
+        DoradoServerBuilder builder = DoradoServerBuilder.forPort(config.getPort())
+                .backlog(config.getBacklog())
+                .acceptors(config.getAcceptors())
+                .ioWorkers(config.getIoWorkers())
+                .minWorkers(config.getMinWorkers())
+                .maxWorkers(config.getMaxWorkers())
+                .maxConnection(config.getMaxConnections())
+                .maxPendingRequest(config.getMaxPendingRequest())
+                .maxIdleTime(config.getMaxIdleTime())
+                .sendBuffer(config.getSendBuffer())
+                .recvBuffer(config.getRecvBuffer())
+                .maxPacketLength(config.getMaxPacketLength())
+                .contextPath(config.getContextPath());
 
-		DoradoServer doradoServer = builder.scanPackages(scanPackages).build();
-		SpringContainer.create(applicationContext);
-		new Thread(doradoServer::start).start();
-	}
+        String[] scanPackages = config.getScanPackages();
+        if (config.getScanPackages() == null || config.getScanPackages().length == 0) {
+            scanPackages = getSpringBootAppScanPackages();
+        }
 
-	private String[] getSpringBootAppScanPackages() {
-		BeanDefinitionRegistry registry = (BeanDefinitionRegistry) applicationContext;
+        DoradoServer doradoServer = builder.scanPackages(scanPackages).build();
+        SpringContainer.create(applicationContext);
+        new Thread(doradoServer::start).start();
+    }
 
-		Set<String> packages = new HashSet<>();
-		String[] names = registry.getBeanDefinitionNames();
-		for (String name : names) {
-			BeanDefinition definition = registry.getBeanDefinition(name);
-			if (definition instanceof AnnotatedBeanDefinition) {
-				AnnotatedBeanDefinition annotatedDefinition = (AnnotatedBeanDefinition) definition;
-				addComponentScanningPackages(packages, annotatedDefinition.getMetadata());
-			}
-		}
-		return packages.toArray(new String[] {});
-	}
+    private String[] getSpringBootAppScanPackages() {
+        BeanDefinitionRegistry registry = (BeanDefinitionRegistry) applicationContext;
 
-	private void addComponentScanningPackages(Set<String> packages, AnnotationMetadata metadata) {
-		AnnotationAttributes attributes = AnnotationAttributes
-				.fromMap(metadata.getAnnotationAttributes(ComponentScan.class.getName(), true));
-		if (attributes != null) {
-			addPackages(packages, attributes.getStringArray("value"));
-			addPackages(packages, attributes.getStringArray("basePackages"));
-			addClasses(packages, attributes.getStringArray("basePackageClasses"));
-			if (packages.isEmpty()) {
-				packages.add(ClassUtils.getPackageName(metadata.getClassName()));
-			}
-		}
-	}
+        Set<String> packages = new HashSet<>();
+        String[] names = registry.getBeanDefinitionNames();
+        for (String name : names) {
+            BeanDefinition definition = registry.getBeanDefinition(name);
+            if (definition instanceof AnnotatedBeanDefinition) {
+                AnnotatedBeanDefinition annotatedDefinition = (AnnotatedBeanDefinition) definition;
+                addComponentScanningPackages(packages, annotatedDefinition.getMetadata());
+            }
+        }
+        return packages.toArray(new String[]{});
+    }
 
-	private void addPackages(Set<String> packages, String[] values) {
-		if (values != null) {
-			Collections.addAll(packages, values);
-		}
-	}
+    private void addComponentScanningPackages(Set<String> packages, AnnotationMetadata metadata) {
+        AnnotationAttributes attributes =
+                AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(ComponentScan.class.getName(), true));
+        if (attributes != null) {
+            addPackages(packages, attributes.getStringArray("value"));
+            addPackages(packages, attributes.getStringArray("basePackages"));
+            addClasses(packages, attributes.getStringArray("basePackageClasses"));
+            if (packages.isEmpty()) {
+                packages.add(ClassUtils.getPackageName(metadata.getClassName()));
+            }
+        }
+    }
 
-	private void addClasses(Set<String> packages, String[] values) {
-		if (values != null) {
-			for (String value : values) {
-				packages.add(ClassUtils.getPackageName(value));
-			}
-		}
-	}
+    private void addPackages(Set<String> packages, String[] values) {
+        if (values != null) {
+            Collections.addAll(packages, values);
+        }
+    }
+
+    private void addClasses(Set<String> packages, String[] values) {
+        if (values != null) {
+            for (String value : values) {
+                packages.add(ClassUtils.getPackageName(value));
+            }
+        }
+    }
 }

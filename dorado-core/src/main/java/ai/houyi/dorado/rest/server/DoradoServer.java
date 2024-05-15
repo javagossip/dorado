@@ -61,7 +61,7 @@ public class DoradoServer {
 		EventLoopGroup acceptor = new NioEventLoopGroup(builder.getAcceptors());
 		EventLoopGroup worker = new NioEventLoopGroup(builder.getIoWorkers());
 
-		ServerBootstrap bootstrap = null;
+		ServerBootstrap bootstrap;
 		try {
 			bootstrap = new ServerBootstrap().group(acceptor, worker).channel(NioServerSocketChannel.class)
 					.childHandler(new DoradoChannelInitializer(builder));

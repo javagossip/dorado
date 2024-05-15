@@ -94,7 +94,7 @@ public class RouteHandler {
             }
             writeResponseBody(invokeResult, mediaType, response);
         } catch (Exception ex) {
-            handleException(ex, request, response);
+            handleException(ex, response);
         }
     }
 
@@ -110,7 +110,7 @@ public class RouteHandler {
                 handler.supportsReturnType(methodDescriptor);
     }
 
-    private void handleException(Exception ex, HttpRequest request, HttpResponse response) {
+    private void handleException(Exception ex, HttpResponse response) {
         Throwable targetException = ex;
         if (ex instanceof InvocationTargetException) {
             targetException = ((InvocationTargetException) ex).getTargetException();
