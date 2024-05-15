@@ -20,9 +20,7 @@ package ai.houyi.dorado.rest.router.trie;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import ai.houyi.dorado.rest.annotation.HttpMethod;
 import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.util.Assert;
 import ai.houyi.dorado.rest.util.StringUtils;
@@ -32,21 +30,15 @@ import ai.houyi.dorado.rest.util.StringUtils;
  */
 public class Router {
 
-    private static final String ANY = ":";
+    private static final String WILDCARD_TRIE_NODE_VALUE = ":";
+    private static final String ALL_METHOD = "_ALL_";
+    private static final String PATH_SEPARATOR = "/";
+    private static final String PATH_VARIABLE_PREFIX = "{";
+    private static final String PATH_VARIABLE_SUFFIX = "}";
 
-    private final TrieNode root = new TrieNode();
-    private static final Map<String, TrieNode> ROOT_NODE_MAP_BY_METHOD = new ConcurrentHashMap<>();
     private static final Router INSTANCE = new Router();
 
-    static {
-        ROOT_NODE_MAP_BY_METHOD.put(HttpMethod.GET, new TrieNode());
-        ROOT_NODE_MAP_BY_METHOD.put(HttpMethod.POST, new TrieNode());
-        ROOT_NODE_MAP_BY_METHOD.put(HttpMethod.PUT, new TrieNode());
-        ROOT_NODE_MAP_BY_METHOD.put(HttpMethod.DELETE, new TrieNode());
-        ROOT_NODE_MAP_BY_METHOD.put(HttpMethod.HEAD, new TrieNode());
-        ROOT_NODE_MAP_BY_METHOD.put(HttpMethod.OPTIONS, new TrieNode());
-        ROOT_NODE_MAP_BY_METHOD.put("_ANY_", new TrieNode());
-    }
+    private final TrieNode root = new TrieNode();
 
     private Router() {
     }
@@ -56,21 +48,21 @@ public class Router {
     }
 
     public void addRoute(Route route) {
-        String method = StringUtils.isBlank(route.getMethod()) ? "_ANY_" : route.getMethod();
-        TrieNode currentNode = ROOT_NODE_MAP_BY_METHOD.get(method);
+        TrieNode currentNode = _createOrGetRootNode(route.getMethod());
 
-        for (String part : route.getPath().split("/")) {
-            if (part.startsWith("{") && part.endsWith("}")) {
-                if (!currentNode.children.containsKey(ANY)) {
+        for (String part : route.getPath().split(PATH_SEPARATOR)) {
+            if (part.startsWith(PATH_VARIABLE_PREFIX) && part.endsWith(PATH_VARIABLE_SUFFIX)) {
+                if (!currentNode.children.containsKey(WILDCARD_TRIE_NODE_VALUE)) {
                     String[] pathParts = part.substring(1, part.length() - 1).split(":");
                     String pathParameterName = pathParts[0];
                     String pathParameterPattern = pathParts.length == 2 ? pathParts[1] : null;
                     PathParameter pathParameter = PathParameter.create(pathParameterName, pathParameterPattern);
                     route.addPathParameter(pathParameter);
-                    currentNode.children.put(ANY, new TrieNode());
-                    currentNode.children.get(ANY).pathParameterName = pathParameterName;
+
+                    currentNode.children.put(WILDCARD_TRIE_NODE_VALUE, new TrieNode());
+                    currentNode.children.get(WILDCARD_TRIE_NODE_VALUE).pathParameterName = pathParameterName;
                 }
-                currentNode = currentNode.children.get(ANY);
+                currentNode = currentNode.children.get(WILDCARD_TRIE_NODE_VALUE);
             } else {
                 if (!currentNode.children.containsKey(part)) {
                     currentNode.children.put(part, new TrieNode());
@@ -82,32 +74,37 @@ public class Router {
         currentNode.route = route;
     }
 
+    private TrieNode _createOrGetRootNode(String method) {
+        String _method = StringUtils.isBlank(method) ? ALL_METHOD : method;
+        if (!root.children.containsKey(_method)) {
+            root.children.put(_method, new TrieNode());
+        }
+        return root.children.get(_method);
+    }
+
     public Route matchRoute(HttpRequest request) {
         Route route = matchRoute(request.getRequestURI(), request.getMethod().toUpperCase());
         if (route != null) {
             return route;
         }
-        return matchRoute(request.getRequestURI(), "_ANY_");
+        return matchRoute(request.getRequestURI(), ALL_METHOD);
     }
 
     public Route matchRoute(String path, String method) {
         Assert.notBlank(path, "path must not be blank");
         Assert.notBlank(method, "method must not be blank");
 
-        TrieNode currentNode = ROOT_NODE_MAP_BY_METHOD.get(method);
-        for (String part : path.split("/")) {
+        TrieNode currentNode = _createOrGetRootNode(method);
+        for (String part : path.split(PATH_SEPARATOR)) {
             if (currentNode.children.containsKey(part)) {
                 currentNode = currentNode.children.get(part);
                 if (currentNode.isLeaf) {
                     return currentNode.route;
                 }
             } else {
-                if (currentNode.children.containsKey(ANY)) {
-                    currentNode = currentNode.children.get(ANY);
-                    PathParameter pathParameter = currentNode.route.getPathParameter(currentNode.pathParameterName);
-                    if (pathParameter != null) {
-                        pathParameter.setValue(part);
-                    }
+                if (currentNode.children.containsKey(WILDCARD_TRIE_NODE_VALUE)) {
+                    currentNode = currentNode.children.get(WILDCARD_TRIE_NODE_VALUE);
+                    currentNode.route.setPathParameterValue(currentNode.pathParameterName, part);
                     if (currentNode.isLeaf) {
                         return currentNode.route;
                     }

@@ -40,7 +40,7 @@ public class RouterTest {
 
         Route route2 = router.matchRoute("/api/v1/campaigns/1", HttpMethod.GET);
         assertNull(route2);
-        route2 = router.matchRoute("/api/v1/campaigns/2", "_ANY_");
+        route2 = router.matchRoute("/api/v1/campaigns/2", "_ALL_");
         assertNotNull(route2);
 
         assertNotNull(route);

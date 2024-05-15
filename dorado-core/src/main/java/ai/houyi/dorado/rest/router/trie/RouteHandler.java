@@ -20,7 +20,6 @@ package ai.houyi.dorado.rest.router.trie;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Map;
 
 import ai.houyi.dorado.exception.DoradoException;
@@ -154,14 +153,13 @@ public class RouteHandler {
             return null;
         }
 
-        List<PathParameter> pathParameters = route.getPathParameters();
         Object[] methodArgs = new Object[methodParameters.length];
         for (int i = 0; i < methodArgs.length; i++) {
             methodArgs[i] = resolveMethodArg(request,
                     response,
                     methodDescriptor,
                     methodParameters[i],
-                    route.getPathParameterMap());
+                    route.getPathParameters());
         }
         return methodArgs;
     }
@@ -180,10 +178,6 @@ public class RouteHandler {
         ParameterValueResolver parameterValueResolver =
                 ParameterValueResolvers.getParameterValueResolver(parameterAnnotationType);
 
-        return parameterValueResolver.resolveParameterValue(request,
-                response,
-                desc,
-                methodParameter,
-                pathVariable);
+        return parameterValueResolver.resolveParameterValue(request, response, desc, methodParameter, pathVariable);
     }
 }
