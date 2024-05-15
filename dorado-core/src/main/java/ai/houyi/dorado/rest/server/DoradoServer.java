@@ -34,69 +34,70 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.timeout.IdleStateHandler;
 
 /**
- * 
  * @author wangwp
  */
 public class DoradoServer {
 
-	private final DoradoServerBuilder builder;
+    private final DoradoServerBuilder builder;
 
-	public DoradoServer(DoradoServerBuilder builder) {
-		this.builder = builder;
-	}
+    public DoradoServer(DoradoServerBuilder builder) {
+        this.builder = builder;
+    }
 
-	public void start() {
-		// print dorado ascii-art logo,use figlet generate ascii-art logo
-		if (!Dorado.springInitialized) {
-			System.out.println(ClassLoaderUtils.getResoureAsString("dorado-ascii"));
-			System.out.println();
-		}
+    public void start() {
+        // print dorado ascii-art logo,use figlet generate ascii-art logo
+        if (!Dorado.springInitialized) {
+            System.out.println(ClassLoaderUtils.getResoureAsString("dorado-ascii"));
+            System.out.println();
+        }
 
-		if (builder.isSpringOn() && !Dorado.springInitialized) {
-			SpringContainer.create(builder.scanPackages());
-		}
+        if (builder.isSpringOn() && !Dorado.springInitialized) {
+            SpringContainer.create(builder.scanPackages());
+        }
 
-		Webapp.create(builder.scanPackages(), builder.isSpringOn());
+        Webapp.create(builder.scanPackages());
 
-		EventLoopGroup acceptor = new NioEventLoopGroup(builder.getAcceptors());
-		EventLoopGroup worker = new NioEventLoopGroup(builder.getIoWorkers());
+        EventLoopGroup acceptor = new NioEventLoopGroup(builder.getAcceptors());
+        EventLoopGroup worker = new NioEventLoopGroup(builder.getIoWorkers());
 
-		ServerBootstrap bootstrap;
-		try {
-			bootstrap = new ServerBootstrap().group(acceptor, worker).channel(NioServerSocketChannel.class)
-					.childHandler(new DoradoChannelInitializer(builder));
+        ServerBootstrap bootstrap;
+        try {
+            bootstrap = new ServerBootstrap().group(acceptor, worker)
+                    .channel(NioServerSocketChannel.class)
+                    .childHandler(new DoradoChannelInitializer(builder));
 
-			bootstrap.option(ChannelOption.SO_BACKLOG, builder.getBacklog());
-			bootstrap.childOption(ChannelOption.TCP_NODELAY, true);
-			bootstrap.childOption(ChannelOption.SO_SNDBUF, builder.getSendBuffer());
-			bootstrap.childOption(ChannelOption.SO_RCVBUF, builder.getRecvBuffer());
+            bootstrap.option(ChannelOption.SO_BACKLOG, builder.getBacklog());
+            bootstrap.childOption(ChannelOption.TCP_NODELAY, true);
+            bootstrap.childOption(ChannelOption.SO_SNDBUF, builder.getSendBuffer());
+            bootstrap.childOption(ChannelOption.SO_RCVBUF, builder.getRecvBuffer());
 
-			ChannelFuture f = bootstrap.bind(builder.getPort()).sync();
-			LogUtils.info(String.format("Dorado application initialized with port: %d (http)", builder.getPort()));
-			f.channel().closeFuture().sync();     
-		} catch (Throwable ex) {
-			LogUtils.error("Start dorado application failed, cause: " + ex.getMessage(), ex);
-		} finally {
-			worker.shutdownGracefully();
-			acceptor.shutdownGracefully();
-		}
-	}
+            ChannelFuture f = bootstrap.bind(builder.getPort()).sync();
+            LogUtils.info(String.format("Dorado application initialized with port: %d (http)", builder.getPort()));
+            f.channel().closeFuture().sync();
+        } catch (Throwable ex) {
+            LogUtils.error("Start dorado application failed, cause: " + ex.getMessage(), ex);
+        } finally {
+            worker.shutdownGracefully();
+            acceptor.shutdownGracefully();
+        }
+    }
 
-	static class DoradoChannelInitializer extends ChannelInitializer<Channel> {
-		private final DoradoServerBuilder builder;
+    static class DoradoChannelInitializer extends ChannelInitializer<Channel> {
 
-		public DoradoChannelInitializer(DoradoServerBuilder builder) {
-			this.builder = builder;
-		}
+        private final DoradoServerBuilder builder;
 
-		@Override
-		protected void initChannel(Channel ch) throws Exception {
-			ChannelPipeline pipeline = ch.pipeline();
+        public DoradoChannelInitializer(DoradoServerBuilder builder) {
+            this.builder = builder;
+        }
 
-			pipeline.addLast(new HttpServerCodec());
-			pipeline.addLast(new HttpObjectAggregator(builder.getMaxPacketLength()));
-			pipeline.addLast(new IdleStateHandler(builder.getMaxIdleTime(), 0, 0));
-			pipeline.addLast(DoradoServerHandler.create(builder));
-		}
-	}
+        @Override
+        protected void initChannel(Channel ch) throws Exception {
+            ChannelPipeline pipeline = ch.pipeline();
+
+            pipeline.addLast(new HttpServerCodec());
+            pipeline.addLast(new HttpObjectAggregator(builder.getMaxPacketLength()));
+            pipeline.addLast(new IdleStateHandler(builder.getMaxIdleTime(), 0, 0));
+            pipeline.addLast(DoradoServerHandler.create(builder));
+        }
+    }
 }
