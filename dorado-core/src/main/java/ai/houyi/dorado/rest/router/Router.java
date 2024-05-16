@@ -55,7 +55,10 @@ public class Router {
         routes.add(route);
         TrieNode currentNode = _createOrGetRootNode(route.getMethod());
         for (String part : route.getPath().split(PATH_SEPARATOR)) {
-            if (part.startsWith(PATH_VARIABLE_PREFIX) && part.endsWith(PATH_VARIABLE_SUFFIX)) {
+            if (StringUtils.isBlank(part)) {
+                continue;
+            }
+            if (isPathVariable(part)) {
                 if (!currentNode.children.containsKey(WILDCARD_TRIE_NODE_VALUE)) {
                     String[] pathParts = part.substring(1, part.length() - 1).split(":");
                     String pathParameterName = pathParts[0];
@@ -64,7 +67,7 @@ public class Router {
                     route.addPathParameter(pathParameter);
 
                     currentNode.children.put(WILDCARD_TRIE_NODE_VALUE, new TrieNode());
-                    currentNode.children.get(WILDCARD_TRIE_NODE_VALUE).pathParameterName = pathParameterName;
+                    currentNode.children.get(WILDCARD_TRIE_NODE_VALUE).value = pathParameterName;
                 }
                 currentNode = currentNode.children.get(WILDCARD_TRIE_NODE_VALUE);
             } else {
@@ -74,16 +77,8 @@ public class Router {
                 currentNode = currentNode.children.get(part);
             }
         }
-        currentNode.isLeaf = true;
+        currentNode.isEnd = true;
         currentNode.route = route;
-    }
-
-    private TrieNode _createOrGetRootNode(String method) {
-        String _method = StringUtils.isBlank(method) ? ALL_METHOD : method;
-        if (!root.children.containsKey(_method)) {
-            root.children.put(_method, new TrieNode());
-        }
-        return root.children.get(_method);
     }
 
     public Route matchRoute(HttpRequest request) {
@@ -100,16 +95,19 @@ public class Router {
 
         TrieNode currentNode = _createOrGetRootNode(method);
         for (String part : path.split(PATH_SEPARATOR)) {
+            if (StringUtils.isBlank(part)) {
+                continue;
+            }
             if (currentNode.children.containsKey(part)) {
                 currentNode = currentNode.children.get(part);
-                if (currentNode.isLeaf) {
+                if (currentNode.isEnd) {
                     return currentNode.route;
                 }
             } else {
                 if (currentNode.children.containsKey(WILDCARD_TRIE_NODE_VALUE)) {
                     currentNode = currentNode.children.get(WILDCARD_TRIE_NODE_VALUE);
-                    currentNode.route.setPathParameterValue(currentNode.pathParameterName, part);
-                    if (currentNode.isLeaf) {
+                    currentNode.route.setPathParameterValue(currentNode.value, part);
+                    if (currentNode.isEnd) {
                         return currentNode.route;
                     }
                 }
@@ -123,11 +121,23 @@ public class Router {
         return Collections.unmodifiableSet(this.routes);
     }
 
+    private boolean isPathVariable(String part) {
+        return part.startsWith(PATH_VARIABLE_PREFIX) && part.endsWith(PATH_VARIABLE_SUFFIX);
+    }
+
+    private TrieNode _createOrGetRootNode(String method) {
+        String _method = StringUtils.isBlank(method) ? ALL_METHOD : method;
+        if (!root.children.containsKey(_method)) {
+            root.children.put(_method, new TrieNode());
+        }
+        return root.children.get(_method);
+    }
+
     static class TrieNode {
 
         Map<String, TrieNode> children = new HashMap<>();
         Route route;
-        String pathParameterName;
-        boolean isLeaf = false;
+        String value;
+        boolean isEnd = false;
     }
 }
