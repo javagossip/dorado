@@ -29,7 +29,6 @@ import ai.houyi.dorado.rest.MessageBodyConverters;
 import ai.houyi.dorado.rest.ParameterValueResolver;
 import ai.houyi.dorado.rest.ParameterValueResolvers;
 import ai.houyi.dorado.rest.annotation.HttpMethod;
-import ai.houyi.dorado.rest.annotation.PathVariable;
 import ai.houyi.dorado.rest.annotation.Status;
 import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.http.HttpResponse;
@@ -168,11 +167,12 @@ public class RouteHandler {
             HttpResponse response,
             MethodDescriptor desc,
             MethodParameter methodParameter,
-            Map<String, PathParameter> pathParameterMap) {
+            Map<String, PathVariable> pathVariableMap) {
         Class<?> parameterAnnotationType = methodParameter.getAnnotationType();
         String pathVariable = null;
-        if (parameterAnnotationType == PathVariable.class) {
-            PathParameter _parameter = pathParameterMap.get(methodParameter.getName());
+        if (parameterAnnotationType == ai.houyi.dorado.rest.annotation.PathVariable.class ||
+                parameterAnnotationType == null) {
+            PathVariable _parameter = pathVariableMap.get(methodParameter.getName());
             pathVariable = _parameter == null ? null : _parameter.getValue();
         }
         ParameterValueResolver parameterValueResolver =

@@ -16,7 +16,7 @@
 package ai.houyi.dorado.swagger.ui;
 
 import ai.houyi.dorado.rest.ResourceRegister;
-import ai.houyi.dorado.rest.router.UriRoutingRegistry;
+import ai.houyi.dorado.rest.router.Router;
 import ai.houyi.dorado.swagger.ui.controller.SwaggerUIController;
 
 /**
@@ -27,6 +27,6 @@ public class SwaggerUIResourceRegister implements ResourceRegister {
 
 	@Override
 	public void register() {
-		UriRoutingRegistry.getInstance().register(SwaggerUIController.class);
+        Router.getInstance().registerRoutesByType(SwaggerUIController.class);
 	}
 }

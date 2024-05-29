@@ -30,7 +30,6 @@ import ai.houyi.dorado.rest.controller.RootController;
 import ai.houyi.dorado.rest.http.Filter;
 import ai.houyi.dorado.rest.http.MethodReturnValueHandler;
 import ai.houyi.dorado.rest.http.MethodReturnValueHandlerConfig;
-import ai.houyi.dorado.rest.router.UriRoutingRegistry;
 import ai.houyi.dorado.rest.router.Router;
 import ai.houyi.dorado.rest.util.PackageScanner;
 
@@ -132,11 +131,7 @@ public class Webapp {
     }
 
     private void initializeUriRouting(Class<?> c) {
-        UriRoutingRegistry.getInstance().register(c);
-    }
-
-    public UriRoutingRegistry getUriRoutingRegistry() {
-        return UriRoutingRegistry.getInstance();
+        getRouter().registerRoutesByType(c);
     }
 
     public Router getRouter() {

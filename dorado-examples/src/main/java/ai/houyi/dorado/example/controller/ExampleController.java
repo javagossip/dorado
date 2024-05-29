@@ -34,11 +34,12 @@ public class ExampleController {
 	@GET
 	@Path("/qtest")
 	public String queryTest(@RequestParam("q") String query) {
-		return "QQ";
+		return "QQ_"+query;
 	}
 	
 	@Path("/name/{name}")
 	public String campaignName(String name) {
+        System.out.println("name: "+name);
 		return String.format("hello_campaign, %s", name);
 	}
 

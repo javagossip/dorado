@@ -79,7 +79,7 @@ public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpReq
             HttpRequest _request = new DoradoHttpRequest(request);
             HttpResponse _response = new DoradoHttpResponse(response);
 
-            Route route = webapp.getRouter().matchRoute(_request);
+            Route route = webapp.getRouter().getRoute(_request);
             if (route == null) {
                 response.setStatus(HttpResponseStatus.NOT_FOUND);
                 ByteBufUtil.writeUtf8(response.content(),
