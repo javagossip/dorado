@@ -25,6 +25,9 @@ import ai.houyi.dorado.rest.util.ClassLoaderUtils;
  */
 public final class Dorado {
 
+    private Dorado() {
+    }
+
     public static volatile ClassLoader classLoader;
     public static volatile boolean springInitialized;
     public static volatile BeanContainer beanContainer;

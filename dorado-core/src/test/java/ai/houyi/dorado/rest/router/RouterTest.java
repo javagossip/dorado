@@ -18,15 +18,14 @@
 
 package ai.houyi.dorado.rest.router;
 
-import ai.houyi.dorado.rest.annotation.Controller;
-import ai.houyi.dorado.rest.annotation.HttpMethod;
-
-import ai.houyi.dorado.rest.annotation.Path;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Test;
 
-import java.util.Set;
+import ai.houyi.dorado.rest.annotation.Controller;
+import ai.houyi.dorado.rest.annotation.HttpMethod;
+import ai.houyi.dorado.rest.annotation.Path;
 
 import static org.junit.Assert.*;
 
@@ -102,7 +101,7 @@ public class RouterTest {
         Router router = Router.getInstance();
         router.registerRoutesByType(DemoController.class);
 
-        Set<Route> routes = router.getRoutes();
+        List<Route> routes = router.getRoutes();
         assertEquals(2, routes.size());
 
         Route route = router.getRoute("/demo", HttpMethod.GET);

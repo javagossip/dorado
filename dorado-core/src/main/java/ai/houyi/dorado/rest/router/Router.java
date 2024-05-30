@@ -21,12 +21,14 @@ package ai.houyi.dorado.rest.router;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import ai.houyi.dorado.rest.annotation.Controller;
@@ -43,13 +45,10 @@ import static ai.houyi.dorado.rest.util.Assert.*;
 public class Router {
 
     private static final String WILDCARD = "*";
-    private static final String REGEXP = "{}";
     private static final String PATH_SEPARATOR = "/";
     private static final String PATH_VARIABLE_PREFIX = "{";
     private static final String PATH_VARIABLE_SUFFIX = "}";
-
     private static final Router INSTANCE = new Router();
-    private static final Map<String, Route> ROUTE_CACHE = new ConcurrentHashMap<>();
 
     private final Set<Route> routes = new HashSet<>();
     private final TrieNode root = new TrieNode();
@@ -90,30 +89,25 @@ public class Router {
 
     public void addRoute(Route route) {
         routes.add(route);
-
         TrieNode current = root;
-        for (String part : route.getPath().split(PATH_SEPARATOR)) {
-            if (StringUtils.isBlank(part)) {
-                continue;
-            }
-            if (current.children.containsKey(part)) {
-                current = current.children.get(part);
-            } else if (isPathVariable(part)) {
-                if (!current.children.containsKey(WILDCARD)) {
+        for (String part : StringUtils.splitTrim(route.getPath(), PATH_SEPARATOR)) {
+            ///api/v1/campaigns/{name:\s+}/summary
+            if (isPathVariable(part)) {
+                if (!current.children.containsKey(part)) {
                     PathVariable pathVariable = PathVariable.of(part);
-                    current.children.put(WILDCARD, TrieNode.create(pathVariable));
+                    current.children.put(part, TrieNode.create(pathVariable));
                     route.addPathVariable(pathVariable);
                 }
-                current = current.children.get(WILDCARD);
             } else if (StringUtils.isRegExp(part)) {
-                if (!current.children.containsKey(REGEXP)) {
-                    current.children.put(REGEXP, TrieNode.create(PathVariable.create(null, part)));
+                // /swagger-ui.*
+                if (!current.children.containsKey(part)) {
+                    current.children.put(part, new TrieNode().regExp(part));
                 }
-                current = current.children.get(REGEXP);
-            } else {
+            } else if (!current.children.containsKey(part)) {
+                // /api/v1/campaigns
                 current.children.put(part, new TrieNode());
-                current = current.children.get(part);
             }
+            current = current.children.get(part);
         }
         current.isEnd = true;
         current.addRoute(route.getMethod(), route);
@@ -128,37 +122,10 @@ public class Router {
         notBlank(method, "method must not be blank");
 
         TrieNode current = root;
-        for (String part : path.split(PATH_SEPARATOR)) {
-            if (StringUtils.isBlank(part)) {
-                continue;
-            }
-            if (current.children.containsKey(part)) {
-                current = current.children.get(part);
-            } else {
-                //如果包含PathVariable
-                if (containsPathVariableNode(current)) {
-                    current = current.children.get(WILDCARD);
-                    String pathVarName = current.pathVariable.getName();
-                    Pattern pathVarPattern = current.pathVariable.getPattern();
-
-                    Route currentRoute = current.route(method);
-                    if (currentRoute == null || !currentRoute.containsPathVariable(pathVarName)) {
-                        return null;
-                    }
-                    //如果路径变量上的正则表达式不为空且路径不匹配此正则表达式，直接返回null
-                    if (pathVarPattern != null && !pathVarPattern.matcher(part).matches()) {
-                        return null;
-                    }
-                    currentRoute.setPathVariableValue(pathVarName, part);
-                } else if (containsRegExpNode(current)) {
-                    current = current.children.get(REGEXP);
-                    PathVariable pathVariable = current.pathVariable;
-                    if (pathVariable != null && !pathVariable.getPattern().matcher(part).matches()) {
-                        return null;
-                    }
-                } else {
-                    return null;
-                }
+        for (String part : StringUtils.splitTrim(path, PATH_SEPARATOR)) {
+            current = current.child(part);
+            if (current == null) {
+                return null;
             }
         }
         if (current.isEnd) {
@@ -167,20 +134,12 @@ public class Router {
         return null;
     }
 
-    private boolean containsRegExpNode(TrieNode current) {
-        return current.children.containsKey(REGEXP);
-    }
-
-    public Set<Route> getRoutes() {
-        return Collections.unmodifiableSet(this.routes);
+    public List<Route> getRoutes() {
+        return Collections.unmodifiableList(new ArrayList<>(routes));
     }
 
     private static boolean isPathVariable(String part) {
         return part.startsWith(PATH_VARIABLE_PREFIX) && part.endsWith(PATH_VARIABLE_SUFFIX);
-    }
-
-    private static boolean containsPathVariableNode(TrieNode current) {
-        return current.children.containsKey(WILDCARD);
     }
 
     private HttpMethod getHttpMethod(Annotation[] annotations) {
@@ -196,6 +155,7 @@ public class Router {
     }
 
     public void reset() {
+        root.children.clear();
         routes.clear();
     }
 
@@ -203,8 +163,9 @@ public class Router {
 
         Map<String, TrieNode> children = new HashMap<>();
         //<GET,xxx> or <POST,xxx> 用来解决相同访问路径，不同http方法对应不同的Route
-        Map<String, Route> methodRouteMap = new HashMap<>();
+        Map<String, Route> methodRoutes = new HashMap<>();
         PathVariable pathVariable;
+        Pattern pattern;
         boolean isEnd = false;
 
         public static TrieNode create(PathVariable pathVariable) {
@@ -213,16 +174,54 @@ public class Router {
             return trieNode;
         }
 
+        public TrieNode child(String pathPart) {
+            if (children.containsKey(pathPart)) {
+                return children.get(pathPart);
+            }
+            for (Entry<String, TrieNode> entry : children.entrySet()) {
+                TrieNode trieNode = entry.getValue();
+                if (trieNode.isPathVariableNode()) {
+                    //{id:\s+} or {id}
+                    PathVariable pathVariable = trieNode.pathVariable;
+                    if (pathVariable.matches(pathPart)) {
+                        pathVariable.setValue(pathPart);
+                        return entry.getValue();
+                    }
+                } else if (trieNode.isRegExpNode()) {
+                    //如果是一个正则表达式
+                    Pattern pattern = trieNode.pattern;
+                    if (pattern.matcher(pathPart).matches()) {
+                        return trieNode;
+                    }
+                }
+            }
+            return null;
+        }
+
         public TrieNode addRoute(String method, Route route) {
-            methodRouteMap.put(method, route);
+            methodRoutes.put(method, route);
             return this;
+        }
+
+        public boolean isPathVariableNode() {
+            return pathVariable != null;
+        }
+
+        public boolean isRegExpNode() {
+            return pattern != null;
         }
 
         public Route route(String method) {
             notBlank(method, "method must not be blank");
-            Route route = methodRouteMap.get(method);
+            Route route = methodRoutes.get(method);
 
-            return route == null ? methodRouteMap.get(WILDCARD) : route;
+            return route == null ? methodRoutes.get(WILDCARD) : route;
+        }
+
+        public TrieNode regExp(String regExp) {
+            notBlank(regExp, "regExp must not be blank");
+            this.pattern = Pattern.compile(regExp, Pattern.CASE_INSENSITIVE);
+            return this;
         }
     }
 }

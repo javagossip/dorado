@@ -50,7 +50,7 @@ public class RootController {
     public List<RestService> services() {
         List<RestService> serviceList = new ArrayList<>();
 
-        Set<Route> allRoutes = Router.getInstance().getRoutes();
+        List<Route> allRoutes = Router.getInstance().getRoutes();
         for (Route route : allRoutes) {
             String path = route.getPath();
             String method = StringUtils.defaultString(route.getMethod(), "*");

@@ -107,4 +107,8 @@ public class PathVariable {
     public int hashCode() {
         return Objects.hash(name, regexp);
     }
+
+    public boolean matches(String pathPart) {
+        return pattern == null || pattern.matcher(pathPart).matches();
+    }
 }

@@ -15,6 +15,7 @@
  */
 package ai.houyi.dorado.rest.http.impl;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import ai.houyi.dorado.rest.http.HttpMessageParseException;
 import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.http.MultipartFile;
 import ai.houyi.dorado.rest.util.LogUtils;
@@ -43,167 +45,172 @@ import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData.HttpDataType;
 
 /**
- * 
  * @author wangwp
  */
 public class DoradoHttpRequest implements HttpRequest {
-	private final FullHttpRequest request;
 
-	private final DoradoInputStream in;
+    private final FullHttpRequest request;
+
+    private final DoradoInputStream in;
 
     private final URIParser uriParser;
 
-	private final Map<String, List<String>> parameters;
+    private final Map<String, List<String>> parameters;
 
-	private final HttpHeaders headers;
-	private final List<MultipartFile> multipartFiles;
+    private final HttpHeaders headers;
+    private final List<MultipartFile> multipartFiles;
 
-	public DoradoHttpRequest(FullHttpRequest request) {
-		this.request = request;
-		this.parameters = new HashMap<>();
-		this.headers = request.headers();
-		this.multipartFiles = new ArrayList<>();
+    public DoradoHttpRequest(FullHttpRequest request) {
+        this.request = request;
+        this.parameters = new HashMap<>();
+        this.headers = request.headers();
+        this.multipartFiles = new ArrayList<>();
 
-		this.uriParser = new URIParser();
+        this.uriParser = new URIParser();
 
-		// 解析querystring上面的参数
+        // 解析querystring上面的参数
         QueryStringDecoder queryStringDecoder = new QueryStringDecoder(request.uri());
-		uriParser.parse(queryStringDecoder.path());
-		parameters.putAll(queryStringDecoder.parameters());
-		in = new DoradoInputStream(request);
+        uriParser.parse(queryStringDecoder.path());
+        parameters.putAll(queryStringDecoder.parameters());
+        in = new DoradoInputStream(request);
 
-		if (request.method() == HttpMethod.POST) {
-			parseHttpPostRequest(request);
-		}
-	}
+        if (request.method() == HttpMethod.POST) {
+            parseHttpPostRequest(request);
+        }
+    }
 
-	private void parseHttpPostRequest(FullHttpRequest request) {
-		HttpPostRequestDecoder decoder = null;
-		try {
-			decoder = new HttpPostRequestDecoder(request);
-			for (InterfaceHttpData httpData : decoder.getBodyHttpDatas()) {
-				HttpDataType _type = httpData.getHttpDataType();
-				if (_type == HttpDataType.Attribute) {
-					Attribute attribute = (Attribute) httpData;
-					parseAttribute(attribute);
-				} else if (_type == HttpDataType.FileUpload) {
-					FileUpload upload = (FileUpload) httpData;
-					multipartFiles.add(MultipartFileFactory.create(upload));
-				}
-			}
-		} catch (Exception ex) {
-			LogUtils.warn(ex.getMessage());
-		} finally {
-			// 注意这个地方，一定要调用destroy方法，如果不调用会导致内存泄漏
-			if (decoder != null)
-				decoder.destroy();
-		}
-	}
+    private void parseHttpPostRequest(FullHttpRequest request) {
+        HttpPostRequestDecoder decoder = null;
+        try {
+            decoder = new HttpPostRequestDecoder(request);
+            for (InterfaceHttpData httpData : decoder.getBodyHttpDatas()) {
+                HttpDataType dataType = httpData.getHttpDataType();
+                if (dataType == HttpDataType.Attribute) {
+                    Attribute attribute = (Attribute) httpData;
+                    parseAttribute(attribute);
+                } else if (dataType == HttpDataType.FileUpload) {
+                    FileUpload upload = (FileUpload) httpData;
+                    multipartFiles.add(MultipartFileFactory.create(upload));
+                }
+            }
+        } catch (Exception ex) {
+            LogUtils.warn(ex.getMessage());
+        } finally {
+            // 注意这个地方，一定要调用destroy方法，如果不调用会导致内存泄漏
+            if (decoder != null) {
+                decoder.destroy();
+            }
+        }
+    }
 
-	private void parseAttribute(Attribute attribute) throws Exception {
-		if (this.parameters.containsKey(attribute.getName())) {
-			this.parameters.get(attribute.getName()).add(attribute.getValue());
-		} else {
-			List<String> values = new ArrayList<>();
-			values.add(attribute.getValue());
-			this.parameters.put(attribute.getName(), values);
-		}
-	}
+    private void parseAttribute(Attribute attribute) {
+        try {
+            if (this.parameters.containsKey(attribute.getName())) {
+                this.parameters.get(attribute.getName()).add(attribute.getValue());
+            } else {
+                List<String> values = new ArrayList<>();
+                values.add(attribute.getValue());
+                this.parameters.put(attribute.getName(), values);
+            }
+        } catch (Exception ex) {
+            throw new HttpMessageParseException(ex);
+        }
+    }
 
-	@Override
-	public String getParameter(String key) {
-		List<String> parameterValues = parameters.get(key);
-		return (parameterValues == null || parameterValues.isEmpty()) ? null : parameterValues.get(0);
-	}
+    @Override
+    public String getParameter(String key) {
+        List<String> parameterValues = parameters.get(key);
+        return (parameterValues == null || parameterValues.isEmpty()) ? null : parameterValues.get(0);
+    }
 
-	@Override
-	public String[] getParameterValues(String key) {
-		return this.parameters.get(key).toArray(new String[] {});
-	}
+    @Override
+    public String[] getParameterValues(String key) {
+        return this.parameters.get(key).toArray(new String[]{});
+    }
 
-	@Override
-	public Map<String, List<String>> getParameters() {
-		return this.parameters;
-	}
+    @Override
+    public Map<String, List<String>> getParameters() {
+        return this.parameters;
+    }
 
-	@Override
-	public String getRemoteAddr() {
-		InetSocketAddress addr = (InetSocketAddress) ChannelHolder.get().remoteAddress();
-		String fallbackAddr = addr.getAddress().getHostAddress();
+    @Override
+    public String getRemoteAddr() {
+        InetSocketAddress addr = (InetSocketAddress) ChannelHolder.get().remoteAddress();
+        String fallbackAddr = addr.getAddress().getHostAddress();
 
-		String xForwardFor = headers.get("X-Forwarded-For");
-		if (xForwardFor == null || StringUtils.isBlank(xForwardFor)) {
-			return fallbackAddr;
-		}
+        String xForwardFor = headers.get("X-Forwarded-For");
+        if (xForwardFor == null || StringUtils.isBlank(xForwardFor)) {
+            return fallbackAddr;
+        }
 
-		String[] proxyIpList = xForwardFor.split(",");
-		for (int i = proxyIpList.length - 1; i >= 0; i--) {
-			String proxyIp = proxyIpList[i];
-			if (!StringUtils.isBlank(proxyIp))
-				proxyIp = proxyIp.trim();
-			if (!NetUtils.isInternalIp(proxyIp)) {
-				return proxyIp;
-			}
-		}
-		return fallbackAddr;
-	}
+        String[] proxyIpList = xForwardFor.split(",");
+        for (int i = proxyIpList.length - 1; i >= 0; i--) {
+            String proxyIp = proxyIpList[i];
+            if (!StringUtils.isBlank(proxyIp)) {
+                proxyIp = proxyIp.trim();
+            }
+            if (!NetUtils.isInternalIp(proxyIp)) {
+                return proxyIp;
+            }
+        }
+        return fallbackAddr;
+    }
 
-	@Override
-	public ai.houyi.dorado.rest.http.Cookie[] getCookies() {
-		String cookieString = this.request.headers().get(HttpHeaderNames.COOKIE);
-		if (cookieString != null) {
-			Set<Cookie> cookies = ServerCookieDecoder.LAX.decode(cookieString);
-			return cookies.stream().map(DoradoCookie::new).collect(Collectors.toList())
-					.toArray(new DoradoCookie[] {});
-		}
-		return null;
-	}
+    @Override
+    public ai.houyi.dorado.rest.http.Cookie[] getCookies() {
+        String cookieString = this.request.headers().get(HttpHeaderNames.COOKIE);
+        if (cookieString != null) {
+            Set<Cookie> cookies = ServerCookieDecoder.LAX.decode(cookieString);
+            return cookies.stream().map(DoradoCookie::new).collect(Collectors.toList()).toArray(new DoradoCookie[]{});
+        }
+        return new DoradoCookie[0];
+    }
 
-	@Override
-	public String getHeader(String name) {
-		return headers.get(name);
-	}
+    @Override
+    public String getHeader(String name) {
+        return headers.get(name);
+    }
 
-	@Override
-	public String[] getHeaders(String name) {
-		return headers.getAll(name).toArray(new String[] {});
-	}
+    @Override
+    public String[] getHeaders(String name) {
+        return headers.getAll(name).toArray(new String[]{});
+    }
 
-	@Override
-	public String getQueryString() {
-		return uriParser.getQueryString();
-	}
+    @Override
+    public String getQueryString() {
+        return uriParser.getQueryString();
+    }
 
-	@Override
-	public String getRequestURI() {
-		return uriParser.getRequestUri();
-	}
+    @Override
+    public String getRequestURI() {
+        return uriParser.getRequestUri();
+    }
 
-	@Override
-	public String getMethod() {
-		return this.request.method().name();
-	}
+    @Override
+    public String getMethod() {
+        return this.request.method().name();
+    }
 
-	@Override
-	public InputStream getInputStream() {
-		return this.in;
-	}
+    @Override
+    public InputStream getInputStream() {
+        return this.in;
+    }
 
-	public MultipartFile getFile() {
-		if (multipartFiles != null && !multipartFiles.isEmpty()) {
-			return multipartFiles.get(0);
-		}
-		return null;
-	}
+    public MultipartFile getFile() {
+        if (multipartFiles != null && !multipartFiles.isEmpty()) {
+            return multipartFiles.get(0);
+        }
+        return null;
+    }
 
-	public MultipartFile[] getFiles() {
-		if (multipartFiles != null && !multipartFiles.isEmpty()) {
-			return multipartFiles.toArray(new MultipartFile[] {});
-		}
-		return null;
-	}
+    public MultipartFile[] getFiles() {
+        if (multipartFiles != null && !multipartFiles.isEmpty()) {
+            return multipartFiles.toArray(new MultipartFile[]{});
+        }
+        return null;
+    }
 
-	public List<MultipartFile> getFileList() {
-		return multipartFiles;
-	}
+    public List<MultipartFile> getFileList() {
+        return multipartFiles;
+    }
 }
