@@ -41,7 +41,7 @@ public class ClassDescriptor {
 	}
 
 	private List<MethodDescriptor> getMethods() {
-		List<MethodDescriptor> methodDescriptors = new ArrayList<>();
+		List<MethodDescriptor> methodDescriptorList = new ArrayList<>();
 
 		Method[] methods = type.getDeclaredMethods();
 		for (Method method : methods) {
@@ -49,9 +49,9 @@ public class ClassDescriptor {
 					|| !Modifier.isPublic(method.getModifiers())) {
 				continue;
 			}
-			methodDescriptors.add(MethodDescriptor.create(type, method));
+			methodDescriptorList.add(MethodDescriptor.create(type, method));
 		}
-		return methodDescriptors;
+		return methodDescriptorList;
 	}
 
 	public static ClassDescriptor create(Class<?> type) {

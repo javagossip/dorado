@@ -18,7 +18,7 @@
 
 package ai.houyi.dorado.rest.router;
 
-import ai.houyi.dorado.rest.util.Assert;
+import ai.houyi.dorado.rest.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +28,7 @@ public class Route {
 
     private final String path;
     private final String method;
-    private final Map<String, PathParameter> pathParameters;
+    private final Map<String, PathVariable> pathVariables;
     private final RouteHandler handler;
 
     public Route(String path, String method) {
@@ -37,17 +37,13 @@ public class Route {
 
     public Route(String path, String method, RouteHandler handler) {
         this.path = path;
-        this.method = method;
+        this.method = StringUtils.isBlank(method) ? "*" : method;
         this.handler = handler;
-        this.pathParameters = new HashMap<>();
+        this.pathVariables = new HashMap<>();
     }
 
-    public void addPathParameter(PathParameter variable) {
-        pathParameters.put(variable.getName(), variable);
-    }
-
-    public boolean containsPathParameter(String name) {
-        return pathParameters.containsKey(name);
+    public void addPathVariable(PathVariable variable) {
+        pathVariables.put(variable.getName(), variable);
     }
 
     public String getPath() {
@@ -58,38 +54,30 @@ public class Route {
         return method;
     }
 
-    public Map<String, PathParameter> getPathParameters() {
-        return pathParameters;
+    public Map<String, PathVariable> getPathParameters() {
+        return pathVariables;
     }
 
     public RouteHandler getHandler() {
         return this.handler;
     }
 
-    public PathParameter getPathParameter(String name) {
-        return pathParameters.get(name);
-    }
-
-    public void setPathParameterValue(String pathParameterName, String value) {
-        PathParameter pathParameter = pathParameters.get(pathParameterName);
-        Assert.notNull(pathParameter, "PathParameter '" + pathParameterName + "' not found");
-
-        pathParameter.setValue(value);
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
         Route route = (Route) o;
         return Objects.equals(path, route.path) && Objects.equals(method, route.method) &&
-                Objects.equals(pathParameters, route.pathParameters);
+                Objects.equals(pathVariables, route.pathVariables);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(path, method, pathParameters);
+        return Objects.hash(path, method, pathVariables);
     }
+
 }

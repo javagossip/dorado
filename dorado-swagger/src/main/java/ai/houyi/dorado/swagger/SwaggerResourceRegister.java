@@ -17,7 +17,7 @@ package ai.houyi.dorado.swagger;
 
 import ai.houyi.dorado.Dorado;
 import ai.houyi.dorado.rest.ResourceRegister;
-import ai.houyi.dorado.rest.router.UriRoutingRegistry;
+import ai.houyi.dorado.rest.router.Router;
 import ai.houyi.dorado.swagger.controller.SwaggerV2Controller;
 
 /**
@@ -34,7 +34,7 @@ public class SwaggerResourceRegister implements ResourceRegister {
 		//如果不启用swagger,则不需要注册swagger相关服务
 		if (enableSwagger == null)
 			return;
-		UriRoutingRegistry.getInstance().register(SwaggerV2Controller.class);
+        Router.getInstance().registerRoutesByType(SwaggerV2Controller.class);
 	}
 
 }

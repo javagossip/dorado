@@ -20,6 +20,9 @@ package ai.houyi.dorado.rest.util;
  */
 public final class Constant {
 
+    private Constant() {
+    }
+
     public static final int NCPU = Runtime.getRuntime().availableProcessors();
 
     public static final int DEFAULT_SEND_BUFFER_SIZE = 256 * 1024;

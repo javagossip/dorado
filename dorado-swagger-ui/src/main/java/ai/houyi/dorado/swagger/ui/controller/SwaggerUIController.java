@@ -25,29 +25,28 @@ import ai.houyi.dorado.rest.util.IOUtils;
 
 /**
  * @author weiping wang
- *
  */
 @Controller
 @Path("/swagger-ui.*")
 public class SwaggerUIController {
-	private static final String RESOURCE_PREFIX = "META-INF/resources/webjars/swagger-ui";
 
-	@GET
-	public void readStaticResource(HttpRequest request, HttpResponse response) {
-		String uri = request.getRequestURI();
+    private static final String RESOURCE_PREFIX = "META-INF/resources/webjars/swagger-ui";
 
-		String resource = String.format("%s%s", RESOURCE_PREFIX, uri);
-		byte[] data = IOUtils.readBytes(ClassLoaderUtils.getStream(resource));
+    @GET
+    @Path
+    public void readStaticResource(HttpRequest request, HttpResponse response) {
+        String uri = request.getRequestURI();
 
-		if (uri.endsWith(".css")) {
-			response.setHeader("content-type", "text/css;charset=UTF-8");
-		} else if (uri.endsWith(".html")) {
-			response.setHeader("content-type", "text/html;charset=UTF-8");
-		} else if (uri.endsWith(".js")) {
-			response.setHeader("content-type", "text/javascript;charset=UTF-8");
-		} else if (uri.endsWith(".map")) {
-			//DO NOTHING
-		}
-		response.write(data);
-	}
+        String resource = String.format("%s%s", RESOURCE_PREFIX, uri);
+        byte[] data = IOUtils.readBytes(ClassLoaderUtils.getStream(resource));
+        if (uri.endsWith(".css")) {
+            response.setHeader("content-type", "text/css;charset=UTF-8");
+        } else if (uri.endsWith(".html")) {
+            response.setHeader("content-type", "text/html;charset=UTF-8");
+        } else if (uri.endsWith(".js")) {
+            response.setHeader("content-type", "text/javascript;charset=UTF-8");
+        }  //DO NOTHING
+
+        response.write(data);
+    }
 }
