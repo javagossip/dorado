@@ -93,17 +93,17 @@ public class Router {
         for (String part : StringUtils.splitTrim(route.getPath(), PATH_SEPARATOR)) {
             ///api/v1/campaigns/{name:\s+}/summary
             if (isPathVariable(part)) {
-                if (!current.children.containsKey(part)) {
+                if (!current.hasChild(part)) {
                     PathVariable pathVariable = PathVariable.of(part);
                     current.children.put(part, TrieNode.create(pathVariable));
                     route.addPathVariable(pathVariable);
                 }
             } else if (StringUtils.isRegExp(part)) {
                 // /swagger-ui.*
-                if (!current.children.containsKey(part)) {
+                if (!current.hasChild(part)) {
                     current.children.put(part, new TrieNode().regExp(part));
                 }
-            } else if (!current.children.containsKey(part)) {
+            } else if (!current.hasChild(part)) {
                 // /api/v1/campaigns
                 current.children.put(part, new TrieNode());
             }
@@ -175,27 +175,31 @@ public class Router {
         }
 
         public TrieNode child(String pathPart) {
-            if (children.containsKey(pathPart)) {
+            if (hasChild(pathPart)) {
                 return children.get(pathPart);
             }
             for (Entry<String, TrieNode> entry : children.entrySet()) {
                 TrieNode trieNode = entry.getValue();
                 if (trieNode.isPathVariableNode()) {
                     //{id:\s+} or {id}
-                    PathVariable pathVariable = trieNode.pathVariable;
-                    if (pathVariable.matches(pathPart)) {
-                        pathVariable.setValue(pathPart);
+                    PathVariable nodePathVariable = trieNode.pathVariable;
+                    if (nodePathVariable.matches(pathPart)) {
+                        nodePathVariable.setValue(pathPart);
                         return entry.getValue();
                     }
                 } else if (trieNode.isRegExpNode()) {
                     //如果是一个正则表达式
-                    Pattern pattern = trieNode.pattern;
-                    if (pattern.matcher(pathPart).matches()) {
+                    Pattern nodePattern = trieNode.pattern;
+                    if (nodePattern.matcher(pathPart).matches()) {
                         return trieNode;
                     }
                 }
             }
             return null;
+        }
+
+        public boolean hasChild(String key) {
+            return children.containsKey(key);
         }
 
         public TrieNode addRoute(String method, Route route) {

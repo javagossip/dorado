@@ -18,7 +18,6 @@
 
 package ai.houyi.dorado.rest.router;
 
-import ai.houyi.dorado.rest.util.Assert;
 import ai.houyi.dorado.rest.util.StringUtils;
 
 import java.util.HashMap;
@@ -31,8 +30,6 @@ public class Route {
     private final String method;
     private final Map<String, PathVariable> pathVariables;
     private final RouteHandler handler;
-    private final boolean hasPathVariables;
-    private final boolean pathIsRegExp;
 
     public Route(String path, String method) {
         this(path, method, null);
@@ -43,20 +40,10 @@ public class Route {
         this.method = StringUtils.isBlank(method) ? "*" : method;
         this.handler = handler;
         this.pathVariables = new HashMap<>();
-        this.hasPathVariables = path.contains("{") && path.contains("}");
-        this.pathIsRegExp = StringUtils.isRegExp(path);
     }
 
     public void addPathVariable(PathVariable variable) {
         pathVariables.put(variable.getName(), variable);
-    }
-
-    public boolean containsPathVariable(String name) {
-        return pathVariables.containsKey(name);
-    }
-
-    public boolean hasPathVariables() {
-        return hasPathVariables;
     }
 
     public String getPath() {
@@ -73,17 +60,6 @@ public class Route {
 
     public RouteHandler getHandler() {
         return this.handler;
-    }
-
-    public PathVariable getPathParameter(String name) {
-        return pathVariables.get(name);
-    }
-
-    public void setPathVariableValue(String name, String value) {
-        PathVariable pathVariable = pathVariables.get(name);
-        Assert.notNull(pathVariable, "PathParameter '" + name + "' not found");
-
-        pathVariable.setValue(value);
     }
 
     @Override
@@ -104,7 +80,4 @@ public class Route {
         return Objects.hash(path, method, pathVariables);
     }
 
-    public boolean pathIsRegExp() {
-        return this.pathIsRegExp;
-    }
 }
