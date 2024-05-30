@@ -19,7 +19,7 @@
 		<netty.version>4.1.109.Final</netty.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<protobuf-java.version>2.6.1</protobuf-java.version>
-		<asm.version>6.2</asm.version>
+		<asm.version>9.7</asm.version>
 		<fastjson.version>1.2.47</fastjson.version>
 		<spring-boot.version>2.1.1.RELEASE</spring-boot.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
