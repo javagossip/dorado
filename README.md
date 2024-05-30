@@ -34,7 +34,7 @@ Features
 
 ## Latest version
 
-**0.0.51**
+**0.0.55**
 
 Maven
 -----
