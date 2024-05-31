@@ -34,7 +34,7 @@ Features
 
 ## Latest version
 
-**0.0.55**
+**0.0.56**
 
 Maven
 -----
@@ -43,7 +43,7 @@ Maven
 <dependency>
     <groupId>io.github.javagossip</groupId>
     <artifactId>dorado-core</artifactId>
-    <version>0.0.55</version>
+    <version>0.0.56</version>
 </dependency>
 ```
 
