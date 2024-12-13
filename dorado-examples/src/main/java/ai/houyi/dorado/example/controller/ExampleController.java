@@ -10,66 +10,71 @@ import ai.houyi.dorado.rest.annotation.DELETE;
 import ai.houyi.dorado.rest.annotation.GET;
 import ai.houyi.dorado.rest.annotation.POST;
 import ai.houyi.dorado.rest.annotation.Path;
+import ai.houyi.dorado.rest.annotation.PathVariable;
 import ai.houyi.dorado.rest.annotation.RequestParam;
 import io.swagger.annotations.Api;
 
 /**
  * @author wangweiping
- *
  */
 @Controller
 @Path("/campaign")
-@Api(tags="推广活动管理")
+@Api(tags = "推广活动管理")
 public class ExampleController {
-	@Path("/{id:[0-9]+}")
-	@GET
-	public Campaign newCampaign(int id) {
-		Campaign campaign = new Campaign();
-		campaign.setId(id);
-		campaign.setName("test campaign");
 
-		return campaign;
-	}
+    @Path("/{id}")
+    @GET
+    public Campaign newCampaign(@PathVariable int id) {
+        Campaign campaign = new Campaign();
+        campaign.setId(id);
+        campaign.setName("test campaign");
 
-	@GET
-	@Path("/qtest")
-	public String queryTest(@RequestParam("q") String query) {
-		return "QQ_"+query;
-	}
-	
-	@Path("/name/{name}")
-	public String campaignName(String name) {
-        System.out.println("name: "+name);
-		return String.format("hello_campaign, %s", name);
-	}
+        return campaign;
+    }
 
-	@POST
-	public Campaign save(Campaign campaign) {
-		System.out.println(campaign);
-		return campaign;
-	}
+    @GET
+    @Path("/123")
+    public Campaign getCampaignWithFixId() {
+        Campaign campaign = new Campaign();
+        campaign.setId(123);
+        campaign.setName("test campaign with fix id: " + 123);
 
-	@Path("/{id}")
-	@DELETE
-	public void deleteCampaign(int id) {
-		System.out.println("delete campaign, id: " + id);
-	}
+        return campaign;
+    }
 
-	@GET
-	@Path("/{id}")
-	public Campaign getCampaign(int id) {
-		return Campaign.builder().withId(12).withName("网易考拉推广计划").build();
-	}
-	
-	@GET
-	@Path("/exception/my")
-	public Campaign testMyException(int id) throws MyException {
-		throw new MyException("my exception");
-	}
+    @GET
+    @Path("/qtest")
+    public String queryTest(@RequestParam("q") String query) {
+        return "QQ_" + query;
+    }
 
-	@GET
-	@Path("/exception/default")
-	public Campaign testDefaultException(int id) throws Exception {
-		throw new Exception("default exception");
-	}
+    @Path("/name/{name}")
+    public String campaignName(String name) {
+        System.out.println("name: " + name);
+        return String.format("hello_campaign, %s", name);
+    }
+
+    @POST
+    public Campaign save(Campaign campaign) {
+        System.out.println(campaign);
+        return campaign;
+    }
+
+    @Path("/{id}")
+    @DELETE
+    public void deleteCampaign(int id) {
+        System.out.println("delete campaign, id: " + id);
+    }
+
+    @GET
+    @Path("/exception/my")
+    public Campaign testMyException(int id) throws MyException {
+        throw new MyException("my exception");
+    }
+
+    @GET
+    @Path("/exception/default")
+    public Campaign testDefaultException(int id) throws Exception {
+        throw new Exception("default exception");
+    }
 }

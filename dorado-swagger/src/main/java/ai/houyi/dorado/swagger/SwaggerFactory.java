@@ -45,9 +45,8 @@ public class SwaggerFactory {
 
 	static {
 		ServiceLoader<ApiContextBuilder> apiContextBuilders = ServiceLoader.load(ApiContextBuilder.class);
-		ApiContextBuilder default_ctx_builder = apiContextBuilders.iterator().hasNext()
-				? apiContextBuilders.iterator().next()
-				: null;
+		ApiContextBuilder default_ctx_builder =
+				apiContextBuilders.iterator().hasNext() ? apiContextBuilders.iterator().next() : null;
 
 		try {
 			if (Dorado.isEnableSpring) {

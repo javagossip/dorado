@@ -66,12 +66,12 @@ public class DoradoStatus {
 		return this;
 	}
 
-	public DoradoStatus pendingRequestsIncrement() {
+	public DoradoStatus incrPendingRequests() {
 		pendingRequests.incrementAndGet();
 		return this;
 	}
 
-	public DoradoStatus pendingRequestsDecrement() {
+	public DoradoStatus decrPendingRequests() {
 		pendingRequests.decrementAndGet();
 		return this;
 	}

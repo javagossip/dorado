@@ -58,7 +58,7 @@ public final class Dorado {
         }
 
         try {
-            Class.forName("mobi.f2time.dorado.swagger.controller.SwaggerV2Controller");
+            Class.forName("ai.houyi.dorado.swagger.controller.SwaggerV2Controller");
             isEnableSwagger = true;
         } catch (Throwable ex) {
             // ignore this ex

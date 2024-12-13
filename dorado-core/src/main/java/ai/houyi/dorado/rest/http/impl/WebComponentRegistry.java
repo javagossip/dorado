@@ -26,67 +26,68 @@ import ai.houyi.dorado.rest.annotation.ExceptionType;
 
 /**
  * @author weiping wang
- *
  */
 public final class WebComponentRegistry {
-	private static final WebComponentRegistry registry = new WebComponentRegistry();
 
-	private final ConcurrentMap<Class<? extends Throwable>, ExceptionHandler> exceptionHandlerRegistry = new ConcurrentHashMap<>();
+    private static final WebComponentRegistry REGISTRY = new WebComponentRegistry();
 
-	private WebComponentRegistry() {
-	}
+    private final ConcurrentMap<Class<? extends Throwable>, ExceptionHandler> exceptionHandlerRegistry =
+            new ConcurrentHashMap<>();
 
-	public static WebComponentRegistry getWebComponentRegistry() {
-		return registry;
-	}
+    private WebComponentRegistry() {
+    }
 
-	public ExceptionHandler getExceptionHandler(Class<? extends Throwable> exceptionType) {
-		ExceptionHandler handler = exceptionHandlerRegistry.get(exceptionType);
+    public static WebComponentRegistry getWebComponentRegistry() {
+        return REGISTRY;
+    }
 
-		if (Exception.class.isAssignableFrom(exceptionType)) {
-			return getExceptionHandler();
-		}
-		
-		if (Error.class.isAssignableFrom(exceptionType)) {
-			return getErrorHandler();
-		}
-		return handler;
-	}
+    public ExceptionHandler getExceptionHandler(Class<? extends Throwable> exceptionType) {
+        ExceptionHandler handler = exceptionHandlerRegistry.get(exceptionType);
 
-	private ExceptionHandler getExceptionHandler() {
-		ExceptionHandler handler = exceptionHandlerRegistry.get(Exception.class);
+        if (Exception.class.isAssignableFrom(exceptionType)) {
+            return getExceptionHandler();
+        }
 
-		if (handler == null) {
-			return exceptionHandlerRegistry.get(Throwable.class);
-		}
-		return handler;
-	}
+        if (Error.class.isAssignableFrom(exceptionType)) {
+            return getErrorHandler();
+        }
+        return handler;
+    }
 
-	private ExceptionHandler getErrorHandler() {
-		ExceptionHandler handler = exceptionHandlerRegistry.get(Error.class);
-		if (handler == null) {
-			return exceptionHandlerRegistry.get(Throwable.class);
-		}
-		return handler;
-	}
+    private ExceptionHandler getExceptionHandler() {
+        ExceptionHandler handler = exceptionHandlerRegistry.get(Exception.class);
 
-	public void registerExceptionHandlers(Class<?> type) {
-		Annotation exceptionAdvice = type.getAnnotation(ExceptionAdvice.class);
+        if (handler == null) {
+            return exceptionHandlerRegistry.get(Throwable.class);
+        }
+        return handler;
+    }
 
-		if (exceptionAdvice == null) {
-			return;
-		}
+    private ExceptionHandler getErrorHandler() {
+        ExceptionHandler handler = exceptionHandlerRegistry.get(Error.class);
+        if (handler == null) {
+            return exceptionHandlerRegistry.get(Throwable.class);
+        }
+        return handler;
+    }
 
-		Object exceptionAdvicor = Dorado.beanContainer.getBean(type);
-		Method[] methods = type.getMethods();
-		for (Method method : methods) {
-			ExceptionType exceptionType = method.getAnnotation(ExceptionType.class);
-			if (exceptionType == null) {
-				continue;
-			}
+    public void registerExceptionHandlers(Class<?> type) {
+        Annotation exceptionAdvice = type.getAnnotation(ExceptionAdvice.class);
 
-			ExceptionHandler handler = ExceptionHandler.newExceptionHandler(exceptionAdvicor, method);
-			exceptionHandlerRegistry.put(exceptionType.value(), handler);
-		}
-	}
+        if (exceptionAdvice == null) {
+            return;
+        }
+
+        Object exceptionAdvicor = Dorado.beanContainer.getBean(type);
+        Method[] methods = type.getMethods();
+        for (Method method : methods) {
+            ExceptionType exceptionType = method.getAnnotation(ExceptionType.class);
+            if (exceptionType == null) {
+                continue;
+            }
+
+            ExceptionHandler handler = ExceptionHandler.newExceptionHandler(exceptionAdvicor, method);
+            exceptionHandlerRegistry.put(exceptionType.value(), handler);
+        }
+    }
 }

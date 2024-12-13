@@ -38,8 +38,6 @@ public class DoradoHttpResponse implements HttpResponse {
 
 	public DoradoHttpResponse(FullHttpResponse response) {
 		this.originalHttpResponse = response;
-		//out = new OutputStreamImpl(response);
-		//writer = new PrintWriterImpl(out);
 	}
 
 	@Override

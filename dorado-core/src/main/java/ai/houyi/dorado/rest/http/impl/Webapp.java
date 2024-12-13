@@ -16,6 +16,8 @@
 package ai.houyi.dorado.rest.http.impl;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,14 +26,19 @@ import ai.houyi.dorado.Dorado;
 import ai.houyi.dorado.exception.DoradoException;
 import ai.houyi.dorado.rest.ResourceRegister;
 import ai.houyi.dorado.rest.ResourceRegisters;
+import ai.houyi.dorado.rest.annotation.Controller;
 import ai.houyi.dorado.rest.annotation.ExceptionAdvice;
 import ai.houyi.dorado.rest.annotation.FilterPath;
+import ai.houyi.dorado.rest.annotation.HttpMethod;
+import ai.houyi.dorado.rest.annotation.Path;
 import ai.houyi.dorado.rest.controller.RootController;
 import ai.houyi.dorado.rest.http.Filter;
 import ai.houyi.dorado.rest.http.MethodReturnValueHandler;
 import ai.houyi.dorado.rest.http.MethodReturnValueHandlerConfig;
+import ai.houyi.dorado.rest.router.DoradoRouteHandler;
 import ai.houyi.dorado.rest.router.Router;
 import ai.houyi.dorado.rest.util.PackageScanner;
+import ai.houyi.dorado.rest.util.StringUtils;
 
 /**
  * @author wangwp
@@ -42,9 +49,11 @@ public class Webapp {
 
     private final String[] packages;
     private MethodReturnValueHandlerConfig methodReturnValueHandlerConfig;
+    private Router router;
 
     private Webapp(String[] packages) {
         this.packages = packages;
+        this.router = Router.newInstance();
     }
 
     public static synchronized void create(String[] packages) {
@@ -75,7 +84,7 @@ public class Webapp {
                 classes.addAll(PackageScanner.scan(scanPackage));
             }
 
-            initializeUriRouting(RootController.class);
+            registerRoutesByType(RootController.class);
             classes.forEach(this::registerWebComponent);
         } catch (Exception ex) {
             throw new DoradoException(ex);
@@ -110,19 +119,19 @@ public class Webapp {
                 return;
             }
 
-            FilterConfiguration.Builder fcb = FilterConfiguration.builder();
+            FilterConfiguration.Builder filterConfigurationBuilder = FilterConfiguration.builder();
             if (include != null && include.length > 0) {
-                fcb.withPathPatterns(Arrays.asList(include));
+                filterConfigurationBuilder.withPathPatterns(Arrays.asList(include));
             }
 
             if (exclude != null && exclude.length > 0) {
-                fcb.withExcludePathPatterns(Arrays.asList(exclude));
+                filterConfigurationBuilder.withExcludePathPatterns(Arrays.asList(exclude));
             }
 
-            fcb.withFilter((Filter) Dorado.beanContainer.getBean(type));
-            FilterManager.getInstance().addFilterConfiguration(fcb.build());
+            filterConfigurationBuilder.withFilter((Filter) Dorado.beanContainer.getBean(type));
+            FilterManager.getInstance().addFilterConfiguration(filterConfigurationBuilder.build());
         } else {
-            initializeUriRouting(type);
+            registerRoutesByType(type);
         }
     }
 
@@ -130,11 +139,46 @@ public class Webapp {
         WebComponentRegistry.getWebComponentRegistry().registerExceptionHandlers(type);
     }
 
-    private void initializeUriRouting(Class<?> c) {
-        getRouter().registerRoutesByType(c);
+    public void registerRoutesByType(Class<?> type) {
+        Controller controller = type.getAnnotation(Controller.class);
+        if (controller == null) {
+            return;
+        }
+
+        Path classLevelPath = type.getAnnotation(Path.class);
+        String controllerPath = classLevelPath == null ? StringUtils.EMPTY : classLevelPath.value();
+
+        Method[] controllerMethods = type.getDeclaredMethods();
+        for (Method method : controllerMethods) {
+            if (Modifier.isStatic(method.getModifiers()) || method.getAnnotations().length == 0 ||
+                    !Modifier.isPublic(method.getModifiers())) {
+                continue;
+            }
+
+            Path methodLevelPath = method.getAnnotation(Path.class);
+            HttpMethod httpMethod = getHttpMethod(method.getAnnotations());
+            String methodPath = methodLevelPath == null ? StringUtils.EMPTY : methodLevelPath.value();
+
+            String requestPath = String.format("%s%s", controllerPath, methodPath);
+            router.addRoute(requestPath,
+                    httpMethod == null ? null : httpMethod.value(),
+                    DoradoRouteHandler.create(method));
+        }
+    }
+
+    private HttpMethod getHttpMethod(Annotation[] annotations) {
+        HttpMethod httpMethod;
+
+        for (Annotation annotation : annotations) {
+            httpMethod = annotation.annotationType().getAnnotation(HttpMethod.class);
+            if (httpMethod != null) {
+                return httpMethod;
+            }
+        }
+        return null;
     }
 
     public Router getRouter() {
-        return Router.getInstance();
+        return router;
     }
 }

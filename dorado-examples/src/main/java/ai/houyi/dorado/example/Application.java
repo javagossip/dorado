@@ -9,13 +9,12 @@ import ai.houyi.dorado.swagger.EnableSwagger;
 
 /**
  * @author wangweiping
- *
  */
 @EnableSwagger
 public class Application {
-	public static void main(String[] args) throws Exception {
-		DoradoServer server = DoradoServerBuilder.forPort(18889).minWorkers(5).maxWorkers(10).build();
-		//Webapp.get().getMethodReturnValueHandlerConfig().addExcludePath("/file/upload/*");
-		server.start();
-	}
+
+    public static void main(String[] args) {
+        DoradoServer server = DoradoServerBuilder.forPort(18889).springOn().minWorkers(5).maxWorkers(10).build();
+        server.start();
+    }
 }

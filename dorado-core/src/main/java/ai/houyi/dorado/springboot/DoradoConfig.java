@@ -23,148 +23,153 @@ import ai.houyi.dorado.rest.util.StringUtils;
 
 /**
  * @author weiping wang
- *
  */
 @ConfigurationProperties("dorado")
 public class DoradoConfig {
-	private int port = 18888;
 
-	private int backlog = Constant.DEFAULT_BACKLOG;
-	private int acceptors = Constant.DEFAULT_ACCEPTOR_COUNT;
-	private int ioWorkers = Constant.DEFAULT_IO_WORKER_COUNT;
+    private int port = 18888;
+    private boolean debug = false;
 
-	private int minWorkers = Constant.DEFAULT_MIN_WORKER_THREAD;
-	private int maxWorkers = Constant.DEFAULT_MAX_WORKER_THREAD;
+    private int backlog = Constant.DEFAULT_BACKLOG;
+    private int acceptors = Constant.DEFAULT_ACCEPTOR_COUNT;
+    private int ioWorkers = Constant.DEFAULT_IO_WORKER_COUNT;
 
-	private int maxConnections = 100000;
-	private int maxPendingRequest = Constant.DEFAULT_MAX_PENDING_REQUEST;
-	private int maxIdleTime = 8 * 3600;
+    private int minWorkers = Constant.DEFAULT_MIN_WORKER_THREAD;
+    private int maxWorkers = Constant.DEFAULT_MAX_WORKER_THREAD;
 
-	private int sendBuffer = Constant.DEFAULT_SEND_BUFFER_SIZE;
-	private int recvBuffer = Constant.DEFAULT_RECV_BUFFER_SIZE;
-	private int maxPacketLength = Constant.DEFAULT_MAX_PACKET_LENGTH;
-	private String contextPath = StringUtils.EMPTY;
+    private int maxConnections = 100000;
+    private int maxPendingRequest = Constant.DEFAULT_MAX_PENDING_REQUEST;
+    private int maxIdleTime = 8 * 3600;
 
-	private String[] scanPackages;
+    private int sendBuffer = Constant.DEFAULT_SEND_BUFFER_SIZE;
+    private int recvBuffer = Constant.DEFAULT_RECV_BUFFER_SIZE;
+    private int maxPacketLength = Constant.DEFAULT_MAX_PACKET_LENGTH;
+    private String contextPath = StringUtils.EMPTY;
 
-	public int getBacklog() {
-		return backlog;
-	}
+    private String[] scanPackages;
 
-	public void setBacklog(int backlog) {
-		this.backlog = backlog;
-	}
+    public int getBacklog() {
+        return backlog;
+    }
 
-	public int getAcceptors() {
-		return acceptors;
-	}
+    public void setBacklog(int backlog) {
+        this.backlog = backlog;
+    }
 
-	public String[] getScanPackages() {
-		return scanPackages;
-	}
+    public int getAcceptors() {
+        return acceptors;
+    }
 
-	public int getPort() {
-		return port;
-	}
+    public String[] getScanPackages() {
+        return scanPackages;
+    }
 
-	public void setPort(int port) {
-		this.port = port;
-	}
+    public int getPort() {
+        return port;
+    }
 
-	public String getContextPath() {
-		return contextPath;
-	}
+    public void setPort(int port) {
+        this.port = port;
+    }
 
-	public void setContextPath(String contextPath) {
-		this.contextPath = contextPath;
-	}
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
 
-	public void setScanPackages(String[] scanPackages) {
-		this.scanPackages = scanPackages;
-	}
+    public String getContextPath() {
+        return contextPath;
+    }
 
-	public void setAcceptors(int acceptors) {
-		this.acceptors = acceptors;
-	}
+    public void setContextPath(String contextPath) {
+        this.contextPath = contextPath;
+    }
 
-	public int getIoWorkers() {
-		return ioWorkers;
-	}
+    public void setScanPackages(String[] scanPackages) {
+        this.scanPackages = scanPackages;
+    }
 
-	public void setIoWorkers(int ioWorkers) {
-		this.ioWorkers = ioWorkers;
-	}
+    public void setAcceptors(int acceptors) {
+        this.acceptors = acceptors;
+    }
 
-	public int getMinWorkers() {
-		return minWorkers;
-	}
+    public int getIoWorkers() {
+        return ioWorkers;
+    }
 
-	public void setMinWorkers(int minWorkers) {
-		this.minWorkers = minWorkers;
-	}
+    public void setIoWorkers(int ioWorkers) {
+        this.ioWorkers = ioWorkers;
+    }
 
-	public int getMaxWorkers() {
-		return maxWorkers;
-	}
+    public int getMinWorkers() {
+        return minWorkers;
+    }
 
-	public void setMaxWorkers(int maxWorkers) {
-		this.maxWorkers = maxWorkers;
-	}
+    public void setMinWorkers(int minWorkers) {
+        this.minWorkers = minWorkers;
+    }
 
-	public int getMaxConnections() {
-		return maxConnections;
-	}
+    public int getMaxWorkers() {
+        return maxWorkers;
+    }
 
-	public void setMaxConnections(int maxConnections) {
-		this.maxConnections = maxConnections;
-	}
+    public void setMaxWorkers(int maxWorkers) {
+        this.maxWorkers = maxWorkers;
+    }
 
-	public int getMaxPendingRequest() {
-		return maxPendingRequest;
-	}
+    public int getMaxConnections() {
+        return maxConnections;
+    }
 
-	public void setMaxPendingRequest(int maxPendingRequest) {
-		this.maxPendingRequest = maxPendingRequest;
-	}
+    public void setMaxConnections(int maxConnections) {
+        this.maxConnections = maxConnections;
+    }
 
-	public int getMaxIdleTime() {
-		return maxIdleTime;
-	}
+    public int getMaxPendingRequest() {
+        return maxPendingRequest;
+    }
 
-	public void setMaxIdleTime(int maxIdleTime) {
-		this.maxIdleTime = maxIdleTime;
-	}
+    public void setMaxPendingRequest(int maxPendingRequest) {
+        this.maxPendingRequest = maxPendingRequest;
+    }
 
-	public int getSendBuffer() {
-		return sendBuffer;
-	}
+    public int getMaxIdleTime() {
+        return maxIdleTime;
+    }
 
-	public void setSendBuffer(int sendBuffer) {
-		this.sendBuffer = sendBuffer;
-	}
+    public void setMaxIdleTime(int maxIdleTime) {
+        this.maxIdleTime = maxIdleTime;
+    }
 
-	public int getRecvBuffer() {
-		return recvBuffer;
-	}
+    public int getSendBuffer() {
+        return sendBuffer;
+    }
 
-	public void setRecvBuffer(int recvBuffer) {
-		this.recvBuffer = recvBuffer;
-	}
+    public void setSendBuffer(int sendBuffer) {
+        this.sendBuffer = sendBuffer;
+    }
 
-	public int getMaxPacketLength() {
-		return maxPacketLength;
-	}
+    public int getRecvBuffer() {
+        return recvBuffer;
+    }
 
-	public void setMaxPacketLength(int maxPacketLength) {
-		this.maxPacketLength = maxPacketLength;
-	}
+    public void setRecvBuffer(int recvBuffer) {
+        this.recvBuffer = recvBuffer;
+    }
 
-	@Override
-	public String toString() {
-		return "DoradoProperties [backlog=" + backlog + ", acceptors=" + acceptors + ", ioWorkers=" + ioWorkers
-				+ ", minWorkers=" + minWorkers + ", maxWorkers=" + maxWorkers + ", maxConnections=" + maxConnections
-				+ ", maxPendingRequest=" + maxPendingRequest + ", maxIdleTime=" + maxIdleTime + ", sendBuffer="
-				+ sendBuffer + ", recvBuffer=" + recvBuffer + ", maxPacketLength=" + maxPacketLength + "]";
-	}
+    public int getMaxPacketLength() {
+        return maxPacketLength;
+    }
+
+    public void setMaxPacketLength(int maxPacketLength) {
+        this.maxPacketLength = maxPacketLength;
+    }
+
+    @Override
+    public String toString() {
+        return "DoradoProperties [backlog=" + backlog + ", acceptors=" + acceptors + ", ioWorkers=" + ioWorkers +
+                ", minWorkers=" + minWorkers + ", maxWorkers=" + maxWorkers + ", maxConnections=" + maxConnections +
+                ", maxPendingRequest=" + maxPendingRequest + ", maxIdleTime=" + maxIdleTime + ", sendBuffer=" +
+                sendBuffer + ", recvBuffer=" + recvBuffer + ", maxPacketLength=" + maxPacketLength + "]";
+    }
 
 }

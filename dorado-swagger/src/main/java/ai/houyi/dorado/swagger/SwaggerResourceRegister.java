@@ -17,24 +17,25 @@ package ai.houyi.dorado.swagger;
 
 import ai.houyi.dorado.Dorado;
 import ai.houyi.dorado.rest.ResourceRegister;
+import ai.houyi.dorado.rest.http.impl.Webapp;
 import ai.houyi.dorado.rest.router.Router;
 import ai.houyi.dorado.swagger.controller.SwaggerV2Controller;
 
 /**
  * @author weiping wang
- *
  */
 public class SwaggerResourceRegister implements ResourceRegister {
 
-	@Override
-	public void register() {
-		Class<?> mainClass = Dorado.mainClass;
-		EnableSwagger enableSwagger = mainClass.getAnnotation(EnableSwagger.class);
+    @Override
+    public void register() {
+        Class<?> mainClass = Dorado.mainClass;
+        EnableSwagger enableSwagger = mainClass.getAnnotation(EnableSwagger.class);
 
-		//如果不启用swagger,则不需要注册swagger相关服务
-		if (enableSwagger == null)
-			return;
-        Router.getInstance().registerRoutesByType(SwaggerV2Controller.class);
-	}
+        //如果不启用swagger,则不需要注册swagger相关服务
+        if (enableSwagger == null) {
+            return;
+        }
+        Webapp.get().registerRoutesByType(SwaggerV2Controller.class);
+    }
 
 }

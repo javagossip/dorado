@@ -94,7 +94,7 @@ public class DoradoHttpRequest implements HttpRequest {
                 }
             }
         } catch (Exception ex) {
-            LogUtils.warn(ex.getMessage());
+            LogUtils.error("parse http post request error",ex);
         } finally {
             // 注意这个地方，一定要调用destroy方法，如果不调用会导致内存泄漏
             if (decoder != null) {

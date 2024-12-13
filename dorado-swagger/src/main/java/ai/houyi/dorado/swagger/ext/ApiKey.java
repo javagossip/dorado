@@ -15,7 +15,6 @@
  */
 package ai.houyi.dorado.swagger.ext;
 
-import javax.annotation.Generated;
 
 /**
  * @author weiping wang
@@ -25,7 +24,6 @@ public class ApiKey {
 	//header or query
 	private String in;
 
-	@Generated("SparkTools")
 	private ApiKey(Builder builder) {
 		this.name = builder.name;
 		this.in = builder.in;
@@ -43,14 +41,12 @@ public class ApiKey {
 	 * Creates builder to build {@link ApiKey}.
 	 * @return created builder
 	 */
-	@Generated("SparkTools")
 	public static Builder builder() {
 		return new Builder();
 	}
 	/**
 	 * Builder to build {@link ApiKey}.
 	 */
-	@Generated("SparkTools")
 	public static final class Builder {
 		private String name;
 		private String in;

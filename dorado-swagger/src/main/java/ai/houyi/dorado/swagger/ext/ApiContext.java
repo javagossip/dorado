@@ -16,7 +16,6 @@
 package ai.houyi.dorado.swagger.ext;
 
 import io.swagger.models.Info;
-import javax.annotation.Generated;
 
 /**
  * @author weiping wang
@@ -25,7 +24,6 @@ public class ApiContext {
 	private Info info;
 	private ApiKey apiKey;
 
-	@Generated("SparkTools")
 	private ApiContext(Builder builder) {
 		this.info = builder.info;
 		this.apiKey = builder.apiKey;
@@ -43,14 +41,12 @@ public class ApiContext {
 	 * Creates builder to build {@link ApiContext}.
 	 * @return created builder
 	 */
-	@Generated("SparkTools")
 	public static Builder builder() {
 		return new Builder();
 	}
 	/**
 	 * Builder to build {@link ApiContext}.
 	 */
-	@Generated("SparkTools")
 	public static final class Builder {
 		private Info info;
 		private ApiKey apiKey;

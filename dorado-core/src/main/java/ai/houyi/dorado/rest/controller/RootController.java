@@ -17,13 +17,12 @@ package ai.houyi.dorado.rest.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import ai.houyi.dorado.Dorado;
 import ai.houyi.dorado.rest.annotation.Controller;
 import ai.houyi.dorado.rest.annotation.Path;
-import ai.houyi.dorado.rest.router.Route;
-import ai.houyi.dorado.rest.router.Router;
+import ai.houyi.dorado.rest.http.impl.Webapp;
+import ai.houyi.dorado.rest.router.Router.Route;
 import ai.houyi.dorado.rest.server.DoradoServerBuilder;
 import ai.houyi.dorado.rest.util.StringUtils;
 
@@ -50,8 +49,8 @@ public class RootController {
     public List<RestService> services() {
         List<RestService> serviceList = new ArrayList<>();
 
-        List<Route> allRoutes = Router.getInstance().getRoutes();
-        for (Route route : allRoutes) {
+        List<Route> routes = Webapp.get().getRouter().getRoutes();
+        for (Route route : routes) {
             String path = route.getPath();
             String method = StringUtils.defaultString(route.getMethod(), "*");
             serviceList.add(RestService.builder().withPath(path).withMethod(method).build());

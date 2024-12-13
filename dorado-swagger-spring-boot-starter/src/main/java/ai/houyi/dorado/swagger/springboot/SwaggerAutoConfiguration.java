@@ -27,38 +27,42 @@ import io.swagger.models.Info;
 import io.swagger.models.License;
 
 /**
- *
  * @author weiping wang
  */
 @Configuration
 @EnableConfigurationProperties(SwaggerProperties.class)
 public class SwaggerAutoConfiguration {
 
-	@Autowired
-	private SwaggerProperties swaggerConfig;
+    @Autowired
+    private SwaggerProperties swaggerConfig;
 
-	@Bean(name = "swaggerApiContext")
-	public ApiContext buildApiContext() {
-		Info info = new Info();
-		info.title(swaggerConfig.getTitle()).description(swaggerConfig.getDescription())
-				.termsOfService(swaggerConfig.getTermsOfServiceUrl()).version(swaggerConfig.getVersion());
-		Contact contact = swaggerConfig.getContact();
+    @Bean(name = "swaggerApiContext")
+    public ApiContext buildApiContext() {
+        Info info = new Info();
+        info.title(swaggerConfig.getTitle())
+                .description(swaggerConfig.getDescription())
+                .termsOfService(swaggerConfig.getTermsOfServiceUrl())
+                .version(swaggerConfig.getVersion());
+        Contact contact = swaggerConfig.getContact();
 
-		if (contact != null)
-			info.setContact(new io.swagger.models.Contact().email(contact.getEmail()).name(contact.getName())
-					.url(contact.getUrl()));
+        if (contact != null) {
+            info.setContact(new io.swagger.models.Contact().email(contact.getEmail())
+                    .name(contact.getName())
+                    .url(contact.getUrl()));
+        }
 
-		info.setLicense(new License().name(swaggerConfig.getLicense()).url(swaggerConfig.getLicenseUrl()));
+        info.setLicense(new License().name(swaggerConfig.getLicense()).url(swaggerConfig.getLicenseUrl()));
 
-		ApiContext.Builder apiContextBuilder = ApiContext.builder().withInfo(info);
+        ApiContext.Builder apiContextBuilder = ApiContext.builder().withInfo(info);
 
-		ai.houyi.dorado.swagger.springboot.SwaggerProperties.ApiKey apiKey = swaggerConfig.getApiKey();
-		if (apiKey != null) {
-			ApiKey _apiKey = ApiKey.builder().withIn(swaggerConfig.getApiKey().getIn())
-					.withName(swaggerConfig.getApiKey().getName()).build();
-			apiContextBuilder.withApiKey(_apiKey);
-		}
-
-		return apiContextBuilder.build();
-	}
+        ai.houyi.dorado.swagger.springboot.SwaggerProperties.ApiKey apiKey = swaggerConfig.getApiKey();
+        if (apiKey != null) {
+            ApiKey _apiKey = ApiKey.builder()
+                    .withIn(swaggerConfig.getApiKey().getIn())
+                    .withName(swaggerConfig.getApiKey().getName())
+                    .build();
+            apiContextBuilder.withApiKey(_apiKey);
+        }
+        return apiContextBuilder.build();
+    }
 }

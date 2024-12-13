@@ -11,54 +11,55 @@ import ai.houyi.dorado.rest.util.AntPathMatcher;
 
 /**
  * @author wangweiping
- *
  */
 public class FilterManager {
-	private static final FilterManager instance = new FilterManager();
 
-	private final List<FilterConfiguration> filterConfigurations;
-	private final AntPathMatcher pathMatcher;
+    private static final FilterManager INSTANCE = new FilterManager();
 
-	private FilterManager() {
-		this.filterConfigurations = new ArrayList<>();
-		this.pathMatcher = new AntPathMatcher();
-	}
+    private final List<FilterConfiguration> filterConfigurations;
+    private final AntPathMatcher pathMatcher;
 
-	public static FilterManager getInstance() {
-		return instance;
-	}
+    private FilterManager() {
+        this.filterConfigurations = new ArrayList<>();
+        this.pathMatcher = new AntPathMatcher();
+    }
 
-	public void addFilterConfiguration(FilterConfiguration filterConfiguration) {
-		this.filterConfigurations.add(filterConfiguration);
-	}
+    public static FilterManager getInstance() {
+        return INSTANCE;
+    }
 
-	public List<Filter> match(String uri) {
-		List<Filter> filters = new ArrayList<>();
+    public void addFilterConfiguration(FilterConfiguration filterConfiguration) {
+        this.filterConfigurations.add(filterConfiguration);
+    }
 
-		filterLoop: for (FilterConfiguration config : filterConfigurations) {
-			List<String> excludePathPatterns = config.getExcludePathPatterns();
-			List<String> pathPatterns = config.getPathPatterns();
+    public List<Filter> match(String uri) {
+        List<Filter> filters = new ArrayList<>();
 
-			// 如果在排除路径中忽略
-			if (excludePathPatterns != null && !excludePathPatterns.isEmpty()) {
-				for (String excluePathPattern : excludePathPatterns) {
-					if (pathMatcher.match(excluePathPattern, uri)) {
-						continue filterLoop;
-					}
-				}
-			}
-			// 如果只有排除路径没有include路径的话直接加入此过滤器
-			if (pathPatterns == null || pathPatterns.isEmpty()) {
-				filters.add(config.getFilter());
-				continue filterLoop;
-			}
-			// 如果存在include路径，则再判断是否匹配include路径，匹配则加入
-			for (String pathPattern : pathPatterns) {
-				if (pathMatcher.match(pathPattern, uri)) {
-					filters.add(config.getFilter());
-				}
-			}
-		}
-		return filters;
-	}
+        filterLoop:
+        for (FilterConfiguration config : filterConfigurations) {
+            List<String> excludePathPatterns = config.getExcludePathPatterns();
+            List<String> pathPatterns = config.getPathPatterns();
+
+            // 如果在排除路径中忽略
+            if (excludePathPatterns != null && !excludePathPatterns.isEmpty()) {
+                for (String excluePathPattern : excludePathPatterns) {
+                    if (pathMatcher.match(excluePathPattern, uri)) {
+                        continue filterLoop;
+                    }
+                }
+            }
+            // 如果只有排除路径没有include路径的话直接加入此过滤器
+            if (pathPatterns == null || pathPatterns.isEmpty()) {
+                filters.add(config.getFilter());
+                continue filterLoop;
+            }
+            // 如果存在include路径，则再判断是否匹配include路径，匹配则加入
+            for (String pathPattern : pathPatterns) {
+                if (pathMatcher.match(pathPattern, uri)) {
+                    filters.add(config.getFilter());
+                }
+            }
+        }
+        return filters;
+    }
 }

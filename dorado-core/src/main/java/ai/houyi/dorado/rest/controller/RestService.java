@@ -14,9 +14,6 @@
  * under the License.
  */
 package ai.houyi.dorado.rest.controller;
-
-import javax.annotation.Generated;
-
 /**
  * 
  * @author wangwp
@@ -29,7 +26,6 @@ public class RestService {
 	public RestService() {
 	}
 
-	@Generated("SparkTools")
 	private RestService(Builder builder) {
 		this.path = builder.path;
 		this.method = builder.method;
@@ -41,7 +37,6 @@ public class RestService {
 	 * 
 	 * @return created builder
 	 */
-	@Generated("SparkTools")
 	public static Builder builder() {
 		return new Builder();
 	}
@@ -61,7 +56,6 @@ public class RestService {
 	/**
 	 * Builder to build {@link RestService}.
 	 */
-	@Generated("SparkTools")
 	public static final class Builder {
 		private String path;
 		private String method;
