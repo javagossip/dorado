@@ -56,6 +56,8 @@ public class RouterTest {
         router.addRoute("/apidocs/swagger.yaml", "GET", RouteHandler.DUMMY);
         router.addRoute("/campaigns/789/detail", "GET", RouteHandler.DUMMY);
         router.addRoute("/campaigns", "GET", RouteHandler.DUMMY);
+        router.addRoute("/creatives", "POST", RouteHandler.DUMMY);
+        router.addRoute("/creatives/{id}/details", null, RouteHandler.DUMMY);
 
         Router.RouteContext routeContext = router.matchRoute("/campaigns/123", "GET");
         assertTrue(routeContext.pathVars.isEmpty());
@@ -76,6 +78,14 @@ public class RouterTest {
         routeContext = router.matchRoute("/campaigns/abc/123", "GET");
         assertNull(routeContext);
 
+        System.out.println(router.dump());
+    }
+
+    @Test
+    public void addRoute_with_null_method() {
+        router.addRoute("/campaigns/{id}", null, RouteHandler.DUMMY);
+        assertTrue(router.matchRoute("/campaigns/123", "GET") != null);
+        assertTrue(router.matchRoute("/campaigns/solo", "POST") != null);
         System.out.println(router.dump());
     }
 

@@ -36,7 +36,6 @@ import ai.houyi.dorado.rest.annotation.HttpMethod;
 import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.http.HttpResponse;
 import ai.houyi.dorado.rest.util.Assert;
-import ai.houyi.dorado.rest.util.LogUtils;
 import ai.houyi.dorado.rest.util.StringUtils;
 
 /**
@@ -167,10 +166,10 @@ public class Router {
             if (!v.children.isEmpty()) {
                 result.append("<<<--dump trie for method: ").append(method).append("-->>>").append("\n");
                 result.append(v);
-                result.append("<<<-- end dump -->>>");
                 result.append("\n");
             }
         });
+        result.append("<<<-- end dump -->>>");
         return result.toString();
     }
 
@@ -277,10 +276,13 @@ public class Router {
             return trieNode;
         }
 
-        public TrieNode child(String part, Map<String, String> pathVars) {
+        public TrieNode child(String part, boolean isEnd, Map<String, String> pathVars) {
             //首先精确匹配，如果匹配到直接返回
             if (hasChild(part)) {
-                return children.get(part);
+                TrieNode node = children.get(part);
+                if (isEnd && node.route != null) {
+                    return node;
+                }
             }
             //再次匹配路径变量，按照优先匹配带正则表达式的路径
             for (TrieNode trieNode : regexPathVarChildren) {

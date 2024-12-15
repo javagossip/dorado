@@ -20,6 +20,7 @@ import java.util.List;
 
 import ai.houyi.dorado.Dorado;
 import ai.houyi.dorado.rest.annotation.Controller;
+import ai.houyi.dorado.rest.annotation.GET;
 import ai.houyi.dorado.rest.annotation.Path;
 import ai.houyi.dorado.rest.http.impl.Webapp;
 import ai.houyi.dorado.rest.router.Router.Route;
@@ -30,22 +31,24 @@ import ai.houyi.dorado.rest.util.StringUtils;
  * @author wangwp
  */
 @Controller
-@Path("/")
 public class RootController {
 
     private static final String DORADO_WELCOME = "Welcome to dorado!";
 
-    @Path
+    @Path("/")
+    @GET
     public String index() {
         return DORADO_WELCOME;
     }
 
-    @Path("status")
+    @Path("/status")
+    @GET
     public DoradoStatus status() {
         return DoradoStatus.get();
     }
 
-    @Path("services")
+    @Path("/services")
+    @GET
     public List<RestService> services() {
         List<RestService> serviceList = new ArrayList<>();
 
@@ -58,7 +61,14 @@ public class RootController {
         return serviceList;
     }
 
-    @Path("config")
+    @GET
+    @Path("/router/dump")
+    public String dumpRouter() {
+        return Webapp.get().getRouter().dump();
+    }
+
+    @GET
+    @Path("/config")
     public DoradoServerBuilder config() {
         return Dorado.serverConfig;
     }
