@@ -27,78 +27,81 @@ import com.google.protobuf.Message;
 import ai.houyi.dorado.exception.DoradoException;
 
 /**
- * 
  * @author wangwp
  */
 public class ProtobufMessageDescriptors {
-	private static final Map<Class<?>, ProtobufMessageDescriptor> messageDescriptorHolder = new ConcurrentHashMap<>();
 
-	public static void registerMessageDescriptor(ProtobufMessageDescriptor messageDescriptor) {
-		messageDescriptorHolder.put(messageDescriptor.messageType, messageDescriptor);
-	}
+    private static final Map<Class<?>, ProtobufMessageDescriptor> messageDescriptorHolder = new ConcurrentHashMap<>();
 
-	public static ProtobufMessageDescriptor messageDescriptorForType(Class<?> type) {
-		return messageDescriptorHolder.get(type);
-	}
+    private ProtobufMessageDescriptors() {
+    }
 
-	public static void registerMessageDescriptorForType(Class<?> type) {
-		messageDescriptorHolder.put(type, new ProtobufMessageDescriptor(type));
-	}
+    public static void registerMessageDescriptor(ProtobufMessageDescriptor messageDescriptor) {
+        messageDescriptorHolder.put(messageDescriptor.messageType, messageDescriptor);
+    }
 
-	public static Message newMessageForType(byte[] data, Class<?> type) {
-		ProtobufMessageDescriptor messageDescriptor = messageDescriptorHolder.get(type);
-		if (messageDescriptor == null) {
-			return null;
-		}
-		return messageDescriptor.mergeFrom(data);
-	}
+    public static ProtobufMessageDescriptor messageDescriptorForType(Class<?> type) {
+        return messageDescriptorHolder.get(type);
+    }
 
-	public static Message newMessageForType(InputStream in, Class<?> type) {
-		ProtobufMessageDescriptor messageDescriptor = messageDescriptorHolder.get(type);
-		if (messageDescriptor == null) {
-			return null;
-		}
-		return messageDescriptor.mergeFrom(in);
-	}
+    public static void registerMessageDescriptorForType(Class<?> type) {
+        messageDescriptorHolder.put(type, new ProtobufMessageDescriptor(type));
+    }
 
-	public static class ProtobufMessageDescriptor {
-		private static final String METHOD_GET_DEFAULT_INSTANCE = "getDefaultInstance";
+    public static Message newMessageForType(byte[] data, Class<?> type) {
+        ProtobufMessageDescriptor messageDescriptor = messageDescriptorHolder.get(type);
+        if (messageDescriptor == null) {
+            return null;
+        }
+        return messageDescriptor.mergeFrom(data);
+    }
 
-		private Class<?> messageType;
-		private Message defaultMessageInstance;
+    public static Message newMessageForType(InputStream in, Class<?> type) {
+        ProtobufMessageDescriptor messageDescriptor = messageDescriptorHolder.get(type);
+        if (messageDescriptor == null) {
+            return null;
+        }
+        return messageDescriptor.mergeFrom(in);
+    }
 
-		public ProtobufMessageDescriptor(Class<?> messageType) throws DoradoException {
-			this.messageType = messageType;
+    public static class ProtobufMessageDescriptor {
 
-			try {
-				Method method = messageType.getMethod(METHOD_GET_DEFAULT_INSTANCE, (Class[]) null);
-				if (!method.isAccessible()) {
-					method.setAccessible(true);
-				}
-				defaultMessageInstance = (Message) method.invoke(messageType, (Object[]) null);
-			} catch (Throwable ex) {
-				throw new DoradoException(ex);
-			}
-		}
+        private static final String METHOD_GET_DEFAULT_INSTANCE = "getDefaultInstance";
 
-		public Message mergeFrom(byte[] data) {
-			try {
-				return defaultMessageInstance.newBuilderForType().mergeFrom(data).build();
-			} catch (InvalidProtocolBufferException ex) {
-				throw new DoradoException(ex);
-			}
-		}
+        private Class<?> messageType;
+        private final Message defaultMessageInstance;
 
-		public Message mergeFrom(InputStream in) {
-			try {
-				return defaultMessageInstance.newBuilderForType().mergeFrom(in).build();
-			} catch (IOException ex) {
-				throw new DoradoException(ex);
-			}
-		}
+        public ProtobufMessageDescriptor(Class<?> messageType) throws DoradoException {
+            this.messageType = messageType;
+            try {
+                Method method = messageType.getMethod(METHOD_GET_DEFAULT_INSTANCE, (Class[]) null);
+                if (!method.isAccessible()) {
+                    method.setAccessible(true);
+                }
+                defaultMessageInstance = (Message) method.invoke(messageType, (Object[]) null);
+            } catch (Exception ex) {
+                throw new DoradoException(ex);
+            }
+        }
 
-		public Class<?> getMessageType() {
-			return this.messageType;
-		}
-	}
+        public Message mergeFrom(byte[] data) {
+            try {
+                return defaultMessageInstance.newBuilderForType().mergeFrom(data).build();
+            } catch (InvalidProtocolBufferException ex) {
+                throw new DoradoException(ex);
+            }
+        }
+
+        public Message mergeFrom(InputStream in) {
+            try {
+                return defaultMessageInstance.newBuilderForType().mergeFrom(in).build();
+            } catch (IOException ex) {
+                throw new DoradoException(ex);
+            }
+        }
+
+        public Class<?> getMessageType() {
+            return this.messageType;
+        }
+    }
 }

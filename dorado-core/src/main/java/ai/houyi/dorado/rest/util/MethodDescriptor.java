@@ -34,199 +34,205 @@ import ai.houyi.dorado.rest.http.HttpResponse;
 import ai.houyi.dorado.rest.http.MultipartFile;
 
 /**
- * 
  * @author wangwp
  */
 public class MethodDescriptor {
-	private final Class<?> clazz;
-	private final Method method;
 
-	private final Annotation[] annotations;
-	private final Object invokeTarget;
-	private final Class<?> returnType;
+    private final Class<?> clazz;
+    private final Method method;
 
-	private final MethodParameter[] methodParameters;
-	private final String consume;
-	private final String produce;
+    private final Annotation[] annotations;
+    private final Object invokeTarget;
+    private final Class<?> returnType;
 
-	private MethodDescriptor(Class<?> clazz, Method method) {
-		this(clazz, method, new DefaultParameterNameResolver());
-	}
+    private final MethodParameter[] methodParameters;
+    private final String consume;
+    private final String produce;
 
-	private MethodDescriptor(Class<?> clazz, Method method, ParameterNameResolver parameterNameResolver) {
-		this.clazz = clazz;
-		this.method = method;
-		this.returnType = method.getReturnType();
+    private MethodDescriptor(Class<?> clazz, Method method) {
+        this(clazz, method, new DefaultParameterNameResolver());
+    }
 
-		if (!method.isAccessible()) {
-			method.setAccessible(true);
-		}
+    private MethodDescriptor(Class<?> clazz, Method method, ParameterNameResolver parameterNameResolver) {
+        this.clazz = clazz;
+        this.method = method;
+        this.returnType = method.getReturnType();
 
-		Class<?>[] parameterTypes = method.getParameterTypes();
-		Type[] genericParameterTypes = method.getGenericParameterTypes();
+        if (!method.isAccessible()) {
+            method.setAccessible(true);
+        }
 
-		String[] parameterNames = parameterNameResolver.getParameterNames(method);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        Type[] genericParameterTypes = method.getGenericParameterTypes();
 
-		this.invokeTarget = Dorado.beanContainer.getBean(clazz);
-		this.annotations = method.getAnnotations();
-		Consume consumeAnnotation = method.getAnnotation(Consume.class);
-		Produce produceAnnotation = method.getAnnotation(Produce.class);
+        String[] parameterNames = parameterNameResolver.getParameterNames(method);
+        Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
-		methodParameters = new MethodParameter[method.getParameterCount()];
-		for (int i = 0; i < method.getParameterCount(); i++) {
-			Annotation annotation = parameterAnnotations[i].length == 0 ? null : parameterAnnotations[i][0];
-			Class<?> type = parameterTypes[i];
-			String name = parameterNames[i];
-			Type genericParameterType = genericParameterTypes[i];
+        this.invokeTarget = Dorado.beanContainer.getBean(clazz);
+        this.annotations = method.getAnnotations();
+        Consume consumeAnnotation = method.getAnnotation(Consume.class);
+        Produce produceAnnotation = method.getAnnotation(Produce.class);
 
-			MethodParameter methodParameter = MethodParameter.create(name, type, genericParameterType, annotation);
+        methodParameters = new MethodParameter[method.getParameterCount()];
+        for (int i = 0; i < method.getParameterCount(); i++) {
+            Annotation annotation = parameterAnnotations[i].length == 0 ? null : parameterAnnotations[i][0];
+            Class<?> type = parameterTypes[i];
+            String name = parameterNames[i];
+            Type genericParameterType = genericParameterTypes[i];
+
+            MethodParameter methodParameter = MethodParameter.create(name, type, genericParameterType, annotation);
             methodParameters[i] = methodParameter;
-			methodParameters[i].setMethodParameterCount(method.getParameterCount());
-			registerMessageDescriptorForTypeIfNeed(type);
-		}
+            methodParameters[i].setMethodParameterCount(method.getParameterCount());
+            registerMessageDescriptorForTypeIfNeed(type);
+        }
 
-		this.consume = consumeAnnotation == null ? guessConsume() : consumeAnnotation.value();
-		this.produce = produceAnnotation == null ? guessProduce() : produceAnnotation.value();
-	}
+        this.consume = consumeAnnotation == null ? guessConsume() : consumeAnnotation.value();
+        this.produce = produceAnnotation == null ? guessProduce() : produceAnnotation.value();
+    }
 
-	private void registerMessageDescriptorForTypeIfNeed(Class<?> type) {
-		try {
-			if (Message.class.isAssignableFrom(type)) {
-				registerMessageDescriptorForType(type);
-			}
-		} catch (Throwable ex) {
-			// ignore this ex
-		}
-	}
+    private void registerMessageDescriptorForTypeIfNeed(Class<?> type) {
+        try {
+            if (Message.class.isAssignableFrom(type)) {
+                registerMessageDescriptorForType(type);
+            }
+        } catch (Throwable ex) {
+            // ignore this ex
+        }
+    }
 
-	public static MethodDescriptor create(Class<?> clazz, Method method) {
+    public static MethodDescriptor create(Class<?> clazz, Method method) {
         return new MethodDescriptor(clazz, method);
-	}
+    }
 
-	public Class<?> getClazz() {
-		return clazz;
-	}
+    public Class<?> getClazz() {
+        return clazz;
+    }
 
-	public Method getMethod() {
-		return method;
-	}
+    public Method getMethod() {
+        return method;
+    }
 
-	public MethodParameter[] getParameters() {
-		return this.methodParameters;
-	}
+    public MethodParameter[] getParameters() {
+        return this.methodParameters;
+    }
 
-	public Class<?> getReturnType() {
-		return returnType;
-	}
+    public Class<?> getReturnType() {
+        return returnType;
+    }
 
-	public Object getInvokeTarget() {
-		return invokeTarget;
-	}
+    public Object getInvokeTarget() {
+        return invokeTarget;
+    }
 
-	public Annotation[] getAnnotations() {
-		return annotations;
-	}
+    public Annotation[] getAnnotations() {
+        return annotations;
+    }
 
-	public String consume() {
-		return this.consume;
-	}
+    public String consume() {
+        return this.consume;
+    }
 
-	public boolean hasAnnotation(Annotation annotation) {
-		for (Annotation _anno : annotations) {
-			if (_anno.equals(annotation)) {
-				return true;
-			}
-		}
-		return false;
-	}
+    public boolean hasAnnotation(Annotation annotation) {
+        for (Annotation _anno : annotations) {
+            if (_anno.equals(annotation)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	private String guessConsume() {
-		for (MethodParameter param : this.methodParameters) {
-			if (param.annotationType == MultipartFile.class) {
-				return MediaType.MULTIPART_FORM_DATA;
-			} else if (TypeUtils.isProtobufMessage(param.getType())) {
-				return MediaType.APPLICATION_PROTOBUF;
-			}else if(TypeUtils.isSerializableType(param.getType())) {
-				return MediaType.APPLICATION_JSON;
-			}
-		}
-		return MediaType.WILDCARD;
-	}
+    private String guessConsume() {
+        for (MethodParameter param : this.methodParameters) {
+            if (param.annotationType == MultipartFile.class) {
+                return MediaType.MULTIPART_FORM_DATA;
+            } else if (TypeUtils.isProtobufMessage(param.getType())) {
+                return MediaType.APPLICATION_PROTOBUF;
+            } else if (TypeUtils.isSerializableType(param.getType())) {
+                return MediaType.APPLICATION_JSON;
+            }
+        }
+        return MediaType.WILDCARD;
+    }
 
-	public String produce() {
-		return this.produce;
-	}
+    public String produce() {
+        return this.produce;
+    }
 
-	private String guessProduce() {
-		MediaType mediaType = MediaTypeUtils.forType(returnType);
-		return mediaType == null ? MediaType.WILDCARD : mediaType.toString();
-	}
+    private String guessProduce() {
+        MediaType mediaType = MediaTypeUtils.forType(returnType);
+        return mediaType == null ? MediaType.WILDCARD : mediaType.toString();
+    }
 
-	public static class MethodParameter {
-		private final String name;
-		private final Class<?> type;
-		private final Annotation annotation;
-		private Class<?> annotationType;
-		private int methodParameterCount;
-		private final Type parameterizedType;
+    public static class MethodParameter {
 
-		private MethodParameter(String name, Class<?> type, Type parameterizedType, Annotation annotation) {
-			this.name = name;
-			this.type = type;
-			this.annotation = annotation;
-			this.annotationType = annotation == null ? null : annotation.annotationType();
+        private final String name;
+        private final Class<?> type;
+        private final Annotation annotation;
+        private Class<?> annotationType;
+        private int methodParameterCount;
+        private final Type parameterizedType;
 
-			if (type == HttpRequest.class)
-				this.annotationType = HttpRequest.class;
-			if (type == HttpResponse.class)
-				this.annotationType = HttpResponse.class;
-			if (type == MultipartFile.class)
-				this.annotationType = MultipartFile.class;
-			if (type.isArray() && type.getComponentType() == MultipartFile.class) {
-				this.annotationType = MultipartFile.class;
-			}
+        private MethodParameter(String name, Class<?> type, Type parameterizedType, Annotation annotation) {
+            this.name = name;
+            this.type = type;
+            this.annotation = annotation;
+            this.annotationType = annotation == null ? null : annotation.annotationType();
 
-			this.parameterizedType = parameterizedType;
-		}
+            if (type == HttpRequest.class) {
+                this.annotationType = HttpRequest.class;
+            }
+            if (type == HttpResponse.class) {
+                this.annotationType = HttpResponse.class;
+            }
+            if (type == MultipartFile.class) {
+                this.annotationType = MultipartFile.class;
+            }
+            if (type.isArray() && type.getComponentType() == MultipartFile.class) {
+                this.annotationType = MultipartFile.class;
+            }
 
-		public void setMethodParameterCount(int parameterCount) {
-			this.methodParameterCount = parameterCount;
-		}
+            this.parameterizedType = parameterizedType;
+        }
 
-		public static MethodParameter create(String name, Class<?> type, Type genericParameterType,
-				Annotation annotation) {
-			return new MethodParameter(name, type, genericParameterType, annotation);
-		}
+        public void setMethodParameterCount(int parameterCount) {
+            this.methodParameterCount = parameterCount;
+        }
 
-		public String getName() {
-			return this.name;
-		}
+        public static MethodParameter create(String name,
+                Class<?> type,
+                Type genericParameterType,
+                Annotation annotation) {
+            return new MethodParameter(name, type, genericParameterType, annotation);
+        }
 
-		public int getMethodParameterCount() {
-			return methodParameterCount;
-		}
+        public String getName() {
+            return this.name;
+        }
 
-		public Class<?> getType() {
-			return this.type;
-		}
+        public int getMethodParameterCount() {
+            return methodParameterCount;
+        }
 
-		public Annotation getAnnotation() {
-			return this.annotation;
-		}
+        public Class<?> getType() {
+            return this.type;
+        }
 
-		public Class<?> getAnnotationType() {
-			return this.annotationType;
-		}
+        public Annotation getAnnotation() {
+            return this.annotation;
+        }
 
-		public Type getParameterizedType() {
-			return parameterizedType;
-		}
+        public Class<?> getAnnotationType() {
+            return this.annotationType;
+        }
 
-		@Override
-		public String toString() {
-			return "MethodParameter [name=" + name + ", type=" + type + ", annotation=" + annotation
-					+ ", annotationType=" + annotationType + "]";
-		}
-	}
+        public Type getParameterizedType() {
+            return parameterizedType;
+        }
+
+        @Override
+        public String toString() {
+            return "MethodParameter [name=" + name + ", type=" + type + ", annotation=" + annotation +
+                    ", annotationType=" + annotationType + "]";
+        }
+    }
 }
