@@ -19,6 +19,7 @@
 package ai.houyi.dorado.rest.router;
 
 import ai.houyi.dorado.exception.DoradoException;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,6 +28,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.*;
 
 public class RouterTest {
+
     private Router router;
 
     @Before
@@ -46,21 +48,27 @@ public class RouterTest {
 
     @Test
     public void addRoute() {
-        router.addRoute("/campaigns/{id}", "GET", null);
-        router.addRoute("/campaigns/{id:[0-9]+}", "GET", null);
-        router.addRoute("/campaigns/123", "GET", null);
-        router.addRoute("/campaigns/123/details", "GET", null);
+        router.addRoute("/campaigns/{id}", "GET", RouteHandler.DUMMY);
+        router.addRoute("/campaigns/{id:[0-9]+}", "GET", RouteHandler.DUMMY);
+        router.addRoute("/campaigns/123", "GET", RouteHandler.DUMMY);
+        router.addRoute("/campaigns/123/details", "GET", RouteHandler.DUMMY);
+        router.addRoute("/apidocs/swagger.json", "GET", RouteHandler.DUMMY);
+        router.addRoute("/apidocs/swagger.yaml", "GET", RouteHandler.DUMMY);
+        router.addRoute("/campaigns/789/detail", "GET", RouteHandler.DUMMY);
+        router.addRoute("/campaigns", "GET", RouteHandler.DUMMY);
 
         Router.RouteContext routeContext = router.matchRoute("/campaigns/123", "GET");
         assertTrue(routeContext.pathVars.isEmpty());
         //匹配/campaigns/{id}
         routeContext = router.matchRoute("/campaigns/abc", "GET");
         assertTrue(routeContext != null);
+        assertEquals("/campaigns/{id}", routeContext.route.path);
         assertTrue(routeContext.pathVars.containsKey("id"));
 
         //匹配/campaigns/{id:[0-9]+}
         routeContext = router.matchRoute("/campaigns/789", "GET");
         assertTrue(routeContext != null);
+        assertEquals("/campaigns/{id:[0-9]+}", routeContext.route.path);
         assertTrue(routeContext.pathVars.containsKey("id"));
         assertEquals("789", routeContext.pathVars.get("id"));
 
@@ -68,7 +76,7 @@ public class RouterTest {
         routeContext = router.matchRoute("/campaigns/abc/123", "GET");
         assertNull(routeContext);
 
-        router.dump();
+        System.out.println(router.dump());
     }
 
     @Test

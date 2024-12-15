@@ -180,4 +180,9 @@ public class DoradoRouteHandler implements RouteHandler {
                 methodParameter,
                 pathVariableValue);
     }
+
+    @Override
+    public String toString() {
+        return methodDescriptor.getClazz().getSimpleName() + "#" + methodDescriptor.getMethod().getName();
+    }
 }

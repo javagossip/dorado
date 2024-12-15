@@ -32,9 +32,11 @@ import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import ai.houyi.dorado.exception.DoradoException;
+import ai.houyi.dorado.rest.annotation.HttpMethod;
 import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.http.HttpResponse;
 import ai.houyi.dorado.rest.util.Assert;
+import ai.houyi.dorado.rest.util.LogUtils;
 import ai.houyi.dorado.rest.util.StringUtils;
 
 /**
@@ -46,14 +48,15 @@ public class Router {
     private static final String PATH_SEPARATOR = "/";
     private static final String PATH_VARIABLE_PREFIX = "{";
     private static final String PATH_VARIABLE_SUFFIX = "}";
+    private static final String PATH_VARIABLE_KEY = "{var}";
+    private static final List<String> SUPPORTED_METHODS =
+            Arrays.asList(HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE);
 
     private final Set<Route> routes = new HashSet<>();
     private final Map<String, TrieNode> methodRoots = new HashMap<>();
 
     private Router() {
-        for (String method : Arrays.asList("GET", "POST", "PUT", "DELETE", WILDCARD)) {
-            methodRoots.put(method, new TrieNode());
-        }
+        SUPPORTED_METHODS.forEach(method -> methodRoots.put(method, new TrieNode()));
     }
 
     public static Router newInstance() {
@@ -61,11 +64,7 @@ public class Router {
     }
 
     public RouteContext matchRoute(HttpRequest request) {
-        RouteContext routeContext = matchRoute(request.getRequestURI(), request.getMethod().toUpperCase());
-        if (routeContext != null) {
-            return routeContext;
-        }
-        return matchRoute(request.getRequestURI(), WILDCARD);
+        return matchRoute(request.getRequestURI(), request.getMethod().toUpperCase());
     }
 
     public List<Route> getRoutes() {
@@ -77,6 +76,11 @@ public class Router {
     }
 
     public void addRoute(String path, String httpMethod, RouteHandler handler) {
+        //if support all http methods, add route to all
+        if (WILDCARD.equals(httpMethod) || StringUtils.isBlank(httpMethod)) {
+            SUPPORTED_METHODS.forEach(method -> addRoute(path, method, handler));
+            return;
+        }
         Route route = new Route(path, httpMethod, handler);
         TrieNode current = methodRoots.get(route.method);
         if (current == null) {
@@ -88,7 +92,7 @@ public class Router {
             String key = part;
             if (isPathVar(key)) {
                 PathVar pathVar = PathVar.create(part);
-                key = pathVar.pattern == null ? "{var}" : "{var:" + pathVar.regex + "}";
+                key = pathVar.pattern == null ? PATH_VARIABLE_KEY : "{var:" + pathVar.regex + "}";
                 if (!current.hasChild(key)) {
                     current.addChild(key, TrieNode.create(pathVar));
                     current.children.get(key).pathVar = pathVar;
@@ -110,30 +114,64 @@ public class Router {
     public RouteContext matchRoute(String path, String method) {
         //按照优先级匹配，先精确匹配，其次匹配带正则的路径变量，再匹配普通的路径变量，最后匹配通配符
         TrieNode current = methodRoots.get(method);
-        if (current == null) {
-            current = methodRoots.get(WILDCARD);
-        }
         String[] parts = StringUtils.splitTrim(path, PATH_SEPARATOR);
+
         Map<String, String> pathVars = new HashMap<>();
-        for (String part : parts) {
-            current = current.child(part, pathVars);
-            if (current == null) {
-                return null;
-            }
-        }
-        if (current.route != null) {
-            return RouteContext.create(current.route, pathVars);
+
+        TrieNode matchNode = matchNode(current, parts, 0, pathVars);
+        if (matchNode != null && matchNode.route != null) {
+            return RouteContext.create(matchNode.route, pathVars);
         }
         return null;
     }
 
-    public void dump() {
-        methodRoots.forEach((k, v) -> {
-            System.out.println("<<<" + k + ">>>");
+    private TrieNode matchNode(TrieNode node, String[] parts, int index, Map<String, String> pathVars) {
+        if (index == parts.length) {
+            return node.route != null ? node : null;
+        }
+        String part = parts[index];
+        TrieNode child = node.children.get(part);
+
+        // 精确匹配
+        if (child != null) {
+            TrieNode result = matchNode(child, parts, index + 1, pathVars);
+            if (result != null) {
+                return result;
+            }
+        }
+
+        //再次匹配路径变量，按照优先匹配带正则表达式的路径
+        for (TrieNode trieNode : node.regexPathVarChildren) {
+            //eg: path /campaigns/123 应该优先匹配/campaigns/{id:[0-9]+}，其次/campaigns/{id}
+            PathVar pathVar = trieNode.pathVar;
+            if (pathVar != null && pathVar.match(part)) {
+                pathVars.put(pathVar.name, part);
+                TrieNode result = matchNode(trieNode, parts, index + 1, pathVars);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+        //再次匹配普通的路径变量
+        TrieNode pathVarNode = node.pathVarChildren.isEmpty() ? null : node.pathVarChildren.iterator().next();
+        if (pathVarNode != null) {
+            pathVars.put(pathVarNode.pathVar.name, part);
+            return matchNode(pathVarNode, parts, index + 1, pathVars);
+        }
+        return null;
+    }
+
+    public String dump() {
+        StringBuilder result = new StringBuilder();
+        methodRoots.forEach((method, v) -> {
             if (!v.children.isEmpty()) {
-                System.out.println(v.printString());
+                result.append("<<<--dump trie for method: ").append(method).append("-->>>").append("\n");
+                result.append(v);
+                result.append("<<<-- end dump -->>>");
+                result.append("\n");
             }
         });
+        return result.toString();
     }
 
     public void handleRequest(HttpRequest request, HttpResponse response) {
@@ -246,7 +284,6 @@ public class Router {
             }
             //再次匹配路径变量，按照优先匹配带正则表达式的路径
             for (TrieNode trieNode : regexPathVarChildren) {
-                //TrieNode trieNode = entry.getValue();
                 //eg: path /campaigns/123 应该优先匹配/campaigns/{id:[0-9]+}，其次/campaigns/{id}
                 PathVar pathVar = trieNode.pathVar;
                 if (pathVar != null && pathVar.match(part)) {
@@ -254,10 +291,11 @@ public class Router {
                     return trieNode;
                 }
             }
-            //再次匹配普通的路径变量
-            for (TrieNode trieNode : pathVarChildren) {
-                pathVars.put(trieNode.pathVar.name, part);
-                return trieNode;
+            //再次匹配普通的路径变量, 无正则表达式的环境变量最多只存在一个
+            TrieNode pathVarNode = pathVarChildren.isEmpty() ? null : pathVarChildren.iterator().next();
+            if (pathVarNode != null) {
+                pathVars.put(pathVarNode.pathVar.name, part);
+                return pathVarNode;
             }
             return null;
         }
@@ -278,25 +316,38 @@ public class Router {
             return children.containsKey(key);
         }
 
-        public String printString() {
+        @Override
+        public String toString() {
             return printNode(this, 0);
         }
 
         private String printNode(TrieNode node, int level) {
-            StringBuilder result = new StringBuilder();
-            if (node == null) {
-                return null;
-            }
             // 打印当前节点，使用缩进表示层级
-            result.append("    ".repeat(level) + (StringUtils.isBlank(node.value) ? "/" : node.value));
+            /**
+             * eg:
+             * ROOT
+             *     |--campaigns --> path: </campaigns> handler: <<DUMMY>>
+             *         |--123 --> path: </campaigns/123> handler: <<DUMMY>>
+             *             |--details --> path: </campaigns/123/details> handler: <<DUMMY>>
+             *         |--789
+             *             |--detail --> path: </campaigns/789/detail> handler: <<DUMMY>>
+             *         |--{var:[0-9]+} --> path: </campaigns/{id:[0-9]+}> handler: <<DUMMY>>
+             *         |--{var} --> path: </campaigns/{id}> handler: <<DUMMY>>
+             *     |--apidocs
+             *         |--swagger.json --> path: </apidocs/swagger.json> handler: <<DUMMY>>
+             *         |--swagger.yaml --> path: </apidocs/swagger.yaml> handler: <<DUMMY>>
+             */
+            StringBuilder result = new StringBuilder();
+            result.append(StringUtils.isBlank(node.value)
+                    ? "ROOT"
+                    : node.value + (node.route == null
+                            ? ""
+                            : (" --> path: <" + node.route.path + "> handler: " + node.route.handler)));
             result.append("\n");
-
             // 遍历并打印子节点
             for (Entry<String, TrieNode> entry : node.children.entrySet()) {
-                String nodeString = printNode(entry.getValue(), level + 1);
-                if (!StringUtils.isBlank(nodeString)) {
-                    result.append(nodeString).append("\n");
-                }
+                result.append("    ".repeat(level + 1)).append("|--");
+                result.append(printNode(entry.getValue(), level + 1));
             }
             return result.toString();
         }

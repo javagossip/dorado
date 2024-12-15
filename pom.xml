@@ -23,6 +23,8 @@
         <asm.version>9.7</asm.version>
         <fastjson.version>1.2.47</fastjson.version>
         <spring-boot.version>3.4.0</spring-boot.version>
+        <javax.annotation.version>1.3.2</javax.annotation.version>
+        <javax.xml.bind.version>2.3.1</javax.xml.bind.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <additionalparam>-Xdoclint:none</additionalparam>
@@ -116,16 +118,28 @@
             <properties>
                 <asm.version>9.7.1</asm.version>
             </properties>
+            <dependencyManagement>
+                <dependencies>
+                    <dependency>
+                        <groupId>javax.annotation</groupId>
+                        <artifactId>javax.annotation-api</artifactId>
+                        <version>${javax.annotation.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>javax.xml.bind</groupId>
+                        <artifactId>jaxb-api</artifactId>
+                        <version>${javax.xml.bind.version}</version>
+                    </dependency>
+                </dependencies>
+            </dependencyManagement>
             <dependencies>
                 <dependency>
                     <groupId>javax.annotation</groupId>
                     <artifactId>javax.annotation-api</artifactId>
-                    <version>1.3.2</version>
                 </dependency>
                 <dependency>
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
-                    <version>2.3.1</version>
                 </dependency>
             </dependencies>
         </profile>

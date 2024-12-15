@@ -24,7 +24,18 @@ import ai.houyi.dorado.rest.http.HttpResponse;
 import java.util.Map;
 
 public interface RouteHandler {
+    RouteHandler DUMMY = new RouteHandler() {
 
+        @Override
+        public String toString() {
+            return "<<DUMMY>>";
+        }
+
+        @Override
+        public void handle(HttpRequest request, HttpResponse response, Map<String, String> pathVars) {
+            //
+        }
+    };
     /**
      * @param request The http request
      * @param response the http response
