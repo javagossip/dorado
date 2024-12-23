@@ -18,7 +18,6 @@ package ai.houyi.dorado.rest;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 
-import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.Message;
 
 import ai.houyi.dorado.exception.DoradoException;
@@ -43,12 +42,12 @@ public interface MessageBodyConverter<T> {
 			} else if (t.getClass() == byte[].class) {
 				return (byte[]) t;
 			}
-			return com.alibaba.fastjson.JSON.toJSONBytes(t);
+			return com.alibaba.fastjson2.JSON.toJSONBytes(t);
 		}
 
 		@Override
 		public Object readMessageBody(InputStream in, Type type) {
-			return JSONObject.parseObject(IOUtils.toString(in, CharsetUtil.UTF_8.name()), type);
+            return com.alibaba.fastjson2.JSON.parseObject(IOUtils.toString(in, CharsetUtil.UTF_8.name()), type);
 		}
 	};
 
@@ -76,7 +75,7 @@ public interface MessageBodyConverter<T> {
 		public Message readMessageBody(InputStream in, Type type) {
 			try {
 				return (Message) ObjectSerializer.PROTOBUF.deserialize(in, type);
-			} catch (Throwable ex) {
+			} catch (Exception ex) {
 				throw new DoradoException(ex);
 			}
 		}

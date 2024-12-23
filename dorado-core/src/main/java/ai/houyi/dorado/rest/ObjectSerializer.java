@@ -15,11 +15,10 @@
  */
 package ai.houyi.dorado.rest;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import com.google.protobuf.Message;
 
 import ai.houyi.dorado.rest.util.IOUtils;
@@ -28,68 +27,62 @@ import ai.houyi.dorado.rest.util.TypeUtils;
 import io.netty.util.CharsetUtil;
 
 /**
- * 
  * @author wangwp
  */
 public interface ObjectSerializer {
-	byte[] serialize(Object t);
 
-	Object deserialize(InputStream in, Type type);
+    byte[] serialize(Object t);
 
-	ObjectSerializer JSON = new ObjectSerializer() {
-		@Override
-		public byte[] serialize(Object t) {
-			return com.alibaba.fastjson.JSON.toJSONString(t).getBytes(CharsetUtil.UTF_8);
-		}
+    Object deserialize(InputStream in, Type type);
 
-		@Override
-		public Object deserialize(InputStream in, Type type) {
-			String text = IOUtils.toString(in, CharsetUtil.UTF_8.name());
-			return JSONObject.parseObject(text, type);
-		}
-	};
+    ObjectSerializer JSON = new ObjectSerializer() {
+        @Override
+        public byte[] serialize(Object t) {
+            return com.alibaba.fastjson2.JSON.toJSONString(t).getBytes(CharsetUtil.UTF_8);
+        }
 
-	ObjectSerializer PROTOBUF = new ObjectSerializer() {
-		@Override
-		public byte[] serialize(Object t) {
-			Message message = (Message) t;
-			return message.toByteArray();
-		}
+        @Override
+        public Object deserialize(InputStream in, Type type) {
+            String text = IOUtils.toString(in, CharsetUtil.UTF_8.name());
+            return JSONObject.parseObject(text, type);
+        }
+    };
 
-		@SuppressWarnings("rawtypes")
-		@Override
-		public Object deserialize(InputStream in, Type type) {
-			return ProtobufMessageDescriptors.newMessageForType(in, (Class) type);
-		}
-	};
+    ObjectSerializer PROTOBUF = new ObjectSerializer() {
+        @Override
+        public byte[] serialize(Object t) {
+            Message message = (Message) t;
+            return message.toByteArray();
+        }
 
-	ObjectSerializer DEFAULT = new ObjectSerializer() {
-		@Override
-		public byte[] serialize(Object t) {
-			if(t instanceof byte[]) {
-				return (byte[])t;
-			}
-			if(t instanceof InputStream) {
-				return IOUtils.readBytes((InputStream) t);
-			}
-			if (TypeUtils.isProtobufMessage(t.getClass())) {
-				return ((Message) t).toByteArray();
-			}
-			return com.alibaba.fastjson.JSON.toJSONBytes(t);
-		}
+        @SuppressWarnings("rawtypes")
+        @Override
+        public Object deserialize(InputStream in, Type type) {
+            return ProtobufMessageDescriptors.newMessageForType(in, (Class) type);
+        }
+    };
 
-		@Override
-		public Object deserialize(InputStream in, Type type) {
-			try {
+    ObjectSerializer DEFAULT = new ObjectSerializer() {
+        @Override
+        public byte[] serialize(Object t) {
+            if (t instanceof byte[]) {
+                return (byte[]) t;
+            }
+            if (t instanceof InputStream) {
+                return IOUtils.readBytes((InputStream) t);
+            }
+            if (TypeUtils.isProtobufMessage(t.getClass())) {
+                return ((Message) t).toByteArray();
+            }
+            return com.alibaba.fastjson2.JSON.toJSONBytes(t);
+        }
 
-				if (TypeUtils.isProtobufMessage(type)) {
-					return ProtobufMessageDescriptors.newMessageForType(in, (Class<?>) type);
-				}
-				return JSONObject.parseObject(in, type);
-			} catch (IOException ex) {
-				// ignore exception
-			}
-			return null;
-		}
-	};
+        @Override
+        public Object deserialize(InputStream in, Type type) {
+            if (TypeUtils.isProtobufMessage(type)) {
+                return ProtobufMessageDescriptors.newMessageForType(in, (Class<?>) type);
+            }
+            return JSON.deserialize(in, type);
+        }
+    };
 }

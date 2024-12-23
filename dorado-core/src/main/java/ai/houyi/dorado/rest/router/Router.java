@@ -348,7 +348,7 @@ public class Router {
             result.append("\n");
             // 遍历并打印子节点
             for (Entry<String, TrieNode> entry : node.children.entrySet()) {
-                result.append("    ".repeat(level + 1)).append("|--");
+                result.append(StringUtils.repeat("    ", level + 1)).append("|--");
                 result.append(printNode(entry.getValue(), level + 1));
             }
             return result.toString();
@@ -358,6 +358,9 @@ public class Router {
     static class TrieNodeComparator implements Comparator<TrieNode> {
 
         public static final TrieNodeComparator INSTANCE = new TrieNodeComparator();
+
+        private TrieNodeComparator() {
+        }
 
         @Override
         public int compare(TrieNode o1, TrieNode o2) {

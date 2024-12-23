@@ -19,14 +19,16 @@
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
         <netty.version>4.1.115.Final</netty.version>
         <slf4j.version>1.7.25</slf4j.version>
-        <protobuf-java.version>2.6.1</protobuf-java.version>
-        <asm.version>9.7</asm.version>
+        <protobuf-java.version>4.28.2</protobuf-java.version>
+        <asm.version>9.7.1</asm.version>
         <fastjson.version>1.2.47</fastjson.version>
-        <spring-boot.version>3.4.0</spring-boot.version>
+        <fastjson2.version>2.0.53</fastjson2.version>
+        <swagger.version>1.6.14</swagger.version>
+        <spring-boot.version>2.7.18</spring-boot.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
         <javax.xml.bind.version>2.3.1</javax.xml.bind.version>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <additionalparam>-Xdoclint:none</additionalparam>
     </properties>
 
@@ -42,7 +44,6 @@
             <name>javagossip</name>
             <email>javagossip@gmail.com</email>
         </developer>
-
     </developers>
 
     <scm>
@@ -64,6 +65,58 @@
                 <artifactId>netty-transport</artifactId>
                 <version>${netty.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm</artifactId>
+                <version>${asm.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>${fastjson2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${protobuf-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-core</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-autoconfigure-processor</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-configuration-processor</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter</artifactId>
+                <version>${spring-boot.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <!--jdk9+以上从jdk中移除了javax相关依赖，需要独立添加-->
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>${javax.xml.bind.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
+                <version>${javax.annotation.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <build>
@@ -80,8 +133,8 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven-compiler-plugin.version}</version>
                     <configuration>
-                        <source>21</source>
-                        <target>21</target>
+                        <source>${maven.compiler.source}</source>
+                        <target>${maven.compiler.target}</target>
                     </configuration>
                 </plugin>
 
@@ -111,45 +164,33 @@
 
     <profiles>
         <profile>
-            <id>jdk21</id>
-            <activation>
-                <jdk>[21,)</jdk>
-            </activation>
-            <properties>
-                <asm.version>9.7.1</asm.version>
-            </properties>
-            <dependencyManagement>
-                <dependencies>
-                    <dependency>
-                        <groupId>javax.annotation</groupId>
-                        <artifactId>javax.annotation-api</artifactId>
-                        <version>${javax.annotation.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>javax.xml.bind</groupId>
-                        <artifactId>jaxb-api</artifactId>
-                        <version>${javax.xml.bind.version}</version>
-                    </dependency>
-                </dependencies>
-            </dependencyManagement>
-            <dependencies>
-                <dependency>
-                    <groupId>javax.annotation</groupId>
-                    <artifactId>javax.annotation-api</artifactId>
-                </dependency>
-                <dependency>
-                    <groupId>javax.xml.bind</groupId>
-                    <artifactId>jaxb-api</artifactId>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
             <id>jdk8</id>
             <activation>
                 <jdk>[1.8,1.9)</jdk>
             </activation>
+        </profile>
+        <profile>
+            <id>jdk9-17</id>
+            <activation>
+                <jdk>[9,17)</jdk>
+            </activation>
+        </profile>
+        <profile>
+            <id>jdk17+</id>
+            <activation>
+                <jdk>[17,21)</jdk>
+            </activation>
             <properties>
-                <asm.version>6.0</asm.version>
+                <spring-boot.version>3.4.0</spring-boot.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>jdk21+</id>
+            <activation>
+                <jdk>[21,)</jdk>
+            </activation>
+            <properties>
+                <spring-boot.version>3.4.0</spring-boot.version>
             </properties>
         </profile>
         <profile>

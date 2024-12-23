@@ -14,12 +14,6 @@
   		<groupId>io.github.javagossip</groupId>
   		<artifactId>dorado-swagger</artifactId>
   		<version>0.0.57-SNAPSHOT</version>
-  		<!-- <exclusions>
-  			<exclusion>
-  				<groupId>javax.validation</groupId>
-  				<artifactId>validation-api</artifactId>
-  			</exclusion>
-  		</exclusions> -->
   	</dependency>
   </dependencies>
 </project>
