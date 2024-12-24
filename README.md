@@ -28,13 +28,12 @@ Features
 -   Spring框架支持，默认支持注解方式初始化spring容器
 -   SpringBoot集成
 -   集成swagger restful API文档生成工具
--   过滤器支持，实现类似于spring mvc的interceptor功能
 -   支持全局异常处理
 -   支持统一响应格式处理
 
 ## Latest version
 
-**0.0.56**
+**0.0.57**
 
 Maven
 -----
@@ -43,7 +42,7 @@ Maven
 <dependency>
     <groupId>io.github.javagossip</groupId>
     <artifactId>dorado-core</artifactId>
-    <version>0.0.56</version>
+    <version>0.0.57</version>
 </dependency>
 ```
 
@@ -271,6 +270,7 @@ Please visit https://github.com/javagossip/dorado-examples
 -   Get Server configuration: **[http://{ip}:{port}/config]()**
 -   Get Server status: **[http://{ip}:{port}/status]()**
 -   List All services: **[http://{ip}:{port}/services]()**
+-   Dump trie router config: **[http://{ip}:{port}/router/dump]()**
 
 SpringBoot集成
 --------------
