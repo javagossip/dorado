@@ -55,13 +55,13 @@ public class SwaggerAutoConfiguration {
 
         ApiContext.Builder apiContextBuilder = ApiContext.builder().withInfo(info);
 
-        ai.houyi.dorado.swagger.springboot.SwaggerProperties.ApiKey apiKey = swaggerConfig.getApiKey();
-        if (apiKey != null) {
-            ApiKey _apiKey = ApiKey.builder()
+        ai.houyi.dorado.swagger.springboot.SwaggerProperties.ApiKey configApiKey = swaggerConfig.getApiKey();
+        if (configApiKey != null) {
+            ApiKey apiKey = ApiKey.builder()
                     .withIn(swaggerConfig.getApiKey().getIn())
                     .withName(swaggerConfig.getApiKey().getName())
                     .build();
-            apiContextBuilder.withApiKey(_apiKey);
+            apiContextBuilder.withApiKey(apiKey);
         }
         return apiContextBuilder.build();
     }

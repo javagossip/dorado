@@ -164,36 +164,6 @@
 
     <profiles>
         <profile>
-            <id>jdk8</id>
-            <activation>
-                <jdk>[1.8,1.9)</jdk>
-            </activation>
-        </profile>
-        <profile>
-            <id>jdk9-17</id>
-            <activation>
-                <jdk>[9,17)</jdk>
-            </activation>
-        </profile>
-        <profile>
-            <id>jdk17+</id>
-            <activation>
-                <jdk>[17,21)</jdk>
-            </activation>
-            <properties>
-                <spring-boot.version>3.4.0</spring-boot.version>
-            </properties>
-        </profile>
-        <profile>
-            <id>jdk21+</id>
-            <activation>
-                <jdk>[21,)</jdk>
-            </activation>
-            <properties>
-                <spring-boot.version>3.4.0</spring-boot.version>
-            </properties>
-        </profile>
-        <profile>
             <id>release</id>
             <build>
                 <plugins>
