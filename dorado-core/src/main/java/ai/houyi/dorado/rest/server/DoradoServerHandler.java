@@ -21,7 +21,6 @@ import ai.houyi.dorado.rest.http.HttpResponse;
 import ai.houyi.dorado.rest.http.impl.DoradoHttpRequest;
 import ai.houyi.dorado.rest.http.impl.DoradoHttpResponse;
 import ai.houyi.dorado.rest.http.impl.Webapp;
-import ai.houyi.dorado.rest.router.Route;
 import ai.houyi.dorado.rest.util.ExceptionUtils;
 import ai.houyi.dorado.rest.util.LogUtils;
 import ai.houyi.dorado.rest.util.TracingThreadPoolExecutor;
@@ -30,11 +29,15 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.timeout.IdleStateEvent;
 
-import static ai.houyi.dorado.rest.http.impl.ChannelHolder.set;
-import static ai.houyi.dorado.rest.http.impl.ChannelHolder.unset;
+import static ai.houyi.dorado.rest.http.impl.ChannelHolder.*;
 
 /**
  * @author wangwp
@@ -62,7 +65,14 @@ public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpReq
             handleHttpRequest(ctx, msg);
             return;
         }
-        asyncExecutor.execute(() -> handleHttpRequest(ctx, msg));
+        FullHttpRequest retainMsg = msg.retain();
+        asyncExecutor.execute(() -> {
+            try {
+                handleHttpRequest(ctx, retainMsg);
+            } finally {
+                retainMsg.release();
+            }
+        });
     }
 
     private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest request) {
@@ -76,19 +86,15 @@ public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpReq
         ChannelFuture channelFuture;
         try {
             set(ctx.channel());
-            HttpRequest _request = new DoradoHttpRequest(request);
-            HttpResponse _response = new DoradoHttpResponse(response);
+            HttpRequest doradoHttpRequest = new DoradoHttpRequest(request);
+            HttpResponse doradoHttpResponse = new DoradoHttpResponse(response);
 
-            Route route = webapp.getRouter().getRoute(_request);
-            if (route == null) {
-                response.setStatus(HttpResponseStatus.NOT_FOUND);
-                ByteBufUtil.writeUtf8(response.content(),
-                        String.format("Resource not found, url: [%s], http_method: [%s]",
-                                _request.getRequestURI(),
-                                _request.getMethod()));
-            } else {
-                route.getHandler().handle(route, _request, _response);
+            //这里增加一个特殊逻辑，用来处理swagger-ui的静态资源请求
+            if (doradoHttpRequest.getRequestURI().startsWith("/swagger-ui")) {
+                SwaggerUiResourceHanlder.handle(doradoHttpRequest, doradoHttpResponse);
+                return;
             }
+            webapp.getRouter().handleRequest(doradoHttpRequest, doradoHttpResponse);
         } catch (Throwable ex) {
             LogUtils.error("handle http request error", ex);
             response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
@@ -107,14 +113,14 @@ public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpReq
     }
 
     @Override
-    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-        if (evt instanceof IdleStateEvent) {
-            IdleStateEvent e = (IdleStateEvent) evt;
+    public void userEventTriggered(ChannelHandlerContext ctx, Object event) throws Exception {
+        if (event instanceof IdleStateEvent) {
+            IdleStateEvent e = (IdleStateEvent) event;
             if (e == IdleStateEvent.READER_IDLE_STATE_EVENT) {
                 ctx.channel().close();
             }
         }
-        super.userEventTriggered(ctx, evt);
+        super.userEventTriggered(ctx, event);
     }
 
     @Override

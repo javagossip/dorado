@@ -17,75 +17,77 @@ package ai.houyi.dorado.rest.http.impl;
 
 import java.util.List;
 
-import javax.annotation.Generated;
-
 import ai.houyi.dorado.rest.http.Filter;
 
 import java.util.Collections;
 
 /**
  * @author wangweiping
- *
  */
 public class FilterConfiguration {
-	private Filter filter;
-	private List<String> pathPatterns;
-	private List<String> excludePathPatterns;
-	
-	public Filter getFilter() {
-		return filter;
-	}
-	public List<String> getPathPatterns() {
-		return pathPatterns;
-	}
-	public List<String> getExcludePathPatterns() {
-		return excludePathPatterns;
-	}
-	@Generated("SparkTools")
-	private FilterConfiguration(Builder builder) {
-		this.filter = builder.filter;
-		this.pathPatterns = builder.pathPatterns;
-		this.excludePathPatterns = builder.excludePathPatterns;
-	}
-	/**
-	 * Creates builder to build {@link FilterConfiguration}.
-	 * @return created builder
-	 */
-	@Generated("SparkTools")
-	public static Builder builder() {
-		return new Builder();
-	}
-	/**
-	 * Builder to build {@link FilterConfiguration}.
-	 */
-	@Generated("SparkTools")
-	public static final class Builder {
-		private Filter filter;
-		private List<String> pathPatterns = Collections.emptyList();
-		private List<String> excludePathPatterns = Collections.emptyList();
 
-		private Builder() {
-		}
+    private Filter filter;
+    private List<String> pathPatterns;
+    private List<String> excludePathPatterns;
 
-		public Builder withFilter(Filter filter) {
-			this.filter = filter;
-			return this;
-		}
+    public Filter getFilter() {
+        return filter;
+    }
 
-		public Builder withPathPatterns(List<String> pathPatterns) {
-			this.pathPatterns = pathPatterns;
-			return this;
-		}
+    public List<String> getPathPatterns() {
+        return pathPatterns;
+    }
 
-		public Builder withExcludePathPatterns(List<String> excludePathPatterns) {
-			this.excludePathPatterns = excludePathPatterns;
-			return this;
-		}
+    public List<String> getExcludePathPatterns() {
+        return excludePathPatterns;
+    }
 
-		public FilterConfiguration build() {
-			return new FilterConfiguration(this);
-		}
-	}
-	
-	
+    private FilterConfiguration(Builder builder) {
+        this.filter = builder.filter;
+        this.pathPatterns = builder.pathPatterns;
+        this.excludePathPatterns = builder.excludePathPatterns;
+    }
+
+    /**
+     * Creates builder to build {@link FilterConfiguration}.
+     *
+     * @return created builder
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
+     * Builder to build {@link FilterConfiguration}.
+     */
+    public static final class Builder {
+
+        private Filter filter;
+        private List<String> pathPatterns = Collections.emptyList();
+        private List<String> excludePathPatterns = Collections.emptyList();
+
+        private Builder() {
+        }
+
+        public Builder withFilter(Filter filter) {
+            this.filter = filter;
+            return this;
+        }
+
+        public Builder withPathPatterns(List<String> pathPatterns) {
+            this.pathPatterns = pathPatterns;
+            return this;
+        }
+
+        public Builder withExcludePathPatterns(List<String> excludePathPatterns) {
+            this.excludePathPatterns = excludePathPatterns;
+            return this;
+        }
+
+        public FilterConfiguration build() {
+            return new FilterConfiguration(this);
+        }
+    }
+
+
 }

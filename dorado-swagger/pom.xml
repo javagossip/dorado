@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>io.github.javagossip</groupId>
 		<artifactId>dorado</artifactId>
-		<version>0.0.57-SNAPSHOT</version>
+		<version>0.0.58-SNAPSHOT</version>
 	</parent>
 	<artifactId>dorado-swagger</artifactId>
 	<name>dorado-swagger</name>
@@ -12,23 +12,15 @@
 		<dependency>
 			<groupId>io.github.javagossip</groupId>
 			<artifactId>dorado-core</artifactId>
-			<version>0.0.57-SNAPSHOT</version>
+			<version>0.0.58-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-core</artifactId>
-			<version>1.5.21</version>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.validation</groupId>
-					<artifactId>validation-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>javax.validation</groupId>
-			<artifactId>validation-api</artifactId>
-			<version>2.0.1.Final</version>
-		</dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+        </dependency>
 	</dependencies>
 </project>

@@ -33,6 +33,20 @@ public final class StringUtils {
     public static final Pattern REGEXP_PATTEN =
             Pattern.compile("[" + REGEX_SPECIAL_CHARS.replaceAll("(.)", "\\\\$1") + "]");
 
+    private StringUtils() {
+    }
+
+    public static String repeat(String str, int count) {
+        if (count <= 0) {
+            return str;
+        }
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < count; i++) {
+            result.append(str);
+        }
+        return result.toString();
+    }
+
     public static String defaultString(String str, String defaultStr) {
         if (isBlank(str)) {
             return defaultStr;

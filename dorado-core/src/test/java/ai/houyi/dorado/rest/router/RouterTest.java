@@ -18,111 +18,117 @@
 
 package ai.houyi.dorado.rest.router;
 
-import java.util.List;
+import ai.houyi.dorado.exception.DoradoException;
 
-import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
-import ai.houyi.dorado.rest.annotation.Controller;
-import ai.houyi.dorado.rest.annotation.HttpMethod;
-import ai.houyi.dorado.rest.annotation.Path;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.*;
 
 public class RouterTest {
 
-    @After
-    public void resetRouter() {
-        Router.getInstance().reset();
+    private Router router;
+
+    @Before
+    public void setUp() throws Exception {
+        router = Router.newInstance();
+    }
+
+    @Test
+    public void matchRoute_NotFound() {
+        router.addRoute("/campaigns/{id}", "GET", null);
+        Router.RouteContext routeContext = router.matchRoute("/campaigns", "GET");
+        assertNull(routeContext);
+
+        routeContext = router.matchRoute("/campaigns/abc", "POST");
+        assertNull(routeContext);
     }
 
     @Test
     public void addRoute() {
-        Router router = Router.getInstance();
-        String path = "/api/v1/users/{id:\\d+}";
-        String path1 = "/api/v1/users";
-        String path2 = "/api/v1/users/{id:\\d+}/details";
+        router.addRoute("/campaigns/{id}", "GET", RouteHandler.DUMMY);
+        router.addRoute("/campaigns/{id:[0-9]+}", "GET", RouteHandler.DUMMY);
+        router.addRoute("/campaigns/123", "GET", RouteHandler.DUMMY);
+        router.addRoute("/campaigns/123/details", "GET", RouteHandler.DUMMY);
+        router.addRoute("/apidocs/swagger.json", "GET", RouteHandler.DUMMY);
+        router.addRoute("/apidocs/swagger.yaml", "GET", RouteHandler.DUMMY);
+        router.addRoute("/campaigns/789/detail", "GET", RouteHandler.DUMMY);
+        router.addRoute("/campaigns", "GET", RouteHandler.DUMMY);
+        router.addRoute("/creatives", "POST", RouteHandler.DUMMY);
+        router.addRoute("/creatives/{id}/details", null, RouteHandler.DUMMY);
 
-        router.addRoute(new Route(path, HttpMethod.GET));
-        router.addRoute(new Route(path1, HttpMethod.POST));
-        router.addRoute(new Route(path2, HttpMethod.GET));
-        router.addRoute(new Route("/api/v1/campaigns/{id}", null));
+        Router.RouteContext routeContext = router.matchRoute("/campaigns/123", "GET");
+        assertTrue(routeContext.pathVars.isEmpty());
+        //匹配/campaigns/{id}
+        routeContext = router.matchRoute("/campaigns/abc", "GET");
+        assertTrue(routeContext != null);
+        assertEquals("/campaigns/{id}", routeContext.route.path);
+        assertTrue(routeContext.pathVars.containsKey("id"));
 
-        Route route = router.getRoute("/api/v1/users/123", HttpMethod.GET);
-        assertNotNull(route);
-        assertEquals("/api/v1/users/{id:\\d+}", route.getPath());
+        //匹配/campaigns/{id:[0-9]+}
+        routeContext = router.matchRoute("/campaigns/789", "GET");
+        assertTrue(routeContext != null);
+        assertEquals("/campaigns/{id:[0-9]+}", routeContext.route.path);
+        assertTrue(routeContext.pathVars.containsKey("id"));
+        assertEquals("789", routeContext.pathVars.get("id"));
 
-        Route route1 = router.getRoute("/api/v1/users", HttpMethod.POST);
-        assertNotNull(route1);
-        assertEquals("/api/v1/users", route1.getPath());
+        //匹配不到的验证
+        routeContext = router.matchRoute("/campaigns/abc/123", "GET");
+        assertNull(routeContext);
 
-        Route route2 = router.getRoute("/api/v1/campaigns/1", HttpMethod.GET);
-        assertNotNull(route2);
-        assertEquals("/api/v1/campaigns/{id}", route2.getPath());
-        assertEquals("*", route2.getMethod());
-
-        route2 = router.getRoute("/api/v1/campaigns/2", "*");
-        assertNotNull(route2);
-
-        assertNotNull(route);
-        assertNotNull(route1);
-
-        route2 = router.getRoute("/api/v1/users/7/details", HttpMethod.GET);
-        assertNotNull(route2);
-
-        route2 = router.getRoute("/api/v1/users/7/detail", HttpMethod.GET);
-        assertNull(route2);
+        System.out.println(router.dump());
     }
 
     @Test
-    public void getRouteWithPathVariableWithRegExp() {
-        Router router = Router.getInstance();
-        router.addRoute(new Route("/api/v1/campaigns/{id:\\d+}", null));
-
-        Route route = router.getRoute("/api/v1/campaigns/123", HttpMethod.GET);
-        assertNotNull(route);
-        assertEquals("/api/v1/campaigns/{id:\\d+}", route.getPath());
-        route = router.getRoute("/api/v1/campaigns/solo", HttpMethod.GET);
-        assertNull(route);
+    public void addRoute_with_null_method() {
+        router.addRoute("/campaigns/{id}", null, RouteHandler.DUMMY);
+        assertTrue(router.matchRoute("/campaigns/123", "GET") != null);
+        assertTrue(router.matchRoute("/campaigns/solo", "POST") != null);
+        System.out.println(router.dump());
     }
 
     @Test
-    public void getRouteWithPathIsRegExp() {
-        Router router = Router.getInstance();
-        router.addRoute(new Route("/api-docs/swagger\\..*", HttpMethod.GET));
-
-        Route route = router.getRoute("/api-docs/swagger.json", HttpMethod.GET);
-        assertNotNull(route);
-        assertEquals("/api-docs/swagger\\..*", route.getPath());
-    }
-
-    @Test
-    public void registerRoutesByType() {
-        Router router = Router.getInstance();
-        router.registerRoutesByType(DemoController.class);
-
-        List<Route> routes = router.getRoutes();
-        assertEquals(2, routes.size());
-
-        Route route = router.getRoute("/demo", HttpMethod.GET);
-        assertNotNull(route);
-        assertEquals("/demo", route.getPath());
-        route = router.getRoute("/demo/api", HttpMethod.POST);
-        assertNotNull(route);
-        assertEquals("/demo/api", route.getPath());
-    }
-
-    @Controller
-    public static class DemoController {
-
-        @Path("/demo")
-        public String demo() {
-            return "demo";
+    public void addRoute_conflict() {
+        router.addRoute("/campaigns/{id}", "GET", null);
+        try {
+            router.addRoute("/campaigns/{name}", "GET", null);
+            fail();
+        } catch (DoradoException ex) {
+            assertTrue(ex.getMessage().contains("Route conflict"));
+            assertTrue(ex.getMessage().contains("/campaigns/{name}"));
         }
 
-        @Path("/demo/api")
-        public String apiDemo() {
-            return "apiDemo";
+        router.addRoute("/campaigns/{id:[A-Za-z0-9]+}", "GET", null);
+        try {
+            router.addRoute("/campaigns/{name:[A-Za-z0-9]+}", "GET", null);
+            fail();
+        } catch (DoradoException ex) {
+            assertTrue(ex.getMessage().contains("Route conflict"));
+            assertTrue(ex.getMessage().contains("/campaigns/{name:[A-Za-z0-9]+}"));
         }
+    }
+
+    @Test
+    public void addRoute_with_unsupported_method() {
+        try {
+            router.addRoute("/campaigns/{id}", "OPTIONS", null);
+            fail();
+        } catch (DoradoException ex) {
+            assertTrue(ex.getMessage().contains("Unsupported http method"));
+        }
+    }
+
+    @Test
+    public void pathVar_regex() {
+        Router.PathVar pathVar = Router.PathVar.create("{id:[0-9]+}");
+        assertTrue(pathVar.regex.equals("[0-9]+"));
+        assertTrue(pathVar.match("123"));
+        assertEquals("id", pathVar.name);
+
+        pathVar = Router.PathVar.create("{id}");
+        assertNull(pathVar.regex);
+        assertEquals("id", pathVar.name);
     }
 }

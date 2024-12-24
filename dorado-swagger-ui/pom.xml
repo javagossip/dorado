@@ -1,25 +1,24 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>io.github.javagossip</groupId>
-    <artifactId>dorado</artifactId>
-    <version>0.0.57-SNAPSHOT</version>
-  </parent>
-  <artifactId>dorado-swagger-ui</artifactId>
-  <name>dorado-swagger-ui</name>
-  <description>swagger-ui model for dorado</description>
-  
-  <dependencies>
-  	<dependency>
-  		<groupId>io.github.javagossip</groupId>
-  		<artifactId>dorado-swagger</artifactId>
-  		<version>0.0.57-SNAPSHOT</version>
-  		<!-- <exclusions>
-  			<exclusion>
-  				<groupId>javax.validation</groupId>
-  				<artifactId>validation-api</artifactId>
-  			</exclusion>
-  		</exclusions> -->
-  	</dependency>
-  </dependencies>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.javagossip</groupId>
+        <artifactId>dorado</artifactId>
+        <version>0.0.58-SNAPSHOT</version>
+    </parent>
+    <artifactId>dorado-swagger-ui</artifactId>
+    <name>dorado-swagger-ui</name>
+    <description>swagger-ui model for dorado</description>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven-javadoc-plugin.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

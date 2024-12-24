@@ -18,91 +18,91 @@ package ai.houyi.dorado.rest.controller;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.alibaba.fastjson.annotation.JSONField;
-
 import ai.houyi.dorado.rest.util.TracingThreadPoolExecutor;
 
+import com.alibaba.fastjson2.annotation.JSONField;
+
 /**
- * 
  * @author wangwp
  */
 public class DoradoStatus {
-	private static DoradoStatus INSTANCE = new DoradoStatus();
 
-	private AtomicInteger connections = new AtomicInteger(0);
-	private AtomicInteger pendingRequests = new AtomicInteger(0);
-	private AtomicLong totalRequests = new AtomicLong(0);
-	private AtomicLong handledRequests = new AtomicLong(0);
-	private int workerPoolSize;
-	private int activePoolSize;
+    private static final DoradoStatus INSTANCE = new DoradoStatus();
 
-	@JSONField(serialize = false)
-	private TracingThreadPoolExecutor workerPool;
+    private AtomicInteger connections = new AtomicInteger(0);
+    private AtomicInteger pendingRequests = new AtomicInteger(0);
+    private AtomicLong totalRequests = new AtomicLong(0);
+    private AtomicLong handledRequests = new AtomicLong(0);
+    private int workerPoolSize;
+    private int activePoolSize;
 
-	private DoradoStatus() {
-	}
+    @JSONField(serialize = false)
+    private TracingThreadPoolExecutor workerPool;
 
-	public static DoradoStatus get() {
-		return INSTANCE;
-	}
+    private DoradoStatus() {
+    }
 
-	public DoradoStatus totalRequestsIncrement() {
-		totalRequests.incrementAndGet();
-		return this;
-	}
+    public static DoradoStatus get() {
+        return INSTANCE;
+    }
 
-	public DoradoStatus handledRequestsIncrement() {
-		handledRequests.incrementAndGet();
-		return this;
-	}
+    public DoradoStatus totalRequestsIncrement() {
+        totalRequests.incrementAndGet();
+        return this;
+    }
 
-	public DoradoStatus connectionIncrement() {
-		connections.incrementAndGet();
-		return this;
-	}
+    public DoradoStatus handledRequestsIncrement() {
+        handledRequests.incrementAndGet();
+        return this;
+    }
 
-	public DoradoStatus connectionDecrement() {
-		connections.decrementAndGet();
-		return this;
-	}
+    public DoradoStatus connectionIncrement() {
+        connections.incrementAndGet();
+        return this;
+    }
 
-	public DoradoStatus pendingRequestsIncrement() {
-		pendingRequests.incrementAndGet();
-		return this;
-	}
+    public DoradoStatus connectionDecrement() {
+        connections.decrementAndGet();
+        return this;
+    }
 
-	public DoradoStatus pendingRequestsDecrement() {
-		pendingRequests.decrementAndGet();
-		return this;
-	}
+    public DoradoStatus incrPendingRequests() {
+        pendingRequests.incrementAndGet();
+        return this;
+    }
 
-	public int getConnections() {
-		return connections.get();
-	}
+    public DoradoStatus decrPendingRequests() {
+        pendingRequests.decrementAndGet();
+        return this;
+    }
 
-	public int getPendingRequests() {
-		return pendingRequests.get();
-	}
+    public int getConnections() {
+        return connections.get();
+    }
 
-	public long getTotalRequests() {
-		return totalRequests.get();
-	}
+    public int getPendingRequests() {
+        return pendingRequests.get();
+    }
 
-	public long getHandledRequests() {
-		return handledRequests.get();
-	}
+    public long getTotalRequests() {
+        return totalRequests.get();
+    }
 
-	public int getWorkerPoolSize() {
-		this.workerPoolSize = workerPool.getPoolSize();
-		return workerPoolSize;
-	}
+    public long getHandledRequests() {
+        return handledRequests.get();
+    }
 
-	public int getActivePoolSize() {
-		this.activePoolSize = workerPool.getActiveCount();
-		return activePoolSize;
-	}
+    public int getWorkerPoolSize() {
+        this.workerPoolSize = workerPool.getPoolSize();
+        return workerPoolSize;
+    }
 
-	public void workerPool(TracingThreadPoolExecutor workerPool) {
-		this.workerPool = workerPool;
-	}
+    public int getActivePoolSize() {
+        this.activePoolSize = workerPool.getActiveCount();
+        return activePoolSize;
+    }
+
+    public void workerPool(TracingThreadPoolExecutor workerPool) {
+        this.workerPool = workerPool;
+    }
 }

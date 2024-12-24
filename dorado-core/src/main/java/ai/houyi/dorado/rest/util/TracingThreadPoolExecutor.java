@@ -44,12 +44,12 @@ public class TracingThreadPoolExecutor extends ThreadPoolExecutor {
 
 	@Override
 	protected void beforeExecute(Thread t, Runnable r) {
-		serverStatus.pendingRequestsIncrement();
+		serverStatus.incrPendingRequests();
 	}
 
 	@Override
 	protected void afterExecute(Runnable r, Throwable t) {
-		serverStatus.pendingRequestsDecrement();
+		serverStatus.decrPendingRequests();
 	}
 
 	public int getPendingTasks() {

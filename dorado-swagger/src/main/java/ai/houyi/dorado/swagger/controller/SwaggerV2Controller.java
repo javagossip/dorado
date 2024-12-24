@@ -15,6 +15,8 @@
  */
 package ai.houyi.dorado.swagger.controller;
 
+import ai.houyi.dorado.rest.util.LogUtils;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,7 +62,7 @@ public class SwaggerV2Controller {
 		try {
 			return mapper.writeValueAsString(SwaggerFactory.getSwagger());
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+            LogUtils.error("",e);
 		}
 		return null;
 	}
