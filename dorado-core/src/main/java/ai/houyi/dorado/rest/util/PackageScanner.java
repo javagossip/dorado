@@ -98,7 +98,7 @@ public class PackageScanner {
                 String className = e.getName();
                 if (!e.isDirectory() && className.startsWith(parent) && className.endsWith(Constant.CLASS_SUFFIX) &&
                         !className.contains("$")) {
-                    className = className.replace('/', '.').replace("BOOT-INF.classes", "").replace("BOOT-INF.lib", "");
+                    className = className.replace('/', '.').replace("BOOT-INF.classes.", "").replace("BOOT-INF.lib", "");
                     classes.add(loadClass(loader, className));
                 }
                 jarReader.closeEntry();
