@@ -22,7 +22,7 @@ import io.swagger.annotations.Api;
 @Api(tags = "推广活动管理")
 public class ExampleController {
 
-    @Path("/{id}")
+    @Path("/{id:[0-9]+}")
     @GET
     public Campaign newCampaign(@PathVariable int id) {
         Campaign campaign = new Campaign();

@@ -140,8 +140,8 @@ public class Router {
         }
 
         //再次匹配路径变量，按照优先匹配带正则表达式的路径
+        //eg: path /campaigns/123 应该优先匹配/campaigns/{id:[0-9]+}，其次/campaigns/{id}
         for (TrieNode trieNode : node.regexPathVarChildren) {
-            //eg: path /campaigns/123 应该优先匹配/campaigns/{id:[0-9]+}，其次/campaigns/{id}
             PathVar pathVar = trieNode.pathVar;
             if (pathVar != null && pathVar.match(part)) {
                 pathVars.put(pathVar.name, part);
@@ -185,7 +185,7 @@ public class Router {
         }
     }
 
-    static class RouteContext {
+    public static class RouteContext {
 
         Route route;
         Map<String, String> pathVars;
@@ -262,9 +262,9 @@ public class Router {
         //子节点需要排序，如何排序呢，给TrieNode来个优先级字段？？？
         Map<String, TrieNode> children = new HashMap<>();
         //普通的pathVar子节点
-        Set<TrieNode> pathVarChildren = new TreeSet<>(TrieNodeComparator.INSTANCE);
+        Set<TrieNode> pathVarChildren = new TreeSet<>(TrieNodeComparator.getInstance());
         //带具体正则表达式的pathVar子节点
-        Set<TrieNode> regexPathVarChildren = new TreeSet<>(TrieNodeComparator.INSTANCE);
+        Set<TrieNode> regexPathVarChildren = new TreeSet<>(TrieNodeComparator.getInstance());
 
         public TrieNode() {
             this.value = "";
@@ -274,32 +274,6 @@ public class Router {
             TrieNode trieNode = new TrieNode();
             trieNode.pathVar = pathVar;
             return trieNode;
-        }
-
-        public TrieNode child(String part, boolean isEnd, Map<String, String> pathVars) {
-            //首先精确匹配，如果匹配到直接返回
-            if (hasChild(part)) {
-                TrieNode node = children.get(part);
-                if (isEnd && node.route != null) {
-                    return node;
-                }
-            }
-            //再次匹配路径变量，按照优先匹配带正则表达式的路径
-            for (TrieNode trieNode : regexPathVarChildren) {
-                //eg: path /campaigns/123 应该优先匹配/campaigns/{id:[0-9]+}，其次/campaigns/{id}
-                PathVar pathVar = trieNode.pathVar;
-                if (pathVar != null && pathVar.match(part)) {
-                    pathVars.put(pathVar.name, part);
-                    return trieNode;
-                }
-            }
-            //再次匹配普通的路径变量, 无正则表达式的环境变量最多只存在一个
-            TrieNode pathVarNode = pathVarChildren.isEmpty() ? null : pathVarChildren.iterator().next();
-            if (pathVarNode != null) {
-                pathVars.put(pathVarNode.pathVar.name, part);
-                return pathVarNode;
-            }
-            return null;
         }
 
         public void addChild(String key, TrieNode child) {
@@ -357,9 +331,13 @@ public class Router {
 
     static class TrieNodeComparator implements Comparator<TrieNode> {
 
-        public static final TrieNodeComparator INSTANCE = new TrieNodeComparator();
+        private static final TrieNodeComparator INSTANCE = new TrieNodeComparator();
 
         private TrieNodeComparator() {
+        }
+
+        public static TrieNodeComparator getInstance() {
+            return INSTANCE;
         }
 
         @Override
