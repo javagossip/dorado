@@ -27,6 +27,9 @@ import java.util.ServiceLoader;
 public class SwaggerExtensions {
 	private static List<SwaggerExtension> extensions = null;
 
+    private SwaggerExtensions() {
+    }
+
 	public static List<SwaggerExtension> getExtensions() {
 		return extensions;
 	}
@@ -40,7 +43,7 @@ public class SwaggerExtensions {
 	}
 
 	static {
-		extensions = new ArrayList<SwaggerExtension>();
+		extensions = new ArrayList<>();
 		ServiceLoader<SwaggerExtension> loader = ServiceLoader.load(SwaggerExtension.class);
 		for (SwaggerExtension ext : loader) {
 			extensions.add(ext);

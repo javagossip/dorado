@@ -52,11 +52,12 @@ public class RootController {
     public List<RestService> services() {
         List<RestService> serviceList = new ArrayList<>();
 
+        String contextPath = Dorado.serverConfig.getContextPath();
         List<Route> routes = Webapp.get().getRouter().getRoutes();
         for (Route route : routes) {
             String path = route.getPath();
             String method = StringUtils.defaultString(route.getMethod(), "*");
-            serviceList.add(RestService.builder().withPath(path).withMethod(method).build());
+            serviceList.add(RestService.builder().withPath(contextPath + path).withMethod(method).build());
         }
         return serviceList;
     }

@@ -54,6 +54,10 @@ public final class StringUtils {
         return str;
     }
 
+    public static boolean isNotBlank(String str) {
+        return !isBlank(str);
+    }
+    
     public static boolean isBlank(String str) {
         if (str == null || str.trim().isEmpty()) {
             return true;

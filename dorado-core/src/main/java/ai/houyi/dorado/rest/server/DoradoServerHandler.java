@@ -15,6 +15,7 @@
  */
 package ai.houyi.dorado.rest.server;
 
+import ai.houyi.dorado.Dorado;
 import ai.houyi.dorado.rest.controller.DoradoStatus;
 import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.http.HttpResponse;
@@ -23,6 +24,7 @@ import ai.houyi.dorado.rest.http.impl.DoradoHttpResponse;
 import ai.houyi.dorado.rest.http.impl.Webapp;
 import ai.houyi.dorado.rest.util.ExceptionUtils;
 import ai.houyi.dorado.rest.util.LogUtils;
+import ai.houyi.dorado.rest.util.StringUtils;
 import ai.houyi.dorado.rest.util.TracingThreadPoolExecutor;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelFuture;
@@ -86,6 +88,12 @@ public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpReq
         ChannelFuture channelFuture;
         try {
             set(ctx.channel());
+            //如果contextPath不为空并且request的uri不包含contextPath，则直接返回404
+            if (StringUtils.isNotBlank(Dorado.serverConfig.getContextPath()) &&
+                    !request.uri().startsWith(Dorado.serverConfig.getContextPath())) {
+                response.setStatus(HttpResponseStatus.NOT_FOUND);
+                return;
+            }
             HttpRequest doradoHttpRequest = new DoradoHttpRequest(request);
             HttpResponse doradoHttpResponse = new DoradoHttpResponse(response);
 

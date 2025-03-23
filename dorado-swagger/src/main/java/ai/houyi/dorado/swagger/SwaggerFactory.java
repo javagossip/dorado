@@ -108,7 +108,7 @@ public class SwaggerFactory {
 		}
 
 		Swagger _swagger = reader.read(classes);
-		_swagger.setSchemes(Arrays.asList(Scheme.HTTP, Scheme.HTTPS));
+		_swagger.setSchemes(Arrays.asList(Scheme.HTTP));
 
 		ApiKey apiKey = apiContext.getApiKey();
 		if (apiKey != null) {
