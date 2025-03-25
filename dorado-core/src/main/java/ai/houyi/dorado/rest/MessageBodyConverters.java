@@ -23,35 +23,39 @@ import ai.houyi.dorado.rest.annotation.Produce;
 import ai.houyi.dorado.rest.util.StringUtils;
 
 /**
- * 
  * @author wangwp
  */
 public class MessageBodyConverters {
-	@SuppressWarnings("rawtypes")
-	private static Map<MediaType, MessageBodyConverter> messageBodyConverterHolder = new ConcurrentHashMap<>();
 
-	static {
-		messageBodyConverterHolder.put(MediaType.TEXT_HTML_TYPE, MessageBodyConverter.TEXT_WILDCARD);
-		messageBodyConverterHolder.put(MediaType.TEXT_JAVASCRIPT, MessageBodyConverter.TEXT_WILDCARD);
-		messageBodyConverterHolder.put(MediaType.TEXT_CSS, MessageBodyConverter.TEXT_WILDCARD);
-		messageBodyConverterHolder.put(MediaType.TEXT_PLAIN_TYPE, MessageBodyConverter.TEXT_WILDCARD);
-		messageBodyConverterHolder.put(MediaType.APPLICATION_JSON_TYPE, MessageBodyConverter.JSON);
-		messageBodyConverterHolder.put(MediaType.APPLICATION_PROTOBUF_TYPE, MessageBodyConverter.PROTOBUF);
-		messageBodyConverterHolder.put(MediaType.APPLICATION_OCTET_STREAM_TYPE, MessageBodyConverter.DEFAULT);
-		messageBodyConverterHolder.put(MediaType.WILDCARD_TYPE, MessageBodyConverter.DEFAULT);
+    @SuppressWarnings("rawtypes")
+    private static Map<MediaType, MessageBodyConverter> messageBodyConverterHolder = new ConcurrentHashMap<>();
 
-		@SuppressWarnings("rawtypes")
-		ServiceLoader<MessageBodyConverter> extMessageBodyConverters = ServiceLoader.load(MessageBodyConverter.class);
-		extMessageBodyConverters.forEach(converter -> {
-			Produce produce = converter.getClass().getAnnotation(Produce.class);
-			if (produce != null && !StringUtils.isBlank(produce.value()))
-				messageBodyConverterHolder.put(MediaType.valueOf(produce.value()), converter);
-		});
-	}
+    static {
+        messageBodyConverterHolder.put(MediaType.TEXT_HTML_TYPE, MessageBodyConverter.TEXT_WILDCARD);
+        messageBodyConverterHolder.put(MediaType.TEXT_JAVASCRIPT, MessageBodyConverter.TEXT_WILDCARD);
+        messageBodyConverterHolder.put(MediaType.TEXT_CSS, MessageBodyConverter.TEXT_WILDCARD);
+        messageBodyConverterHolder.put(MediaType.TEXT_PLAIN_TYPE, MessageBodyConverter.TEXT_WILDCARD);
+        messageBodyConverterHolder.put(MediaType.APPLICATION_JSON_TYPE, MessageBodyConverter.JSON_CONVERTER);
+        messageBodyConverterHolder.put(MediaType.APPLICATION_PROTOBUF_TYPE, MessageBodyConverter.PROTOBUF);
+        messageBodyConverterHolder.put(MediaType.APPLICATION_OCTET_STREAM_TYPE, MessageBodyConverter.DEFAULT);
+        messageBodyConverterHolder.put(MediaType.WILDCARD_TYPE, MessageBodyConverter.DEFAULT);
 
-	@SuppressWarnings("rawtypes")
-	public static MessageBodyConverter getMessageBodyConverter(MediaType mediaType) {
-		MessageBodyConverter messageBodyConverter = messageBodyConverterHolder.get(mediaType);
-		return messageBodyConverter == null ? MessageBodyConverter.DEFAULT : messageBodyConverter;
-	}
+        @SuppressWarnings("rawtypes") ServiceLoader<MessageBodyConverter> extMessageBodyConverters =
+                ServiceLoader.load(MessageBodyConverter.class);
+        extMessageBodyConverters.forEach(converter -> {
+            Produce produce = converter.getClass().getAnnotation(Produce.class);
+            if (produce != null && !StringUtils.isBlank(produce.value())) {
+                messageBodyConverterHolder.put(MediaType.valueOf(produce.value()), converter);
+            }
+        });
+    }
+
+    private MessageBodyConverters() {
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static MessageBodyConverter getMessageBodyConverter(MediaType mediaType) {
+        MessageBodyConverter messageBodyConverter = messageBodyConverterHolder.get(mediaType);
+        return messageBodyConverter == null ? MessageBodyConverter.DEFAULT : messageBodyConverter;
+    }
 }

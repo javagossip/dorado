@@ -15,8 +15,6 @@
  */
 package ai.houyi.dorado.rest.util;
 
-import static ai.houyi.dorado.rest.util.ProtobufMessageDescriptors.registerMessageDescriptorForType;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -32,6 +30,8 @@ import ai.houyi.dorado.rest.annotation.Produce;
 import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.http.HttpResponse;
 import ai.houyi.dorado.rest.http.MultipartFile;
+
+import static ai.houyi.dorado.rest.util.ProtobufMessageDescriptors.*;
 
 /**
  * @author wangwp
@@ -62,7 +62,9 @@ public class MethodDescriptor {
             method.setAccessible(true);
         }
 
+        //擦除实际参数类型的参数类型
         Class<?>[] parameterTypes = method.getParameterTypes();
+        //携带泛型类型的参数类型
         Type[] genericParameterTypes = method.getGenericParameterTypes();
 
         String[] parameterNames = parameterNameResolver.getParameterNames(method);
@@ -231,8 +233,9 @@ public class MethodDescriptor {
 
         @Override
         public String toString() {
-            return "MethodParameter [name=" + name + ", type=" + type + ", annotation=" + annotation +
-                    ", annotationType=" + annotationType + "]";
+            return "MethodParameter{" + "name='" + name + '\'' + ", type=" + type + ", annotation=" + annotation +
+                    ", annotationType=" + annotationType + ", methodParameterCount=" + methodParameterCount +
+                    ", parameterizedType=" + parameterizedType + '}';
         }
     }
 }

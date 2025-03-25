@@ -30,6 +30,8 @@ public interface HttpRequest {
 
 	Map<String, List<String>> getParameters();
 
+    Map getParameterMap();
+
 	String getRemoteAddr();
 
 	Cookie[] getCookies();

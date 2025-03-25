@@ -15,13 +15,13 @@
  */
 package ai.houyi.dorado.rest.http.impl;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,6 +31,7 @@ import ai.houyi.dorado.rest.http.MultipartFile;
 import ai.houyi.dorado.rest.util.LogUtils;
 import ai.houyi.dorado.rest.util.NetUtils;
 import ai.houyi.dorado.rest.util.StringUtils;
+import io.netty.buffer.ByteBufInputStream;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -51,11 +52,13 @@ public class DoradoHttpRequest implements HttpRequest {
 
     private final FullHttpRequest request;
 
-    private final DoradoInputStream in;
-
     private final URIParser uriParser;
 
     private final Map<String, List<String>> parameters;
+
+    private InputStream in;
+    //original parameterMap
+    private Map parameterMap;
 
     private final HttpHeaders headers;
     private final List<MultipartFile> multipartFiles;
@@ -72,9 +75,9 @@ public class DoradoHttpRequest implements HttpRequest {
         QueryStringDecoder queryStringDecoder = new QueryStringDecoder(request.uri());
         uriParser.parse(queryStringDecoder.path());
         parameters.putAll(queryStringDecoder.parameters());
-        in = new DoradoInputStream(request);
 
         if (request.method() == HttpMethod.POST) {
+            in = new ByteBufInputStream(request.content().duplicate());
             parseHttpPostRequest(request);
         }
     }
@@ -94,7 +97,7 @@ public class DoradoHttpRequest implements HttpRequest {
                 }
             }
         } catch (Exception ex) {
-            LogUtils.error("parse http post request error",ex);
+            LogUtils.error("parse http post request error", ex);
         } finally {
             // 注意这个地方，一定要调用destroy方法，如果不调用会导致内存泄漏
             if (decoder != null) {
@@ -131,6 +134,24 @@ public class DoradoHttpRequest implements HttpRequest {
     @Override
     public Map<String, List<String>> getParameters() {
         return this.parameters;
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    public Map getParameterMap() {
+        if (this.parameterMap != null) {
+            return this.parameterMap;
+        }
+
+        parameterMap = new HashMap<>();
+        for (Entry<String, List<String>> entry : parameters.entrySet()) {
+            if (entry.getValue().size() == 1) {
+                parameterMap.put(entry.getKey(), entry.getValue().get(0));
+            } else {
+                parameterMap.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return parameterMap;
     }
 
     @Override
@@ -207,7 +228,7 @@ public class DoradoHttpRequest implements HttpRequest {
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
             return multipartFiles.toArray(new MultipartFile[]{});
         }
-        return null;
+        return new MultipartFile[0];
     }
 
     public List<MultipartFile> getFileList() {

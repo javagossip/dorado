@@ -41,6 +41,9 @@ public final class TypeUtils {
 		primitiveDefaultHolder.put(char.class, (char) 0);
 	}
 
+    private TypeUtils() {
+    }
+
 	public static boolean isPrimitive(Class<?> type) {
 		return (type != void.class && type != Void.class) 
 				&& type.isPrimitive();
@@ -83,8 +86,8 @@ public final class TypeUtils {
 			if (annotation.annotationType().getName().equals(annotationName)) {
 				return true;
 			}
-			Annotation[] _annotations = annotation.annotationType().getAnnotations();
-			if (_annotations != null)
+			Annotation[] annotationTypeAnnotations = annotation.annotationType().getAnnotations();
+			if (annotationTypeAnnotations != null)
 				return hasAnnotationByName(annotation.annotationType(), annotationName);
 		}
 		return false;

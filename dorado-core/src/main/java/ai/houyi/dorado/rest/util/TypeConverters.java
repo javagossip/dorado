@@ -19,35 +19,41 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 
  * @author wangwp
  */
 public class TypeConverters {
-	private static Map<Class<?>, TypeConverter<?, ?>> converters = new HashMap<>();
 
-	static {
-		converters.put(int.class, TypeConverter.STRING_INT);
-		converters.put(long.class, TypeConverter.STRING_LONG);
-		converters.put(double.class, TypeConverter.STRING_DOUBLE);
-		converters.put(float.class, TypeConverter.STRING_FLOAT);
-		converters.put(short.class, TypeConverter.STRING_SHORT);
-		converters.put(boolean.class, TypeConverter.STRING_BOOL);
-		converters.put(char.class, TypeConverter.STRING_CHAR);
-		converters.put(byte.class, TypeConverter.STRING_BYTE);
+    private static final Map<Class<?>, TypeConverter<?, ?>> converters = new HashMap<>();
 
-		converters.put(Float.class, TypeConverter.STRING_FLOAT_WRAPPER);
-		converters.put(Integer.class, TypeConverter.STRING_INT_WRAPPER);
-		converters.put(Long.class, TypeConverter.STRING_LONG_WRAPPER);
-		converters.put(Double.class, TypeConverter.STRING_DOUBLE_WRAPPER);
-		converters.put(Short.class, TypeConverter.STRING_SHORT_WRAPPER);
-		converters.put(Boolean.class, TypeConverter.STRING_BOOL_WRAPPER);
-		converters.put(Character.class, TypeConverter.STRING_CHAR_WRAPPER);
-		converters.put(Byte.class, TypeConverter.STRING_BYTE_WRAPPER);
-	}
+    static {
+        converters.put(int.class, TypeConverter.STRING_INT);
+        converters.put(long.class, TypeConverter.STRING_LONG);
+        converters.put(double.class, TypeConverter.STRING_DOUBLE);
+        converters.put(float.class, TypeConverter.STRING_FLOAT);
+        converters.put(short.class, TypeConverter.STRING_SHORT);
+        converters.put(boolean.class, TypeConverter.STRING_BOOL);
+        converters.put(char.class, TypeConverter.STRING_CHAR);
+        converters.put(byte.class, TypeConverter.STRING_BYTE);
 
-	@SuppressWarnings("rawtypes")
-	public static TypeConverter resolveConverter(Class<?> type) {
-		TypeConverter converter = converters.get(type);
-		return converter == null ? TypeConverter.DUMMY : converter;
-	}
+        converters.put(Float.class, TypeConverter.STRING_FLOAT_WRAPPER);
+        converters.put(Integer.class, TypeConverter.STRING_INT_WRAPPER);
+        converters.put(Long.class, TypeConverter.STRING_LONG_WRAPPER);
+        converters.put(Double.class, TypeConverter.STRING_DOUBLE_WRAPPER);
+        converters.put(Short.class, TypeConverter.STRING_SHORT_WRAPPER);
+        converters.put(Boolean.class, TypeConverter.STRING_BOOL_WRAPPER);
+        converters.put(Character.class, TypeConverter.STRING_CHAR_WRAPPER);
+        converters.put(Byte.class, TypeConverter.STRING_BYTE_WRAPPER);
+    }
+
+    private TypeConverters() {
+    }
+
+    public static void registerConverter(Class<?> type, TypeConverter<?, ?> converter) {
+        converters.put(type, converter);
+    }
+    @SuppressWarnings("rawtypes")
+    public static TypeConverter resolveConverter(Class<?> type) {
+        TypeConverter converter = converters.get(type);
+        return converter == null ? TypeConverter.DUMMY : converter;
+    }
 }

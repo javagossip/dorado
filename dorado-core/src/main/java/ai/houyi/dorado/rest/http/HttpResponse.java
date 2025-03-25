@@ -17,9 +17,8 @@ package ai.houyi.dorado.rest.http;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
-
-import ai.houyi.dorado.rest.http.impl.DoradoOutputStream;
 
 /**
  * 
@@ -38,7 +37,7 @@ public interface HttpResponse {
 
 	void setStatus(int sc);
 
-	DoradoOutputStream getOutputStream() throws IOException;
+	OutputStream getOutputStream() throws IOException;
 
 	PrintWriter getWriter() throws IOException;
 

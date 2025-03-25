@@ -98,7 +98,6 @@ public class DoradoRouteHandler implements RouteHandler {
     }
 
     private Object[] resolveParameters(HttpRequest request, HttpResponse response, Map<String, String> parameters) {
-        Object[] args = new Object[methodDescriptor.getParameters().length];
         MethodParameter[] methodParameters = methodDescriptor.getParameters();
         if (methodParameters.length == 0) {
             return null;

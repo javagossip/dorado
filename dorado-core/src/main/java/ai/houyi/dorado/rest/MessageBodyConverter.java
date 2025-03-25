@@ -18,6 +18,7 @@ package ai.houyi.dorado.rest;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 
+import com.alibaba.fastjson2.JSON;
 import com.google.protobuf.Message;
 
 import ai.houyi.dorado.exception.DoradoException;
@@ -26,71 +27,72 @@ import ai.houyi.dorado.rest.util.SerializeUtils;
 import io.netty.util.CharsetUtil;
 
 /**
- * 
  * @author wangwp
  */
 public interface MessageBodyConverter<T> {
-	byte[] writeMessageBody(T t);
 
-	T readMessageBody(InputStream in, Type clazz);
+    byte[] writeMessageBody(T t);
 
-	MessageBodyConverter<? extends Object> JSON = new MessageBodyConverter<Object>() {
-		@Override
-		public byte[] writeMessageBody(Object t) {
-			if (t.getClass() == String.class) {
-				return ((String) t).getBytes(CharsetUtil.UTF_8);
-			} else if (t.getClass() == byte[].class) {
-				return (byte[]) t;
-			}
-			return com.alibaba.fastjson2.JSON.toJSONBytes(t);
-		}
+    T readMessageBody(InputStream in, Type parameterizedType);
 
-		@Override
-		public Object readMessageBody(InputStream in, Type type) {
-            return com.alibaba.fastjson2.JSON.parseObject(IOUtils.toString(in, CharsetUtil.UTF_8.name()), type);
-		}
-	};
+    MessageBodyConverter<? extends Object> JSON_CONVERTER = new MessageBodyConverter<Object>() {
+        @Override
+        public byte[] writeMessageBody(Object t) {
+            if (t.getClass() == String.class) {
+                return ((String) t).getBytes(CharsetUtil.UTF_8);
+            } else if (t.getClass() == byte[].class) {
+                return (byte[]) t;
+            }
+            return JSON.toJSONBytes(t);
+        }
 
-	@SuppressWarnings("rawtypes")
-	MessageBodyConverter TEXT_WILDCARD = new MessageBodyConverter<Object>() {
-		@Override
-		public byte[] writeMessageBody(Object t) {
-			return t.toString().getBytes(CharsetUtil.UTF_8);
-		}
+        @Override
+        public Object readMessageBody(InputStream in, Type parameterizedType) {
+            String requestBody = IOUtils.toString(in, CharsetUtil.UTF_8.name());
+            return JSON.parseObject(requestBody, parameterizedType);
+        }
+    };
 
-		@Override
-		public Object readMessageBody(InputStream in, Type type) {
-			return IOUtils.toString(in, CharsetUtil.UTF_8.name());
-		}
-	};
+    @SuppressWarnings("rawtypes")
+    MessageBodyConverter TEXT_WILDCARD = new MessageBodyConverter<Object>() {
+        @Override
+        public byte[] writeMessageBody(Object t) {
+            return t.toString().getBytes(CharsetUtil.UTF_8);
+        }
 
-	@SuppressWarnings("rawtypes")
-	MessageBodyConverter PROTOBUF = new MessageBodyConverter<Message>() {
-		@Override
-		public byte[] writeMessageBody(Message t) {
-			return t.toByteArray();
-		}
+        @Override
+        public Object readMessageBody(InputStream in, Type parameterizedType) {
+            return IOUtils.toString(in, CharsetUtil.UTF_8.name());
+        }
+    };
 
-		@Override
-		public Message readMessageBody(InputStream in, Type type) {
-			try {
-				return (Message) ObjectSerializer.PROTOBUF.deserialize(in, type);
-			} catch (Exception ex) {
-				throw new DoradoException(ex);
-			}
-		}
-	};
+    @SuppressWarnings("rawtypes")
+    MessageBodyConverter PROTOBUF = new MessageBodyConverter<Message>() {
+        @Override
+        public byte[] writeMessageBody(Message t) {
+            return t.toByteArray();
+        }
 
-	@SuppressWarnings("rawtypes")
-	MessageBodyConverter DEFAULT = new MessageBodyConverter<Object>() {
-		@Override
-		public byte[] writeMessageBody(Object t) {
-			return SerializeUtils.serialize(t);
-		}
+        @Override
+        public Message readMessageBody(InputStream in, Type parameterizedType) {
+            try {
+                return (Message) ObjectSerializer.PROTOBUF.deserialize(in, parameterizedType);
+            } catch (Exception ex) {
+                throw new DoradoException(ex);
+            }
+        }
+    };
 
-		@Override
-		public Object readMessageBody(InputStream in, Type type) {
-			return SerializeUtils.deserialize(in, type);
-		}
-	};
+    @SuppressWarnings("rawtypes")
+    MessageBodyConverter DEFAULT = new MessageBodyConverter<Object>() {
+        @Override
+        public byte[] writeMessageBody(Object t) {
+            return SerializeUtils.serialize(t);
+        }
+
+        @Override
+        public Object readMessageBody(InputStream in, Type parameterizedType) {
+            return SerializeUtils.deserialize(in, parameterizedType);
+        }
+    };
 }

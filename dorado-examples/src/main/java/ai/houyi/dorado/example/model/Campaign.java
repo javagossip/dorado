@@ -18,8 +18,13 @@ public class Campaign {
 		this.id = builder.id;
 		this.name = builder.name;
 	}
-	
-	public Campaign() {}
+
+    @Override
+    public String toString() {
+        return "Campaign{" + "id=" + id + ", name='" + name + '\'' + '}';
+    }
+
+    public Campaign() {}
 	
 	public int getId() {
 		return id;

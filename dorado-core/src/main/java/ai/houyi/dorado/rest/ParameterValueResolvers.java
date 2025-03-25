@@ -27,33 +27,36 @@ import ai.houyi.dorado.rest.http.HttpResponse;
 import ai.houyi.dorado.rest.http.MultipartFile;
 
 /**
- * 
  * @author wangwp
  */
 public class ParameterValueResolvers {
-	private static Map<Class<?>, ParameterValueResolver> parameterValueResolverHolder = new ConcurrentHashMap<>();
 
-	static {
-		parameterValueResolverHolder.put(RequestParam.class, ParameterValueResolver.REQUEST_PARAM);
-		parameterValueResolverHolder.put(HeaderParam.class, ParameterValueResolver.HEADER_PARAM);
-		parameterValueResolverHolder.put(PathVariable.class, ParameterValueResolver.PATH_PARAM);
-		parameterValueResolverHolder.put(HttpRequest.class, ParameterValueResolver.HTTP_REQUEST);
-		parameterValueResolverHolder.put(HttpResponse.class, ParameterValueResolver.HTTP_RESPONSE);
-		parameterValueResolverHolder.put(RequestBody.class, ParameterValueResolver.REQUEST_BODY);
-		parameterValueResolverHolder.put(MultipartFile.class, ParameterValueResolver.MULTIPARTFILE);
-	}
+    private static final Map<Class<?>, ParameterValueResolver> parameterValueResolverHolder = new ConcurrentHashMap<>();
 
-	public static ParameterValueResolver getParameterValueResolver(Class<?> parameterAnnotationType) {
-		if (parameterAnnotationType == null) {
-			return ParameterValueResolver.ALL;
-		}
+    static {
+        parameterValueResolverHolder.put(RequestParam.class, ParameterValueResolver.REQUEST_PARAM);
+        parameterValueResolverHolder.put(HeaderParam.class, ParameterValueResolver.HEADER_PARAM);
+        parameterValueResolverHolder.put(PathVariable.class, ParameterValueResolver.PATH_PARAM);
+        parameterValueResolverHolder.put(HttpRequest.class, ParameterValueResolver.HTTP_REQUEST);
+        parameterValueResolverHolder.put(HttpResponse.class, ParameterValueResolver.HTTP_RESPONSE);
+        parameterValueResolverHolder.put(RequestBody.class, ParameterValueResolver.REQUEST_BODY);
+        parameterValueResolverHolder.put(MultipartFile.class, ParameterValueResolver.MULTIPART_FILE);
+    }
 
-		ParameterValueResolver parameterValueResolver = parameterValueResolverHolder.get(parameterAnnotationType);
-		if (parameterValueResolver == null) {
-			return ParameterValueResolver.ALL;
-		}
+    private ParameterValueResolvers() {
+    }
 
-		return parameterValueResolverHolder.get(parameterAnnotationType);
-	}
+    public static ParameterValueResolver getParameterValueResolver(Class<?> parameterAnnotationType) {
+        if (parameterAnnotationType == null) {
+            return ParameterValueResolver.ALL;
+        }
+
+        ParameterValueResolver parameterValueResolver = parameterValueResolverHolder.get(parameterAnnotationType);
+        if (parameterValueResolver == null) {
+            return ParameterValueResolver.ALL;
+        }
+
+        return parameterValueResolverHolder.get(parameterAnnotationType);
+    }
 
 }

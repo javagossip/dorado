@@ -27,30 +27,28 @@ import ai.houyi.dorado.rest.util.LogUtils;
 import io.swagger.util.Yaml;
 
 /**
- * 
  * @author wangwp
  */
 @Produce("application/yaml")
 public class YamlMessageBodyConverter implements MessageBodyConverter<Object> {
 
-	@Override
-	public byte[] writeMessageBody(Object t) {
-		try {
-			return Yaml.mapper().writeValueAsBytes(t);
-		} catch (JsonProcessingException ex) {
-			LogUtils.error(ex.getMessage(), ex);
-		}
-		return null;
-	}
+    @Override
+    public byte[] writeMessageBody(Object t) {
+        try {
+            return Yaml.mapper().writeValueAsBytes(t);
+        } catch (JsonProcessingException ex) {
+            LogUtils.error(ex.getMessage(), ex);
+        }
+        return null;
+    }
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	public Object readMessageBody(InputStream in, Type type) {
-		try {
-			return Yaml.mapper().readValue(in, (Class) type);
-		} catch (IOException ex) {
-			LogUtils.error(ex.getMessage(), ex);
-		}
-		return null;
-	}
+    @Override
+    public Object readMessageBody(InputStream in, Type type) {
+        try {
+            return Yaml.mapper().readValue(in, (Class<?>) type);
+        } catch (IOException ex) {
+            LogUtils.error(ex.getMessage(), ex);
+        }
+        return null;
+    }
 }

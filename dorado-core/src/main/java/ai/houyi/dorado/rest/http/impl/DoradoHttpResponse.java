@@ -17,6 +17,7 @@ package ai.houyi.dorado.rest.http.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import ai.houyi.dorado.exception.DoradoException;
@@ -31,10 +32,10 @@ import io.netty.handler.codec.http.HttpResponseStatus;
  * @author wangwp
  */
 public class DoradoHttpResponse implements HttpResponse {
-	private FullHttpResponse originalHttpResponse;
+	private final FullHttpResponse originalHttpResponse;
 
-	private DoradoOutputStream out;
-	private DoradoPrintWriter writer;
+	private OutputStream out;
+	private PrintWriter writer;
 
 	public DoradoHttpResponse(FullHttpResponse response) {
 		this.originalHttpResponse = response;
@@ -72,7 +73,7 @@ public class DoradoHttpResponse implements HttpResponse {
 	}
 
 	@Override
-	public DoradoOutputStream getOutputStream() throws IOException {
+	public OutputStream getOutputStream() throws IOException {
 		return out;
 	}
 

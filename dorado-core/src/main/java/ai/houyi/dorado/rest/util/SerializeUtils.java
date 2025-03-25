@@ -21,16 +21,15 @@ import java.lang.reflect.Type;
 import ai.houyi.dorado.rest.ObjectSerializer;
 
 /**
- * 
  * @author wangwp
  */
 public class SerializeUtils {
 
-	public static byte[] serialize(Object t) {
-		return ObjectSerializer.DEFAULT.serialize(t);
-	}
+    public static byte[] serialize(Object t) {
+        return ObjectSerializer.DEFAULT.serialize(t);
+    }
 
-	public static Object deserialize(InputStream in, Type type) {
-		return ObjectSerializer.DEFAULT.deserialize(in, type);
-	}
+    public static Object deserialize(InputStream in, Type parameterizedType) {
+        return ObjectSerializer.DEFAULT.deserialize(in, parameterizedType);
+    }
 }

@@ -18,7 +18,6 @@ package ai.houyi.dorado.rest;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 
-import com.alibaba.fastjson2.JSONObject;
 import com.google.protobuf.Message;
 
 import ai.houyi.dorado.rest.util.IOUtils;
@@ -44,7 +43,7 @@ public interface ObjectSerializer {
         @Override
         public Object deserialize(InputStream in, Type type) {
             String text = IOUtils.toString(in, CharsetUtil.UTF_8.name());
-            return JSONObject.parseObject(text, type);
+            return com.alibaba.fastjson2.JSON.parseObject(text, type);
         }
     };
 
@@ -82,7 +81,8 @@ public interface ObjectSerializer {
             if (TypeUtils.isProtobufMessage(type)) {
                 return ProtobufMessageDescriptors.newMessageForType(in, (Class<?>) type);
             }
-            return JSON.deserialize(in, type);
+            String text = IOUtils.toString(in, CharsetUtil.UTF_8.name());
+            return com.alibaba.fastjson2.JSON.parseObject(text, type);
         }
     };
 }
