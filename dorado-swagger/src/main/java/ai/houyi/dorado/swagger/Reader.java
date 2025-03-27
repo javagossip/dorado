@@ -7,7 +7,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -40,6 +39,7 @@ import ai.houyi.dorado.rest.annotation.PUT;
 import ai.houyi.dorado.rest.annotation.Produce;
 import ai.houyi.dorado.rest.http.HttpResponse;
 import ai.houyi.dorado.rest.util.MethodDescriptor;
+import ai.houyi.dorado.rest.util.MethodDescriptor.MethodParameter;
 import ai.houyi.dorado.swagger.ext.SwaggerExtension;
 import ai.houyi.dorado.swagger.ext.SwaggerExtensions;
 import ai.houyi.dorado.swagger.utils.ReaderUtils;
@@ -111,18 +111,15 @@ public class Reader {
      * @return the generated Swagger definition
      */
     public Swagger read(Set<Class<?>> classes) {
-        Set<Class<?>> sortedClasses = new TreeSet<Class<?>>(new Comparator<Class<?>>() {
-            @Override
-            public int compare(Class<?> class1, Class<?> class2) {
-                if (class1.equals(class2)) {
-                    return 0;
-                } else if (class1.isAssignableFrom(class2)) {
-                    return -1;
-                } else if (class2.isAssignableFrom(class1)) {
-                    return 1;
-                }
-                return class1.getName().compareTo(class2.getName());
+        Set<Class<?>> sortedClasses = new TreeSet<>((class1, class2) -> {
+            if (class1.equals(class2)) {
+                return 0;
+            } else if (class1.isAssignableFrom(class2)) {
+                return -1;
+            } else if (class2.isAssignableFrom(class1)) {
+                return 1;
             }
+            return class1.getName().compareTo(class2.getName());
         });
         sortedClasses.addAll(classes);
 
@@ -161,10 +158,9 @@ public class Reader {
             Map<String, Tag> parentTags,
             List<Parameter> parentParameters,
             Set<Class<?>> scannedResources) {
-        // ClassDescriptor classDescriptor = ClassDescriptor.create(cls);
 
-        Map<String, Tag> tags = new LinkedHashMap<String, Tag>();
-        List<SecurityRequirement> securities = new ArrayList<SecurityRequirement>();
+        Map<String, Tag> tags = new LinkedHashMap<>();
+        List<SecurityRequirement> securities = new ArrayList<>();
 
         String[] consumes = new String[0];
         String[] produces = new String[0];
@@ -179,10 +175,8 @@ public class Reader {
 
         // class readable only if annotated with ((@Path and @Api) or isSubresource ) -
         // and @Api not hidden
-        boolean classReadable = ((hasPathAnnotation && hasApiAnnotation)) && !isApiHidden;
-
         // readable if classReadable or scanAll
-        boolean readable = classReadable;
+        boolean readable = ((hasPathAnnotation && hasApiAnnotation)) && !isApiHidden;
 
         if (!readable) {
             return swagger;
@@ -222,11 +216,11 @@ public class Reader {
             }
         }
 
-        final List<Parameter> globalParameters = new ArrayList<Parameter>();
+        final List<Parameter> globalParameters = new ArrayList<>();
 
         // build class/interface level @ApiResponse list
         ApiResponses classResponseAnnotation = ReflectionUtils.getAnnotation(cls, ApiResponses.class);
-        List<ApiResponse> classApiResponses = new ArrayList<ApiResponse>();
+        List<ApiResponse> classApiResponses = new ArrayList<>();
         if (classResponseAnnotation != null) {
             classApiResponses.addAll(Arrays.asList(classResponseAnnotation.value()));
         }
@@ -259,10 +253,8 @@ public class Reader {
                 if (methodPath == null && httpMethod == null) {
                     continue;
                 }
-                Operation operation = null;
-                if (apiOperation != null || httpMethod != null || methodPath != null) {
-                    operation = parseMethod(cls, method, annotatedMethod, globalParameters, classApiResponses);
-                }
+                Operation operation;
+                operation = parseMethod(cls, method, annotatedMethod, globalParameters, classApiResponses);
                 if (operation == null) {
                     continue;
                 }
@@ -714,8 +706,8 @@ public class Reader {
         return parseMethod(classType.getClass(),
                 method,
                 bd.findMethod(method.getName(), method.getParameterTypes()),
-                Collections.<Parameter>emptyList(),
-                Collections.<ApiResponse>emptyList());
+                Collections.emptyList(),
+                Collections.emptyList());
     }
 
     @SuppressWarnings("deprecation")
@@ -750,7 +742,7 @@ public class Reader {
         String responseContainer = null;
 
         Type responseType = null;
-        Map<String, Property> defaultResponseHeaders = new LinkedHashMap<String, Property>();
+        Map<String, Property> defaultResponseHeaders = new LinkedHashMap<>();
 
         JsonView jsonViewAnnotation = ReflectionUtils.getAnnotation(method, JsonView.class);
 
@@ -775,7 +767,7 @@ public class Reader {
             if (!apiOperation.responseContainer().isEmpty()) {
                 responseContainer = apiOperation.responseContainer();
             }
-            List<SecurityRequirement> securities = new ArrayList<SecurityRequirement>();
+            List<SecurityRequirement> securities = new ArrayList<>();
             for (Authorization auth : apiOperation.authorizations()) {
                 if (!auth.value().isEmpty()) {
                     SecurityRequirement security = new SecurityRequirement();
@@ -851,7 +843,7 @@ public class Reader {
             }
         }
 
-        List<ApiResponse> apiResponses = new ArrayList<ApiResponse>();
+        List<ApiResponse> apiResponses = new ArrayList<>();
         if (responseAnnotation != null) {
             apiResponses.addAll(Arrays.asList(responseAnnotation.value()));
         }
@@ -886,13 +878,17 @@ public class Reader {
         }
 
         Annotation[][] paramAnnotations = ReflectionUtils.getParameterAnnotations(method);
-        // MethodDescriptor methodDescriptor = MethodDescriptor.create(cls, method);
+        MethodParameter[] methodParameters = methodDescriptor.getParameters();
+        ai.houyi.dorado.rest.annotation.Path methodPathAnnotation =
+                methodDescriptor.getMethod().getAnnotation(ai.houyi.dorado.rest.annotation.Path.class);
+        String operationPath = methodPathAnnotation != null ? methodPathAnnotation.value() : null;
 
         if (annotatedMethod == null) {
             Type[] genericParameterTypes = method.getGenericParameterTypes();
             for (int i = 0; i < genericParameterTypes.length; i++) {
                 final Type type = TypeFactory.defaultInstance().constructType(genericParameterTypes[i], cls);
-                List<Parameter> parameters = getParameters(type, Arrays.asList(paramAnnotations[i]), methodDescriptor);
+                List<Parameter> parameters =
+                        getParameters(type, Arrays.asList(paramAnnotations[i]), methodParameters[i], operationPath);
 
                 for (Parameter parameter : parameters) {
                     operation.parameter(parameter);
@@ -902,7 +898,8 @@ public class Reader {
             for (int i = 0; i < annotatedMethod.getParameterCount(); i++) {
                 AnnotatedParameter param = annotatedMethod.getParameter(i);
                 final Type type = TypeFactory.defaultInstance().constructType(param.getParameterType(), cls);
-                List<Parameter> parameters = getParameters(type, Arrays.asList(paramAnnotations[i]), methodDescriptor);
+                List<Parameter> parameters =
+                        getParameters(type, Arrays.asList(paramAnnotations[i]), methodParameters[i], operationPath);
 
                 for (Parameter parameter : parameters) {
                     operation.parameter(parameter);
@@ -920,20 +917,23 @@ public class Reader {
         return operation;
     }
 
-    private List<Parameter> getParameters(Type type, List<Annotation> annotations, MethodDescriptor methodDescriptor) {
+    private List<Parameter> getParameters(Type type,
+            List<Annotation> annotations,
+            MethodParameter methodParameter,
+            String operationPath) {
         final Iterator<SwaggerExtension> chain = SwaggerExtensions.chain();
         if (!chain.hasNext()) {
             return Collections.emptyList();
         }
         LOGGER.debug("getParameters for {}", type);
-        Set<Type> typesToSkip = new HashSet<Type>();
+        Set<Type> typesToSkip = new HashSet<>();
         final SwaggerExtension extension = chain.next();
         LOGGER.debug("trying extension {}", extension);
 
         final List<Parameter> parameters =
-                extension.extractParameters(annotations, type, typesToSkip, chain, methodDescriptor);
+                extension.extractParameters(annotations, type, typesToSkip, chain, methodParameter,operationPath);
         if (!parameters.isEmpty()) {
-            final List<Parameter> processed = new ArrayList<Parameter>(parameters.size());
+            final List<Parameter> processed = new ArrayList<>(parameters.size());
             for (Parameter parameter : parameters) {
                 if (ParameterProcessor.applyAnnotations(swagger, parameter, type, annotations) != null) {
                     processed.add(parameter);
@@ -942,7 +942,7 @@ public class Reader {
             return processed;
         } else {
             LOGGER.debug("no parameter found, looking at body params");
-            final List<Parameter> body = new ArrayList<Parameter>();
+            final List<Parameter> body = new ArrayList<>();
             if (!typesToSkip.contains(type)) {
                 Parameter param = ParameterProcessor.applyAnnotations(swagger, null, type, annotations);
                 if (param != null) {

@@ -99,7 +99,7 @@ public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpReq
 
             //这里增加一个特殊逻辑，用来处理swagger-ui的静态资源请求
             if (doradoHttpRequest.getRequestURI().startsWith("/swagger-ui")) {
-                SwaggerUiResourceHanlder.handle(doradoHttpRequest, doradoHttpResponse);
+                SwaggerUiResourceHandler.handle(doradoHttpRequest, doradoHttpResponse);
                 return;
             }
             webapp.getRouter().handleRequest(doradoHttpRequest, doradoHttpResponse);

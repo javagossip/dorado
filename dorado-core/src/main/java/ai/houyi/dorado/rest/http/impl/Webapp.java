@@ -18,9 +18,9 @@ package ai.houyi.dorado.rest.http.impl;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import ai.houyi.dorado.Dorado;
 import ai.houyi.dorado.exception.DoradoException;
@@ -47,12 +47,12 @@ public class Webapp {
 
     private static Webapp webapp;
 
-    private final String[] packages;
+    private final Set<String> packages;
     private MethodReturnValueHandlerConfig methodReturnValueHandlerConfig;
     private Router router;
 
     private Webapp(String[] packages) {
-        this.packages = packages;
+        this.packages = new HashSet<>(Arrays.asList(packages));
         this.router = Router.newInstance();
     }
 
@@ -73,7 +73,7 @@ public class Webapp {
     }
 
     public void initialize() {
-        List<Class<?>> classes = new ArrayList<>();
+        Set<Class<?>> classes = new HashSet<>();
 
         for (ResourceRegister resourceRegister : ResourceRegisters.getInstance().getResourceRegisters()) {
             resourceRegister.register();
@@ -136,7 +136,7 @@ public class Webapp {
     }
 
     private void registerExceptionAdvice(Class<?> type) {
-        WebComponentRegistry.getWebComponentRegistry().registerExceptionHandlers(type);
+        WebComponents.getInstance().registerExceptionHandlers(type);
     }
 
     public void registerRoutesByType(Class<?> type) {

@@ -36,7 +36,7 @@ import ai.houyi.dorado.rest.http.MethodReturnValueHandler;
 import ai.houyi.dorado.rest.http.MethodReturnValueHandlerConfig;
 import ai.houyi.dorado.rest.http.impl.ExceptionHandler;
 import ai.houyi.dorado.rest.http.impl.HttpHeaderNames;
-import ai.houyi.dorado.rest.http.impl.WebComponentRegistry;
+import ai.houyi.dorado.rest.http.impl.WebComponents;
 import ai.houyi.dorado.rest.http.impl.Webapp;
 import ai.houyi.dorado.rest.util.Assert;
 import ai.houyi.dorado.rest.util.MediaTypeUtils;
@@ -129,7 +129,7 @@ public class DoradoRouteHandler implements RouteHandler {
         }
 
         ExceptionHandler exceptionHandler =
-                WebComponentRegistry.getWebComponentRegistry().getExceptionHandler(targetException.getClass());
+                WebComponents.getInstance().getExceptionHandler(targetException.getClass());
         if (exceptionHandler == null) {
             throw new DoradoException(targetException);
         }

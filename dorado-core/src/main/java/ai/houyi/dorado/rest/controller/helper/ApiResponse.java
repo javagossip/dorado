@@ -7,7 +7,7 @@ public class ApiResponse {
 
     //具体由业务来定义code, 如：200, 400, 500
     private int code = SUCCESS_CODE;
-    private String message;
+    private String message = "OK";
     private Object data;
 
     //json序列化需要无参构造函数

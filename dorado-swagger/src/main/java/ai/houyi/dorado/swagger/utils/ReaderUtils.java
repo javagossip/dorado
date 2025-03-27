@@ -30,7 +30,7 @@ public class ReaderUtils {
     /**
      * Collects constructor-level parameters from class.
      *
-     * @param cls     is a class for collecting
+     * @param cls is a class for collecting
      * @param swagger is the instance of the Swagger
      * @return the collection of supported parameters
      */
@@ -43,8 +43,8 @@ public class ReaderUtils {
         int maxParamsCount = 0;
 
         for (Constructor<?> constructor : cls.getDeclaredConstructors()) {
-            if (!ReflectionUtils.isConstructorCompatible(constructor)
-                    && !ReflectionUtils.isInject(Arrays.asList(constructor.getDeclaredAnnotations()))) {
+            if (!ReflectionUtils.isConstructorCompatible(constructor) &&
+                    !ReflectionUtils.isInject(Arrays.asList(constructor.getDeclaredAnnotations()))) {
                 continue;
             }
 
@@ -62,7 +62,10 @@ public class ReaderUtils {
                     final List<Parameter> tmpParameters = collectParameters(genericParameterType, tmpAnnotations);
                     if (tmpParameters.size() >= 1) {
                         for (Parameter tmpParameter : tmpParameters) {
-                            if (ParameterProcessor.applyAnnotations(swagger, tmpParameter, genericParameterType, tmpAnnotations) != null) {
+                            if (ParameterProcessor.applyAnnotations(swagger,
+                                    tmpParameter,
+                                    genericParameterType,
+                                    tmpAnnotations) != null) {
                                 parameters.add(tmpParameter);
                             }
                         }
@@ -83,7 +86,7 @@ public class ReaderUtils {
     /**
      * Collects field-level parameters from class.
      *
-     * @param cls     is a class for collecting
+     * @param cls is a class for collecting
      * @param swagger is the instance of the Swagger
      * @return the collection of supported parameters
      */
@@ -102,14 +105,14 @@ public class ReaderUtils {
     }
 
     /**
-     * Splits the provided array of strings into an array, using comma as the separator.
-     * Also removes leading and trailing whitespace and omits empty strings from the results.
+     * Splits the provided array of strings into an array, using comma as the separator. Also removes leading and
+     * trailing whitespace and omits empty strings from the results.
      *
      * @param strings is the provided array of strings
      * @return the resulted array of strings
      */
     public static String[] splitContentValues(String[] strings) {
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<>();
 
         for (String string : strings) {
             Iterables.addAll(result, Splitter.on(",").trimResults().omitEmptyStrings().split(string));
@@ -120,8 +123,9 @@ public class ReaderUtils {
 
     private static List<Parameter> collectParameters(Type type, List<Annotation> annotations) {
         final Iterator<SwaggerExtension> chain = SwaggerExtensions.chain();
-        return chain.hasNext() ? chain.next().extractParameters(annotations, type, new HashSet<Type>(), chain) :
-                Collections.<Parameter>emptyList();
+        return chain.hasNext()
+                ? chain.next().extractParameters(annotations, type, new HashSet<>(), chain)
+                : Collections.<Parameter>emptyList();
     }
 
     private static boolean isContext(List<Annotation> annotations) {

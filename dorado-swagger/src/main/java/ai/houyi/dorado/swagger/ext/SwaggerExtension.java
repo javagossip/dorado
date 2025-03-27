@@ -23,6 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import ai.houyi.dorado.rest.util.MethodDescriptor.MethodParameter;
+
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -81,5 +83,5 @@ public interface SwaggerExtension {
 	}
 
 	public List<Parameter> extractParameters(List<Annotation> annotations, Type type, Set<Type> typesToSkip,
-			Iterator<SwaggerExtension> chain, MethodDescriptor methodDescriptor);
+			Iterator<SwaggerExtension> chain, MethodParameter methodParameter,String operationPath);
 }

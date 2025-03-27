@@ -23,10 +23,10 @@ import ai.houyi.dorado.rest.http.HttpResponse;
 import ai.houyi.dorado.rest.util.ClassLoaderUtils;
 import ai.houyi.dorado.rest.util.IOUtils;
 
-public class SwaggerUiResourceHanlder {
+public class SwaggerUiResourceHandler {
     private static final String RESOURCE_PREFIX = "META-INF/resources/webjars/swagger-ui";
 
-    private SwaggerUiResourceHanlder() {
+    private SwaggerUiResourceHandler() {
     }
 
     public static void handle(HttpRequest request, HttpResponse response) {

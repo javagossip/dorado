@@ -27,17 +27,17 @@ import ai.houyi.dorado.rest.annotation.ExceptionType;
 /**
  * @author weiping wang
  */
-public final class WebComponentRegistry {
+public final class WebComponents {
 
-    private static final WebComponentRegistry REGISTRY = new WebComponentRegistry();
+    private static final WebComponents REGISTRY = new WebComponents();
 
     private final ConcurrentMap<Class<? extends Throwable>, ExceptionHandler> exceptionHandlerRegistry =
             new ConcurrentHashMap<>();
 
-    private WebComponentRegistry() {
+    private WebComponents() {
     }
 
-    public static WebComponentRegistry getWebComponentRegistry() {
+    public static WebComponents getInstance() {
         return REGISTRY;
     }
 
