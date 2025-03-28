@@ -27,7 +27,7 @@ Features
 -   支持文件上传
 -   Spring框架支持，默认支持注解方式初始化spring容器
 -   SpringBoot集成
--   集成swagger restful API文档生成工具
+-   集成swagger restful API文档生成工具，支持swagger-ui
 -   支持全局异常处理
 -   支持统一响应格式处理
 
