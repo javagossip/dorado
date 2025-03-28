@@ -76,22 +76,40 @@ public class DefaultParameterExtension implements SwaggerExtension {
             Set<Type> typesToSkip,
             Iterator<SwaggerExtension> chain,
             MethodParameter _parameter,
-            String operationPath) {
+            String operationPath,
+            String httpMethod) {
         if (shouldIgnoreType(type, typesToSkip)) {
             return new ArrayList<Parameter>();
         }
 
-        //Path methodPathAnno = methodDescriptor.getMethod().getAnnotation(Path.class);
-        //String operationPath = methodPathAnno != null ? methodPathAnno.value() : null;
+        Class<?> parameterType = _parameter.getType();
+        boolean isMultiFile = parameterType == MultipartFile.class ||
+                (parameterType.isArray() && parameterType.getComponentType() == MultipartFile.class);
 
-        List<Parameter> parameters = new ArrayList<Parameter>();
-        //for (MethodParameter _parameter : methodDescriptor.getParameters()) {
+        List<Parameter> parameters = new ArrayList<>();
+        if (annotations.isEmpty()) {
+            Parameter parameter;
+            if (isMultiFile) {
+                FormParameter fp;
+                if (parameterType.isArray()) {
+                    fp = new FormParameter().type("array").name(_parameter.getName());
+                    Property property = new FileProperty();
+                    fp.setItems(property);
+                } else {
+                    fp = new FormParameter().type("file").name(_parameter.getName());
+                }
+                parameter = fp;
+                if (parameter != null) {
+                    parameters.add(parameter);
+                }
+            }
+        }
+
         for (Annotation annotation : annotations) {
-            Class<?> parameterType = _parameter.getType();
             Parameter parameter = null;
             Class<?> annotationType = annotation.annotationType();
 
-            if (annotationType == MultipartFile.class) {
+            if (isMultiFile) {
                 FormParameter fp;
                 if (parameterType.isArray()) {
                     fp = new FormParameter().type("array").name(_parameter.getName());
@@ -103,14 +121,27 @@ public class DefaultParameterExtension implements SwaggerExtension {
                 parameter = fp;
             } else if (annotationType == RequestParam.class) {
                 RequestParam param = (RequestParam) annotation;
-                QueryParameter fp = new QueryParameter().name(StringUtils.isBlank(param.value())
-                        ? _parameter.getName()
-                        : param.value());
-                Property schema = createProperty(type);
-                if (schema != null) {
-                    fp.setProperty(schema);
+                if (StringUtils.isNotBlank(httpMethod) && httpMethod.equalsIgnoreCase("post")) {
+                    FormParameter fp = new FormParameter().name(StringUtils.isBlank(param.value())
+                            ? _parameter.getName()
+                            : param.value());
+                    fp.setDefaultValue(param.defaultValue());
+                    Property schema = createProperty(type);
+                    if (schema != null) {
+                        fp.setProperty(schema);
+                    }
+                    parameter = fp;
+                } else {
+                    QueryParameter fp = new QueryParameter().name(StringUtils.isBlank(param.value())
+                            ? _parameter.getName()
+                            : param.value());
+                    fp.setDefaultValue(param.defaultValue());
+                    Property schema = createProperty(type);
+                    if (schema != null) {
+                        fp.setProperty(schema);
+                    }
+                    parameter = fp;
                 }
-                parameter = fp;
             } else if (annotationType == PathVariable.class) {
                 PathVariable pathVar = (PathVariable) annotation;
                 PathParameter fp = new PathParameter().name(StringUtils.isBlank(pathVar.value())

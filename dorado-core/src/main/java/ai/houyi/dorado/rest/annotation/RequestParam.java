@@ -31,4 +31,5 @@ import java.lang.annotation.Target;
 @Target(PARAMETER)
 public @interface RequestParam {
 	String value() default "";
+    String defaultValue() default "";
 }

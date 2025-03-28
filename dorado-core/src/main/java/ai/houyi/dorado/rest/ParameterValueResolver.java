@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.alibaba.fastjson2.JSON;
 
+import ai.houyi.dorado.rest.annotation.RequestParam;
 import ai.houyi.dorado.rest.http.Cookie;
 import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.http.HttpResponse;
@@ -46,13 +47,15 @@ public interface ParameterValueResolver {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     ParameterValueResolver REQUEST_PARAM = (req, resp, methodDesc, methodParam, pathVariable) -> {
+        RequestParam reqParam = (RequestParam) methodParam.getAnnotation();
         TypeConverter converter = TypeConverters.resolveConverter(methodParam.getType());
         //如果没有合适的类型转换器且是对象类型的话，尝试将请求参数转换成指定对象
         if (converter == TypeConverter.DUMMY && TypeUtils.isSerializableType(methodParam.getType()) &&
                 req.getMethod().equalsIgnoreCase(HttpMethod.GET.name())) {
             return JSON.parseObject(JSON.toJSONString(req.getParameterMap()), methodParam.getType());
         }
-        return converter.convert(req.getParameter(methodParam.getName()));
+        String parameterValue = req.getParameter(methodParam.getName());
+        return converter.convert(parameterValue == null ? reqParam.defaultValue() : parameterValue);
     };
 
     @SuppressWarnings("unchecked")

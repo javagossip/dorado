@@ -19,6 +19,7 @@ import ai.houyi.dorado.rest.annotation.PathVariable;
 import ai.houyi.dorado.rest.annotation.RequestBody;
 import ai.houyi.dorado.rest.annotation.RequestParam;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 /**
  * @author wangweiping
@@ -34,6 +35,17 @@ public class ExampleController {
         Campaign campaign = new Campaign();
         campaign.setId(id);
         campaign.setName("test campaign");
+
+        return campaign;
+    }
+
+    @GET
+    @ApiOperation("根据id获取推广活动")
+    public Campaign getCampaignById(@RequestParam(defaultValue = "1124") int id) {
+        System.out.println("id: " + id);
+        Campaign campaign = new Campaign();
+        campaign.setId(id);
+        campaign.setName("Test getCampaignById, id: " + id);
 
         return campaign;
     }

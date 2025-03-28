@@ -23,65 +23,70 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import ai.houyi.dorado.rest.util.MethodDescriptor.MethodParameter;
-
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import ai.houyi.dorado.rest.util.MethodDescriptor;
+import ai.houyi.dorado.rest.util.MethodDescriptor.MethodParameter;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.models.Operation;
 import io.swagger.models.parameters.Parameter;
 
 /**
- * 
  * @author wangwp
  */
 public interface SwaggerExtension {
 
-	default public String extractOperationMethod(ApiOperation apiOperation, Method method,
-			Iterator<SwaggerExtension> chain) {
-		if (chain.hasNext()) {
-			return chain.next().extractOperationMethod(apiOperation, method, chain);
-		} else {
-			return null;
-		}
-	}
+    default public String extractOperationMethod(ApiOperation apiOperation,
+            Method method,
+            Iterator<SwaggerExtension> chain) {
+        if (chain.hasNext()) {
+            return chain.next().extractOperationMethod(apiOperation, method, chain);
+        } else {
+            return null;
+        }
+    }
 
-	default public List<Parameter> extractParameters(List<Annotation> annotations, Type type, Set<Type> typesToSkip,
-			Iterator<SwaggerExtension> chain) {
-		if (chain.hasNext()) {
-			return chain.next().extractParameters(annotations, type, typesToSkip, chain);
-		} else {
-			return Collections.emptyList();
-		}
-	}
+    default public List<Parameter> extractParameters(List<Annotation> annotations,
+            Type type,
+            Set<Type> typesToSkip,
+            Iterator<SwaggerExtension> chain) {
+        if (chain.hasNext()) {
+            return chain.next().extractParameters(annotations, type, typesToSkip, chain);
+        } else {
+            return Collections.emptyList();
+        }
+    }
 
-	default public void decorateOperation(Operation operation, Method method, Iterator<SwaggerExtension> chain) {
-		if (chain.hasNext()) {
-			chain.next().decorateOperation(operation, method, chain);
-		}
-	}
+    default public void decorateOperation(Operation operation, Method method, Iterator<SwaggerExtension> chain) {
+        if (chain.hasNext()) {
+            chain.next().decorateOperation(operation, method, chain);
+        }
+    }
 
-	default boolean shouldIgnoreClass(Class<?> cls) {
-		return false;
-	}
+    default boolean shouldIgnoreClass(Class<?> cls) {
+        return false;
+    }
 
-	default boolean shouldIgnoreType(Type type, Set<Type> typesToSkip) {
-		if (typesToSkip.contains(type)) {
-			return true;
-		}
-		if (shouldIgnoreClass(constructType(type).getRawClass())) {
-			typesToSkip.add(type);
-			return true;
-		}
-		return false;
-	}
+    default boolean shouldIgnoreType(Type type, Set<Type> typesToSkip) {
+        if (typesToSkip.contains(type)) {
+            return true;
+        }
+        if (shouldIgnoreClass(constructType(type).getRawClass())) {
+            typesToSkip.add(type);
+            return true;
+        }
+        return false;
+    }
 
-	default JavaType constructType(Type type) {
-		return TypeFactory.defaultInstance().constructType(type);
-	}
+    default JavaType constructType(Type type) {
+        return TypeFactory.defaultInstance().constructType(type);
+    }
 
-	public List<Parameter> extractParameters(List<Annotation> annotations, Type type, Set<Type> typesToSkip,
-			Iterator<SwaggerExtension> chain, MethodParameter methodParameter,String operationPath);
+    public List<Parameter> extractParameters(List<Annotation> annotations,
+            Type type,
+            Set<Type> typesToSkip,
+            Iterator<SwaggerExtension> chain,
+            MethodParameter methodParameter,
+            String operationPath,
+            String httpMethod);
 }

@@ -142,7 +142,6 @@ public class DoradoHttpRequest implements HttpRequest {
         if (this.parameterMap != null) {
             return this.parameterMap;
         }
-
         parameterMap = new HashMap<>();
         for (Entry<String, List<String>> entry : parameters.entrySet()) {
             if (entry.getValue().size() == 1) {

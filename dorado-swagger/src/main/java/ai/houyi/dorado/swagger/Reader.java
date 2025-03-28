@@ -887,8 +887,11 @@ public class Reader {
             Type[] genericParameterTypes = method.getGenericParameterTypes();
             for (int i = 0; i < genericParameterTypes.length; i++) {
                 final Type type = TypeFactory.defaultInstance().constructType(genericParameterTypes[i], cls);
-                List<Parameter> parameters =
-                        getParameters(type, Arrays.asList(paramAnnotations[i]), methodParameters[i], operationPath);
+                List<Parameter> parameters = getParameters(type,
+                        Arrays.asList(paramAnnotations[i]),
+                        methodParameters[i],
+                        operationPath,
+                        resolveHttpMethod(method));
 
                 for (Parameter parameter : parameters) {
                     operation.parameter(parameter);
@@ -898,8 +901,11 @@ public class Reader {
             for (int i = 0; i < annotatedMethod.getParameterCount(); i++) {
                 AnnotatedParameter param = annotatedMethod.getParameter(i);
                 final Type type = TypeFactory.defaultInstance().constructType(param.getParameterType(), cls);
-                List<Parameter> parameters =
-                        getParameters(type, Arrays.asList(paramAnnotations[i]), methodParameters[i], operationPath);
+                List<Parameter> parameters = getParameters(type,
+                        Arrays.asList(paramAnnotations[i]),
+                        methodParameters[i],
+                        operationPath,
+                        resolveHttpMethod(method));
 
                 for (Parameter parameter : parameters) {
                     operation.parameter(parameter);
@@ -920,7 +926,8 @@ public class Reader {
     private List<Parameter> getParameters(Type type,
             List<Annotation> annotations,
             MethodParameter methodParameter,
-            String operationPath) {
+            String operationPath,
+            String httpMethod) {
         final Iterator<SwaggerExtension> chain = SwaggerExtensions.chain();
         if (!chain.hasNext()) {
             return Collections.emptyList();
@@ -930,8 +937,13 @@ public class Reader {
         final SwaggerExtension extension = chain.next();
         LOGGER.debug("trying extension {}", extension);
 
-        final List<Parameter> parameters =
-                extension.extractParameters(annotations, type, typesToSkip, chain, methodParameter,operationPath);
+        final List<Parameter> parameters = extension.extractParameters(annotations,
+                type,
+                typesToSkip,
+                chain,
+                methodParameter,
+                operationPath,
+                httpMethod);
         if (!parameters.isEmpty()) {
             final List<Parameter> processed = new ArrayList<>(parameters.size());
             for (Parameter parameter : parameters) {
@@ -1004,6 +1016,23 @@ public class Reader {
             map.put(prop.mediaType(), prop.value());
         }
         return map;
+    }
+
+    public String resolveHttpMethod(Method method) {
+        if (method.getAnnotation(GET.class) != null) {
+            return "get";
+        } else if (method.getAnnotation(PUT.class) != null) {
+            return "put";
+        } else if (method.getAnnotation(POST.class) != null) {
+            return "post";
+        } else if (method.getAnnotation(DELETE.class) != null) {
+            return "delete";
+        } else if (method.getAnnotation(HttpMethod.class) != null) {
+            HttpMethod httpMethod = method.getAnnotation(HttpMethod.class);
+            return httpMethod.value().toLowerCase();
+        } else {
+            return null;
+        }
     }
 
     public String extractOperationMethod(ApiOperation apiOperation, Method method, Iterator<SwaggerExtension> chain) {

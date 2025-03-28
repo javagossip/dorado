@@ -40,7 +40,6 @@ public class FileUploadController {
 		System.out.println(file);
 		System.out.println(file.getContent().length);
 
-		// saveFile(file);
 		return file.getContent();
 	}
 
