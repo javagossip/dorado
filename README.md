@@ -33,7 +33,7 @@ Features
 
 ## Latest version
 
-**0.0.57**
+**0.0.61**
 
 Maven
 -----
@@ -42,7 +42,7 @@ Maven
 <dependency>
     <groupId>io.github.javagossip</groupId>
     <artifactId>dorado-core</artifactId>
-    <version>0.0.57</version>
+    <version>LATEST_VERSION</version>
 </dependency>
 ```
 
@@ -290,6 +290,7 @@ SpringBoot集成
     ```java
     @SpringBootApplication
     @EnableDorado       //用这个注解开启dorado server
+    @EnableSwagger     //用这个注解开启swagger
     public class SpringBootApplication {
 
         public static void main(String[] args) throws Exception {
@@ -298,18 +299,6 @@ SpringBoot集成
     }
     ```
 
-    或者直接使用DoradoSpringBootApplication来替换SpringBootApplication和EnableDorado,如下：
-    
-    ```java
-      @DoradoSpringBootApplication
-      public class SpringBootApplication {
-
-            public static void main(String[] args) throws Exception {
-                SpringApplication.run(SpringBootApplication.class, args);
-            }
-       }
-    ```
-    
 -   Dorado框架的spring-boot配置参数
 
 	|参数名|描述|默认值|
