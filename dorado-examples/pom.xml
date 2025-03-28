@@ -3,7 +3,7 @@
     <parent>
         <groupId>io.github.javagossip</groupId>
         <artifactId>dorado</artifactId>
-        <version>0.0.61</version>
+        <version>0.0.62-SNAPSHOT</version>
     </parent>
     <artifactId>dorado-examples</artifactId>
     <name>dorado-examples</name>
@@ -12,17 +12,17 @@
         <dependency>
             <groupId>io.github.javagossip</groupId>
             <artifactId>dorado-spring-boot-starter</artifactId>
-            <version>0.0.61</version>
+            <version>0.0.62-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>io.github.javagossip</groupId>
             <artifactId>dorado-swagger-ui</artifactId>
-            <version>0.0.61</version>
+            <version>0.0.62-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>io.github.javagossip</groupId>
             <artifactId>dorado-swagger-spring-boot-starter</artifactId>
-            <version>0.0.61</version>
+            <version>0.0.62-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
