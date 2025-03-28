@@ -16,7 +16,7 @@ public class ApiResponseWrapper implements MethodReturnValueHandler {
     @Override
     public boolean supportsReturnType(MethodDescriptor methodDescriptor) {
         Class<?> returnType = methodDescriptor.getReturnType();
-        return returnType != byte[].class && returnType != void.class && returnType != InputStream.class &&
-                returnType != ApiResponse.class && !TypeUtils.isProtobufMessage(returnType);
+        return returnType != byte[].class && returnType != InputStream.class && returnType != ApiResponse.class &&
+                !TypeUtils.isProtobufMessage(returnType);
     }
 }
