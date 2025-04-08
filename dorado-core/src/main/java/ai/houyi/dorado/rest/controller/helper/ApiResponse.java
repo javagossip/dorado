@@ -4,10 +4,11 @@ package ai.houyi.dorado.rest.controller.helper;
 public class ApiResponse {
 
     private static final int SUCCESS_CODE = 200;
+    private static final String DEFAULT_MESSAGE = "OK";
 
     //具体由业务来定义code, 如：200, 400, 500
     private int code = SUCCESS_CODE;
-    private String message = "OK";
+    private String message = DEFAULT_MESSAGE;
     private Object data;
 
     //json序列化需要无参构造函数
@@ -20,7 +21,7 @@ public class ApiResponse {
     }
 
     public ApiResponse(Object data) {
-        this(SUCCESS_CODE, null, data);
+        this(SUCCESS_CODE, DEFAULT_MESSAGE, data);
     }
 
     public ApiResponse(int code, String message, Object data) {
