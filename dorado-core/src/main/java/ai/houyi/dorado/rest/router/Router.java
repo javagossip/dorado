@@ -33,9 +33,12 @@ import java.util.regex.Pattern;
 
 import ai.houyi.dorado.exception.DoradoException;
 import ai.houyi.dorado.rest.annotation.HttpMethod;
+import ai.houyi.dorado.rest.http.Filter;
 import ai.houyi.dorado.rest.http.HttpRequest;
 import ai.houyi.dorado.rest.http.HttpResponse;
+import ai.houyi.dorado.rest.http.impl.FilterManager;
 import ai.houyi.dorado.rest.util.Assert;
+import ai.houyi.dorado.rest.util.SimpleLRUCache;
 import ai.houyi.dorado.rest.util.StringUtils;
 
 /**
@@ -53,6 +56,7 @@ public class Router {
 
     private final Set<Route> routes = new HashSet<>();
     private final Map<String, TrieNode> methodRoots = new HashMap<>();
+    private final SimpleLRUCache<String, RouteContext> routeCache = SimpleLRUCache.create(1024);
 
     private Router() {
         SUPPORTED_METHODS.forEach(method -> methodRoots.put(method, new TrieNode()));
@@ -112,6 +116,11 @@ public class Router {
 
     public RouteContext matchRoute(String path, String method) {
         //按照优先级匹配，先精确匹配，其次匹配带正则的路径变量，再匹配普通的路径变量，最后匹配通配符
+        String cacheKey = method + ":" + path;
+        RouteContext routeContext = routeCache.get(cacheKey);
+        if (routeContext != null) {
+            return routeContext;
+        }
         TrieNode current = methodRoots.get(method);
         String[] parts = StringUtils.splitTrim(path, PATH_SEPARATOR);
 
@@ -119,7 +128,9 @@ public class Router {
 
         TrieNode matchNode = matchNode(current, parts, 0, pathVars);
         if (matchNode != null && matchNode.route != null) {
-            return RouteContext.create(matchNode.route, pathVars);
+            routeContext = RouteContext.create(matchNode.route, pathVars, FilterManager.getInstance().match(path));
+            routeCache.put(cacheKey, routeContext);
+            return routeContext;
         }
         return null;
     }
@@ -181,7 +192,19 @@ public class Router {
                     request.getRequestURI(),
                     request.getMethod()));
         } else {
-            routeContext.route.handler.handle(request, response, routeContext.pathVars);
+            List<Filter> filters = routeContext.filters == null ? Collections.emptyList() : routeContext.filters;
+            try {
+                for (Filter filter : filters) {
+                    if (!filter.preFilter(request, response)) {
+                        return;
+                    }
+                }
+                routeContext.route.handler.handle(request, response, routeContext.pathVars);
+            } finally {
+                for (Filter filter : filters) {
+                    filter.postFilter(request, response);
+                }
+            }
         }
     }
 
@@ -189,14 +212,21 @@ public class Router {
 
         Route route;
         Map<String, String> pathVars;
+        List<Filter> filters;
 
         RouteContext(Route route, Map<String, String> pathVars) {
             this.route = route;
             this.pathVars = pathVars;
         }
 
-        static RouteContext create(Route route, Map<String, String> pathVars) {
-            return new RouteContext(route, pathVars);
+        RouteContext(Route route, Map<String, String> pathVars, List<Filter> filters) {
+            this.route = route;
+            this.pathVars = pathVars;
+            this.filters = filters;
+        }
+
+        static RouteContext create(Route route, Map<String, String> pathVars, List<Filter> filters) {
+            return new RouteContext(route, pathVars, filters);
         }
     }
 
