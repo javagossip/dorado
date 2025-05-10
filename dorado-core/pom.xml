@@ -3,7 +3,7 @@
     <parent>
         <groupId>io.github.javagossip</groupId>
         <artifactId>dorado</artifactId>
-        <version>0.0.68</version>
+        <version>0.0.69-SNAPSHOT</version>
     </parent>
     <artifactId>dorado-core</artifactId>
     <name>dorado-core</name>
