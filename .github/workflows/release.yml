@@ -38,6 +38,6 @@ jobs:
           </settings>
           EOF
       - name: Debug settings.xml
-        run: cat ~/.m2/settings.xml
+        run: cat ~/.m2/settings.xml && pwd
       - name: Publish to Maven Central
-        run: mvn release:prepare release:perform -B
+        run: ./mvnw release:prepare release:perform -B
