@@ -31,7 +31,6 @@ import ai.houyi.dorado.rest.http.MultipartFile;
 import ai.houyi.dorado.rest.util.LogUtils;
 import ai.houyi.dorado.rest.util.NetUtils;
 import ai.houyi.dorado.rest.util.StringUtils;
-import io.netty.buffer.ByteBufInputStream;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -56,7 +55,6 @@ public class DoradoHttpRequest implements HttpRequest {
 
     private final Map<String, List<String>> parameters;
 
-    private InputStream in;
     //original parameterMap
     private Map parameterMap;
 
