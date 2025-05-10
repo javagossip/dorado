@@ -46,6 +46,7 @@ import static ai.houyi.dorado.rest.http.impl.ChannelHolder.*;
  */
 public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
+    private static final String SWAGGER_UI_RESOURCE_PATH = "/swagger-ui";
     private final TracingThreadPoolExecutor asyncExecutor;
     private final Webapp webapp;
     private final DoradoStatus status;
@@ -98,7 +99,7 @@ public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpReq
             HttpResponse doradoHttpResponse = new DoradoHttpResponse(response);
 
             //这里增加一个特殊逻辑，用来处理swagger-ui的静态资源请求
-            if (doradoHttpRequest.getRequestURI().startsWith("/swagger-ui")) {
+            if (doradoHttpRequest.getRequestURI().startsWith(SWAGGER_UI_RESOURCE_PATH)) {
                 SwaggerUiResourceHandler.handle(doradoHttpRequest, doradoHttpResponse);
                 return;
             }
