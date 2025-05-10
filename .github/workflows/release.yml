@@ -9,7 +9,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
+      - name: Set up Git user
+        run: |
+          git config --global user.name "javagossip"
+          git config --global user.email "javagossip@gmail.com"
       - name: Set up Java and credentials
         uses: actions/setup-java@v4
         with:
