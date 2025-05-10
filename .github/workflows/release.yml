@@ -23,6 +23,7 @@ jobs:
           server-password: ${{ secrets.OSSRH_PASSWORD }}
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
-
+      - name: Debug settings.xml
+        run: cat ~/.m2/settings.xml
       - name: Publish to Maven Central
         run: mvn release:prepare release:perform -B
