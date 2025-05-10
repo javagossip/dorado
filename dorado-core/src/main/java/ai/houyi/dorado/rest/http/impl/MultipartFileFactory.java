@@ -15,26 +15,41 @@
  */
 package ai.houyi.dorado.rest.http.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+
 import ai.houyi.dorado.rest.http.MultipartFile;
 import io.netty.handler.codec.http.multipart.FileUpload;
 
 /**
  * @author weiping wang
- *
  */
 public final class MultipartFileFactory {
 
-	public static MultipartFile create(FileUpload fileUpload) {
-		try {
-			MultipartFile _file = new MultipartFile();
-			_file.setContent(fileUpload.get());
-			_file.setContentType(fileUpload.getContentType());
-			_file.setSize(fileUpload.length());
-			_file.setName(fileUpload.getFilename());
-			return _file;
-		} catch (Exception ex) {
-			// ignore exception
-		}
-		return null;
-	}
+    public static MultipartFile create(FileUpload fileUpload) {
+        if (!fileUpload.isCompleted()) {
+            throw new IllegalStateException("FileUpload is not completed");
+        }
+        try {
+            MultipartFile multipartFile = new MultipartFile();
+            multipartFile.setContent(fileUpload.isInMemory() ? fileUpload.get() : null);
+            multipartFile.setContentType(fileUpload.getContentType());
+            multipartFile.setSize(fileUpload.length());
+            multipartFile.setName(fileUpload.getFilename());
+            multipartFile.setStream(toInputStream(fileUpload));
+            return multipartFile;
+        } catch (Exception ex) {
+            // ignore exception
+        }
+        return null;
+    }
+
+    private static InputStream toInputStream(FileUpload fileUpload) throws IOException {
+        if (fileUpload.isInMemory()) {
+            return new ByteArrayInputStream(fileUpload.get());
+        }
+        return Files.newInputStream(fileUpload.getFile().toPath());
+    }
 }

@@ -15,61 +15,63 @@
  */
 package ai.houyi.dorado.rest.http;
 
+import ai.houyi.dorado.rest.util.IOUtils;
+
 import java.io.InputStream;
 
 /**
  * @author weiping wang
- *
  */
 public class MultipartFile {
-	private String name;
-	private String contentType;
-	private byte[] content;
-	private InputStream stream;
-	private long size;
 
-	public String getName() {
-		return name;
-	}
+    private String name;
+    private String contentType;
+    private byte[] content;
+    private InputStream stream;
+    private long size;
 
-	public long getSize() {
-		return size;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setSize(long size) {
-		this.size = size;
-	}
+    public long getSize() {
+        return size;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setSize(long size) {
+        this.size = size;
+    }
 
-	@Override
-	public String toString() {
-		return "MultipartFile [name=" + name + ", contentType=" + contentType + ", size=" + size + "]";
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getContentType() {
-		return contentType;
-	}
+    @Override
+    public String toString() {
+        return "MultipartFile [name=" + name + ", contentType=" + contentType + ", size=" + size + "]";
+    }
 
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
+    public String getContentType() {
+        return contentType;
+    }
 
-	public byte[] getContent() {
-		return content;
-	}
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
 
-	public void setContent(byte[] content) {
-		this.content = content;
-	}
+    public byte[] getContent() {
+        return content == null ? (getStream() != null ? IOUtils.readBytes(getStream()) : null) : content;
+    }
 
-	public InputStream getStream() {
-		return stream;
-	}
+    public void setContent(byte[] content) {
+        this.content = content;
+    }
 
-	public void setStream(InputStream stream) {
-		this.stream = stream;
-	}
+    public InputStream getStream() {
+        return stream;
+    }
+
+    public void setStream(InputStream stream) {
+        this.stream = stream;
+    }
 }
