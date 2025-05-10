@@ -77,7 +77,7 @@ public class DoradoHttpRequest implements HttpRequest {
         parameters.putAll(queryStringDecoder.parameters());
 
         if (request.method() == HttpMethod.POST) {
-            in = new ByteBufInputStream(request.content().duplicate());
+            //in = new ByteBufInputStream(request.content().duplicate());
             parseHttpPostRequest(request);
         }
     }
@@ -213,7 +213,7 @@ public class DoradoHttpRequest implements HttpRequest {
 
     @Override
     public InputStream getInputStream() {
-        return this.in;
+        throw new UnsupportedOperationException("getInputStream() is not supported");
     }
 
     public MultipartFile getFile() {
