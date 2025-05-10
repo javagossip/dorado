@@ -28,77 +28,74 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponseStatus;
 
 /**
- * 
  * @author wangwp
  */
 public class DoradoHttpResponse implements HttpResponse {
-	private final FullHttpResponse originalHttpResponse;
 
-	private OutputStream out;
-	private PrintWriter writer;
+    private final FullHttpResponse originalHttpResponse;
 
-	public DoradoHttpResponse(FullHttpResponse response) {
-		this.originalHttpResponse = response;
-	}
+    public DoradoHttpResponse(FullHttpResponse response) {
+        this.originalHttpResponse = response;
+    }
 
-	@Override
-	public void setHeader(String name, String value) {
-		originalHttpResponse.headers().set(name, value);
-	}
+    @Override
+    public void setHeader(String name, String value) {
+        originalHttpResponse.headers().set(name, value);
+    }
 
-	@Override
-	public void addHeader(String name, String value) {
-		originalHttpResponse.headers().add(name, value);
-	}
+    @Override
+    public void addHeader(String name, String value) {
+        originalHttpResponse.headers().add(name, value);
+    }
 
-	@Override
-	public void sendRedirect(String location) {
-		originalHttpResponse.setStatus(HttpResponseStatus.FOUND);
-		originalHttpResponse.headers().set(HttpHeaderNames.LOCATION, location);
-	}
+    @Override
+    public void sendRedirect(String location) {
+        originalHttpResponse.setStatus(HttpResponseStatus.FOUND);
+        originalHttpResponse.headers().set(HttpHeaderNames.LOCATION, location);
+    }
 
-	@Override
-	public void sendError(int sc, String msg) {
-		originalHttpResponse.setStatus(HttpResponseStatus.valueOf(sc, msg));
-	}
+    @Override
+    public void sendError(int sc, String msg) {
+        originalHttpResponse.setStatus(HttpResponseStatus.valueOf(sc, msg));
+    }
 
-	@Override
-	public void sendError(int sc) {
-		originalHttpResponse.setStatus(HttpResponseStatus.valueOf(sc));
-	}
+    @Override
+    public void sendError(int sc) {
+        originalHttpResponse.setStatus(HttpResponseStatus.valueOf(sc));
+    }
 
-	@Override
-	public void setStatus(int sc) {
-		originalHttpResponse.setStatus(HttpResponseStatus.valueOf(sc));
-	}
+    @Override
+    public void setStatus(int sc) {
+        originalHttpResponse.setStatus(HttpResponseStatus.valueOf(sc));
+    }
 
-	@Override
-	public OutputStream getOutputStream() throws IOException {
-		return out;
-	}
+    @Override
+    public OutputStream getOutputStream() throws IOException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public PrintWriter getWriter() throws IOException {
-		return writer;
-	}
+    @Override
+    public PrintWriter getWriter() throws IOException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void write(byte[] content) {
-		originalHttpResponse.content().writeBytes(content);
-	}
+    @Override
+    public void write(byte[] content) {
+        originalHttpResponse.content().writeBytes(content);
+    }
 
-	@Override
-	public void writeStringUtf8(String str) {
-		ByteBufUtil.writeUtf8(originalHttpResponse.content(), str);
-	}
+    @Override
+    public void writeStringUtf8(String str) {
+        ByteBufUtil.writeUtf8(originalHttpResponse.content(), str);
+    }
 
-	@Override
-	public void write(InputStream in) {
-		try {
-			originalHttpResponse.content().writeBytes(in, in.available());
-		} catch (IOException ex) {
-			throw new DoradoException(ex);
-		}
-	}
+    @Override
+    public void write(InputStream in) {
+        try {
+            originalHttpResponse.content().writeBytes(in, in.available());
+        } catch (IOException ex) {
+            throw new DoradoException(ex);
+        }
+    }
 
 }
