@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>io.github.javagossip</groupId>
 		<artifactId>dorado</artifactId>
-		<version>0.0.68-SNAPSHOT</version>
+		<version>0.0.68</version>
 	</parent>
 	<artifactId>dorado-spring-boot-starter</artifactId>
 	<name>dorado-spring-boot-starter</name>
@@ -27,7 +27,7 @@
 		<dependency>
 			<groupId>io.github.javagossip</groupId>
 			<artifactId>dorado-core</artifactId>
-			<version>0.0.68-SNAPSHOT</version>
+			<version>0.0.68</version>
 		</dependency>
 	</dependencies>
 </project>
