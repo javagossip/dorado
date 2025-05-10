@@ -30,9 +30,9 @@ jobs:
           <settings>
             <servers>
               <server>
-                <id>sonatype</id>
-                <username>${{ secrets.OSSRH_USERNAME }}</username>
-                <password>${{ secrets.OSSRH_PASSWORD }}</password>
+                <id>central</id>
+                <username>OsTrOzSm</username>
+                <password>6pJ/IabVdR2ggiJQaFQC6sSlZJ/icMxFLYevaWfOF1HI</password>
               </server>
             </servers>
           </settings>
