@@ -60,7 +60,13 @@ public class MultipartFile {
     }
 
     public byte[] getContent() {
-        return content == null ? (getStream() != null ? IOUtils.readBytes(getStream()) : null) : content;
+        if (content != null) {
+            return content;
+        }
+        if (getStream() != null) {
+            content = IOUtils.readBytes(getStream());
+        }
+        return content;
     }
 
     public void setContent(byte[] content) {
