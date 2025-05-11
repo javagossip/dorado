@@ -29,7 +29,7 @@ jobs:
       - name: Publish to Maven Central
         run: ./mvnw -X release:prepare release:perform -B Prelease -s $GITHUB_WORKSPACE/settings.xml
         env:
-            MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+            MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
             MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
             MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
