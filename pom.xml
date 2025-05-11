@@ -221,8 +221,10 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                         <configuration>
-                           <useAgent>false</useAgent>
+                           <useAgent>true</useAgent>
                             <gpgArguments>
+                                <arg>--batch</arg>
+                                <arg>--yes</arg>
                                 <arg>--pinentry-mode</arg>
                                 <arg>loopback</arg>
                             </gpgArguments>
