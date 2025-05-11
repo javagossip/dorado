@@ -8,6 +8,10 @@
     <artifactId>dorado-examples</artifactId>
     <name>dorado-examples</name>
     <description>the examples module for dorado</description>
+
+<!--    <build>-->
+<!--        <finalName>dorado-examples</finalName>-->
+<!--    </build>-->
     <dependencies>
         <dependency>
             <groupId>io.github.javagossip</groupId>
@@ -44,6 +48,7 @@
     </dependencyManagement>
 
     <build>
+        <finalName>dorado-examples</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
