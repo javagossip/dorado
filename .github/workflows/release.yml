@@ -19,26 +19,13 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
           server-id: central
-          server-username: ${{ secrets.OSSRH_USERNAME }}
-          server-password: ${{ secrets.OSSRH_PASSWORD }}
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_CENTRAL_TOKEN
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
-      - name: Create settings.xml with plaintext
-        run: |
-          mkdir -p ~/.m2
-          cat > ~/.m2/settings.xml <<EOF
-          <settings>
-            <servers>
-              <server>
-                <id>central</id>
-                <username>OsTrOzSm</username>
-                <password>6pJ/IabVdR2ggiJQaFQC6sSlZJ/icMxFLYevaWfOF1HI</password>
-                <!-- 6pJ/IabVdR2ggiJQaFQC6sSlZJ/icMxFLYevaWfOF1HI -->
-              </server>
-            </servers>
-          </settings>
-          EOF
-      - name: Debug settings.xml
-        run: cat ~/.m2/settings.xml && pwd
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Publish to Maven Central
         run: ./mvnw release:prepare release:perform -B
+        env:
+            MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+            MAVEN_CENTRAL_TOKEN: ${{ secrets.OSSRH_PASSWORD }}
+            MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
