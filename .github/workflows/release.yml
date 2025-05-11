@@ -28,3 +28,5 @@ jobs:
         run: cat $GITHUB_WORKSPACE/settings.xml
       - name: Publish to Maven Central
         run: ./mvnw release:prepare release:perform -B -s $GITHUB_WORKSPACE/settings.xml
+        env:
+            GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
