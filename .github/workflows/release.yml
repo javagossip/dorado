@@ -27,7 +27,7 @@ jobs:
       - name: Debug maven settings.xml
         run: cat $GITHUB_WORKSPACE/settings.xml
       - name: Publish to Maven Central
-        run: ./mvnw release:prepare release:perform -B -s $GITHUB_WORKSPACE/settings.xml
+        run: ./mvnw release:prepare release:perform -B Prelease -s $GITHUB_WORKSPACE/settings.xml
         env:
             MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
             MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
