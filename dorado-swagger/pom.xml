@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>io.github.javagossip</groupId>
 		<artifactId>dorado</artifactId>
-		<version>0.0.80-SNAPSHOT</version>
+		<version>0.0.80</version>
 	</parent>
 	<artifactId>dorado-swagger</artifactId>
 	<name>dorado-swagger</name>
@@ -12,7 +12,7 @@
 		<dependency>
 			<groupId>io.github.javagossip</groupId>
 			<artifactId>dorado-core</artifactId>
-			<version>0.0.80-SNAPSHOT</version>
+			<version>0.0.80</version>
 		</dependency>
         <dependency>
             <groupId>io.swagger</groupId>
