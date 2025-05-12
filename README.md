@@ -33,7 +33,7 @@ Features
 
 ## Latest version
 
-**0.0.61**
+**0.0.82**
 
 Maven
 -----
@@ -183,7 +183,7 @@ public String uploadFile(MultipartFile[] fs,String name) {
 	```java
 	@ExceptionAdvice
 	public class TestExceptionAdvice {
-
+	
 		@ExceptionType(MyException.class)
 		@Status(400) //Status注解来指定http响应状态码
 		public String handleException(MyException ex) {
@@ -195,7 +195,7 @@ public String uploadFile(MultipartFile[] fs,String name) {
 			return "use default exception handler,cause: " + ex.getClass().getName() + "," + ex.getMessage();
 		}
 	}
-
+	
 	```
 	
 -	全局统一响应格式处理  
@@ -214,7 +214,7 @@ public String uploadFile(MultipartFile[] fs,String name) {
 	
 	```java
 	public class TestMethodReturnValueHandler implements MethodReturnValueHandler {
-
+	
 		@Override
 		public Object handleMethodReturnValue(Object value, MethodDescriptor methodDescriptor) {
 			return TestResp.builder().withCode(0).withMsg("OK").withData(value).build();
@@ -398,9 +398,9 @@ public class CampaignController {
 
 	```xml
 	<dependency>
-  		<groupId>io.github.javagossip</groupId>
-  		<artifactId>dorado-swagger-spring-boot-starter</artifactId>
-  		<version>${dorado.version}</version>
+		<groupId>io.github.javagossip</groupId>
+		<artifactId>dorado-swagger-spring-boot-starter</artifactId>
+		<version>${dorado.version}</version>
 	</dependency> 
 	```
 	
@@ -425,3 +425,4 @@ public class CampaignController {
 
 性能测试
 --------
+

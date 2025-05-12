@@ -17,6 +17,7 @@ package ai.houyi.dorado.rest.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -24,7 +25,9 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 
 import ai.houyi.dorado.exception.DoradoException;
@@ -40,10 +43,12 @@ public class PackageScanner {
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             Enumeration<URL> urls = classLoader.getResources(packageName.replace('.', '/'));
             while (urls.hasMoreElements()) {
-                URI uri = urls.nextElement().toURI();
+                URL resourceUrl = urls.nextElement();
+                URI uri = resourceUrl.toURI();
                 switch (uri.getScheme().toLowerCase()) {
                     case "jar":
-                        scanFromJarProtocol(classLoader, classes, uri.getRawSchemeSpecificPart());
+                        //scanFromJarProtocol(classLoader, classes, uri.getRawSchemeSpecificPart());
+                        scanClassesInJar(classLoader, classes, resourceUrl);
                         break;
                     case "file":
                         scanFromFileProtocol(classLoader, classes, new File(uri).getPath(), packageName);
@@ -52,16 +57,36 @@ public class PackageScanner {
                         throw new URISyntaxException(uri.getScheme(), "unknown schema " + uri.getScheme());
                 }
             }
-        } catch (URISyntaxException | IOException e) {
-            e.printStackTrace();
+        } catch (URISyntaxException | IOException ex) {
+            throw new DoradoException("Scan package error, packageName: " + packageName, ex);
         }
         return classes;
     }
 
-    private static Class<?> loadClass(ClassLoader loader, String classPath) {
+    private static void scanClassesInJar(ClassLoader classLoader, List<Class<?>> classes, URL jarUrl) throws
+            IOException {
+        JarURLConnection jarURLConnection = (JarURLConnection) jarUrl.openConnection();
+        JarFile jarFile = jarURLConnection.getJarFile();
+
+        Enumeration<JarEntry> entries = jarFile.entries();
+        while (entries.hasMoreElements()) {
+            JarEntry entry = entries.nextElement();
+            String entryName = entry.getName();
+
+            if (entryName.endsWith(Constant.CLASS_SUFFIX)) {
+                String className = entryName.replace('/', '.');
+                classes.add(loadClass(classLoader, className));
+            }
+        }
+        jarFile.close();
+    }
+
+    private static Class<?> loadClass(ClassLoader loader, String className) {
         try {
-            classPath = classPath.substring(0, classPath.length() - 6);
-            return loader.loadClass(classPath);
+            className = className.endsWith(Constant.CLASS_SUFFIX)
+                    ? className.substring(0, className.length() - 6)
+                    : className;
+            return loader.loadClass(className);
         } catch (Throwable cause) {
             LogUtils.error("", cause);
         }
@@ -83,36 +108,6 @@ public class PackageScanner {
             });
         } catch (Exception ex) {
             throw new DoradoException(ex);
-        }
-    }
-
-    private static void scanFromJarProtocol(ClassLoader loader, List<Class<?>> classes, String fullPath) {
-        final String jar = fullPath.substring(0, fullPath.indexOf('!'));
-        final String parent = fullPath.substring(fullPath.indexOf('!') + 2).replace("!", "");
-        JarEntry e;
-
-        JarInputStream jarReader = null;
-        try {
-            jarReader = new JarInputStream(URI.create(jar).toURL().openStream());
-            while ((e = jarReader.getNextJarEntry()) != null) {
-                String className = e.getName();
-                if (!e.isDirectory() && className.startsWith(parent) && className.endsWith(Constant.CLASS_SUFFIX) &&
-                        !className.contains("$")) {
-                    className = className.replace('/', '.').replace("BOOT-INF.classes.", "").replace("BOOT-INF.lib", "");
-                    classes.add(loadClass(loader, className));
-                }
-                jarReader.closeEntry();
-            }
-        } catch (IOException error) {
-            error.printStackTrace();
-        } finally {
-            try {
-                if (jarReader != null) {
-                    jarReader.close();
-                }
-            } catch (IOException exp) {
-                exp.printStackTrace();
-            }
         }
     }
 
