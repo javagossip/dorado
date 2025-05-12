@@ -15,7 +15,7 @@
  */
 package ai.houyi.dorado.spring;
 
-import java.util.logging.Filter;
+import ai.houyi.dorado.rest.http.Filter;
 
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
@@ -27,33 +27,35 @@ import org.springframework.core.type.filter.AssignableTypeFilter;
 import ai.houyi.dorado.rest.annotation.Controller;
 
 /**
- * 
  * @author wangwp
  */
 public class DoradoClassPathBeanDefinitionScanner extends ClassPathBeanDefinitionScanner {
 
-	public DoradoClassPathBeanDefinitionScanner(BeanDefinitionRegistry registry, boolean useDefaultFilters,
-			Environment environment, ResourceLoader resourceLoader) {
-		super(registry, useDefaultFilters, environment, resourceLoader);
-	}
+    public DoradoClassPathBeanDefinitionScanner(BeanDefinitionRegistry registry,
+            boolean useDefaultFilters,
+            Environment environment,
+            ResourceLoader resourceLoader) {
+        super(registry, useDefaultFilters, environment, resourceLoader);
+    }
 
-	public DoradoClassPathBeanDefinitionScanner(BeanDefinitionRegistry registry, boolean useDefaultFilters,
-			Environment environment) {
-		super(registry, useDefaultFilters, environment);
-	}
+    public DoradoClassPathBeanDefinitionScanner(BeanDefinitionRegistry registry,
+            boolean useDefaultFilters,
+            Environment environment) {
+        super(registry, useDefaultFilters, environment);
+    }
 
-	public DoradoClassPathBeanDefinitionScanner(BeanDefinitionRegistry registry, boolean useDefaultFilters) {
-		super(registry, useDefaultFilters);
-	}
+    public DoradoClassPathBeanDefinitionScanner(BeanDefinitionRegistry registry, boolean useDefaultFilters) {
+        super(registry, useDefaultFilters);
+    }
 
-	public DoradoClassPathBeanDefinitionScanner(BeanDefinitionRegistry registry) {
-		super(registry);
-	}
+    public DoradoClassPathBeanDefinitionScanner(BeanDefinitionRegistry registry) {
+        super(registry);
+    }
 
-	@Override
-	protected void registerDefaultFilters() {
-		super.registerDefaultFilters();
-		this.addIncludeFilter(new AnnotationTypeFilter(Controller.class));
-		this.addIncludeFilter(new AssignableTypeFilter(Filter.class));
-	}
+    @Override
+    protected void registerDefaultFilters() {
+        super.registerDefaultFilters();
+        this.addIncludeFilter(new AnnotationTypeFilter(Controller.class));
+        this.addIncludeFilter(new AssignableTypeFilter(Filter.class));
+    }
 }
