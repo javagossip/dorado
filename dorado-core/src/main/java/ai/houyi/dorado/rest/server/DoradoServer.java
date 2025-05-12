@@ -21,6 +21,7 @@ import ai.houyi.dorado.rest.util.ClassLoaderUtils;
 import ai.houyi.dorado.rest.util.LogUtils;
 import ai.houyi.dorado.spring.SpringContainer;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -70,6 +71,7 @@ public class DoradoServer {
             bootstrap.childOption(ChannelOption.TCP_NODELAY, true);
             bootstrap.childOption(ChannelOption.SO_SNDBUF, builder.getSendBuffer());
             bootstrap.childOption(ChannelOption.SO_RCVBUF, builder.getRecvBuffer());
+            bootstrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
 
             ChannelFuture f = bootstrap.bind(builder.getPort()).sync();
             LogUtils.info(String.format("Dorado application initialized with port: %d (http)", builder.getPort()));
@@ -85,9 +87,11 @@ public class DoradoServer {
     static class DoradoChannelInitializer extends ChannelInitializer<Channel> {
 
         private final DoradoServerBuilder builder;
+        private final DoradoServerHandler doradoServerHandler;
 
         public DoradoChannelInitializer(DoradoServerBuilder builder) {
             this.builder = builder;
+            this.doradoServerHandler = DoradoServerHandler.create(builder);
         }
 
         @Override
@@ -97,7 +101,7 @@ public class DoradoServer {
             pipeline.addLast(new HttpServerCodec());
             pipeline.addLast(new HttpObjectAggregator(builder.getMaxPacketLength()));
             pipeline.addLast(new IdleStateHandler(builder.getMaxIdleTime(), 0, 0));
-            pipeline.addLast(DoradoServerHandler.create(builder));
+            pipeline.addLast(doradoServerHandler);
         }
     }
 }

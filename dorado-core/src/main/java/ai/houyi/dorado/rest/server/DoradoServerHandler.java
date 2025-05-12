@@ -29,6 +29,7 @@ import ai.houyi.dorado.rest.util.TracingThreadPoolExecutor;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
@@ -44,6 +45,7 @@ import static ai.houyi.dorado.rest.http.impl.ChannelHolder.*;
 /**
  * @author wangwp
  */
+@Sharable
 public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     private static final String SWAGGER_UI_RESOURCE_PATH = "/swagger-ui";
