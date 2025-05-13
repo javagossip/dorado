@@ -314,8 +314,8 @@ SpringBoot集成
 	| dorado.send-buffer         |    send buffer size    |   256k   |
 	| dorado.recv-buffer         |    recv buffer size    |   256k   |
 	| dorado.max-idle-time       |        连接最大空闲时间        |    8h    |
-	| dorado.max-packet-length   |       http请求包体大小       |    1M    |
-- | dorado.virtual-threads-on  |        是否启用虚拟线程        |  false   |
+	| dorado.max-packet-length   |       http请求包体大小       |    1M    | 
+    | dorado.virtual-threads-on  |        是否启用虚拟线程        |  false   |
 	
 swagger集成
 -----------
