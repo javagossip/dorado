@@ -19,6 +19,7 @@ package ai.houyi.dorado.springboot;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.Executors;
 
 import javax.annotation.PostConstruct;
 
@@ -80,6 +81,10 @@ public class DoradoAutoConfiguration {
                 .maxPacketLength(config.getMaxPacketLength())
                 .contextPath(config.getContextPath());
 
+        if (config.isVirtualThreadsOn()) {
+            LogUtils.info("Dorado server use virtual threads as worker threads");
+            builder.workerExecutor(config.getVirtualThreadExecutor());
+        }
         String[] scanPackages = config.getScanPackages();
         if (config.getScanPackages() == null || config.getScanPackages().length == 0) {
             scanPackages = getSpringBootAppScanPackages();

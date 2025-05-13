@@ -16,16 +16,35 @@
 
 package ai.houyi.dorado.springboot;
 
+import ai.houyi.dorado.rest.util.VirtualThreadPerTaskExecutorReflectionFactory;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import ai.houyi.dorado.rest.util.Constant;
 import ai.houyi.dorado.rest.util.StringUtils;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * @author weiping wang
  */
 @ConfigurationProperties("dorado")
 public class DoradoConfig {
+
+    private static boolean vmSupportVirtualThreads = false;
+    private static ExecutorService virtualThreadExecutor;
+
+    static {
+        try {
+            Thread.class.getMethod("ofVirtual").invoke(null);
+            virtualThreadExecutor = VirtualThreadPerTaskExecutorReflectionFactory.create("dorado-virtual-thread-pool");
+            vmSupportVirtualThreads = true;
+        } catch (Throwable ex) {
+            // ignore this error
+        }
+    }
 
     private int port = 18888;
     private boolean debug = false;
@@ -45,8 +64,14 @@ public class DoradoConfig {
     private int recvBuffer = Constant.DEFAULT_RECV_BUFFER_SIZE;
     private int maxPacketLength = Constant.DEFAULT_MAX_PACKET_LENGTH;
     private String contextPath = StringUtils.EMPTY;
+    //是否启用虚拟线程
+    private boolean virtualThreadsOn;
 
     private String[] scanPackages;
+
+    public void setVirtualThreadsOn(boolean virtualThreadsOn) {
+        this.virtualThreadsOn = virtualThreadsOn;
+    }
 
     public int getBacklog() {
         return backlog;
@@ -172,4 +197,11 @@ public class DoradoConfig {
                 sendBuffer + ", recvBuffer=" + recvBuffer + ", maxPacketLength=" + maxPacketLength + "]";
     }
 
+    public boolean isVirtualThreadsOn() {
+        return vmSupportVirtualThreads && virtualThreadsOn;
+    }
+
+    public ExecutorService getVirtualThreadExecutor() {
+        return virtualThreadExecutor;
+    }
 }

@@ -23,7 +23,7 @@ public class ChannelHolder {
     private ChannelHolder() {
     }
 
-    public static final ThreadLocal<Channel> _channelHolder = new ThreadLocal<Channel>();
+    public static final ThreadLocal<Channel> _channelHolder = new ThreadLocal<>();
 
     public static void set(Channel channel) {
         _channelHolder.set(channel);

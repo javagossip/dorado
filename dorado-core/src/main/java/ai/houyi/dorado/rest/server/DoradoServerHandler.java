@@ -25,7 +25,6 @@ import ai.houyi.dorado.rest.http.impl.Webapp;
 import ai.houyi.dorado.rest.util.ExceptionUtils;
 import ai.houyi.dorado.rest.util.LogUtils;
 import ai.houyi.dorado.rest.util.StringUtils;
-import ai.houyi.dorado.rest.util.TracingThreadPoolExecutor;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -40,6 +39,8 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.timeout.IdleStateEvent;
 
+import java.util.concurrent.ExecutorService;
+
 import static ai.houyi.dorado.rest.http.impl.ChannelHolder.*;
 
 /**
@@ -49,13 +50,13 @@ import static ai.houyi.dorado.rest.http.impl.ChannelHolder.*;
 public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     private static final String SWAGGER_UI_RESOURCE_PATH = "/swagger-ui";
-    private final TracingThreadPoolExecutor asyncExecutor;
+    private final ExecutorService workerExecutor;
     private final Webapp webapp;
     private final DoradoStatus status;
 
     private DoradoServerHandler(DoradoServerBuilder builder) {
         this.webapp = Webapp.get();
-        this.asyncExecutor = builder.executor();
+        this.workerExecutor = builder.executor();
         this.status = DoradoStatus.get();
     }
 
@@ -66,12 +67,13 @@ public class DoradoServerHandler extends SimpleChannelInboundHandler<FullHttpReq
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
         status.totalRequestsIncrement();
-        if (asyncExecutor == null) {
+        if (workerExecutor == null) {
             handleHttpRequest(ctx, msg);
             return;
         }
+
         FullHttpRequest retainMsg = msg.retain();
-        asyncExecutor.execute(() -> {
+        workerExecutor.execute(() -> {
             try {
                 handleHttpRequest(ctx, retainMsg);
             } finally {
