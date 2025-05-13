@@ -93,11 +93,17 @@ public class DoradoStatus {
     }
 
     public int getWorkerPoolSize() {
+        if (workerPool == null) {
+            return 0;
+        }
         this.workerPoolSize = workerPool.getPoolSize();
         return workerPoolSize;
     }
 
     public int getActivePoolSize() {
+        if (workerPool == null) {
+            return 0;
+        }
         this.activePoolSize = workerPool.getActiveCount();
         return activePoolSize;
     }
