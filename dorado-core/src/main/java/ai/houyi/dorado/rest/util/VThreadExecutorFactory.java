@@ -8,11 +8,11 @@ import java.util.concurrent.ThreadFactory;
 
 import ai.houyi.dorado.exception.DoradoException;
 
-public class VirtualThreadPerTaskExecutorReflectionFactory {
+public class VThreadExecutorFactory {
 
     public static ExecutorService create(String name) {
         try {
-            ThreadFactory factory = createVirtualThreadFactory(name);
+            ThreadFactory factory = createVThreadFactory(name);
             if (factory == null) {
                 throw new IllegalStateException("Failed to create virtual thread factory");
             }
@@ -23,7 +23,7 @@ public class VirtualThreadPerTaskExecutorReflectionFactory {
         }
     }
 
-    public static ThreadFactory createVirtualThreadFactory(String name) throws
+    public static ThreadFactory createVThreadFactory(String name) throws
             NoSuchMethodException,
             InvocationTargetException,
             IllegalAccessException,

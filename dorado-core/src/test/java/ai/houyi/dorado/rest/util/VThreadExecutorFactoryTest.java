@@ -8,22 +8,22 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class VirtualThreadPerTaskExecutorReflectionFactoryTest {
+public class VThreadExecutorFactoryTest {
 
     @Test
     public void createShouldReturnExecutorServiceWhenMethodExists() {
-        ExecutorService executorService = VirtualThreadPerTaskExecutorReflectionFactory.create("dorado-vt-worker");
+        ExecutorService executorService = VThreadExecutorFactory.create("dorado-vt-worker");
         assertNotNull(executorService);
     }
 
     @Test
-    public void createVirtualThreadFactory() throws
+    public void createVThreadFactory() throws
             InvocationTargetException,
             NoSuchMethodException,
             IllegalAccessException,
             ClassNotFoundException {
         ThreadFactory threadFactory =
-                VirtualThreadPerTaskExecutorReflectionFactory.createVirtualThreadFactory("test-thread");
+                VThreadExecutorFactory.createVThreadFactory("test-thread");
         assertNotNull(threadFactory);
     }
 }

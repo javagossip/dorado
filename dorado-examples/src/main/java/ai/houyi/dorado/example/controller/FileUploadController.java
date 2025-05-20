@@ -19,38 +19,39 @@ import ai.houyi.dorado.rest.annotation.Controller;
 import ai.houyi.dorado.rest.annotation.POST;
 import ai.houyi.dorado.rest.annotation.Path;
 import ai.houyi.dorado.rest.annotation.Produce;
+import ai.houyi.dorado.rest.annotation.RequestParam;
 import ai.houyi.dorado.rest.http.MultipartFile;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
  * @author weiping wang
- *
  */
 @Controller
 @Path("/file/upload")
-@Api(tags = { "文件上传" })
+@Api(tags = {"文件上传"})
 public class FileUploadController {
 
-	@Produce("image/jpeg")
-	@POST
-	@Path("/single")
-	@ApiOperation("文件上传测试")
-	public byte[] upload(MultipartFile file) {
-		System.out.println(file);
-		System.out.println(file.getContent().length);
+    @Produce("image/jpeg")
+    @POST
+    @Path("/single")
+    @ApiOperation("文件上传测试")
+    public byte[] upload(MultipartFile file, @RequestParam("name") String name) {
+        System.out.println(file);
+        System.out.println(file.getContent().length);
 
-		return file.getContent();
-	}
+        System.out.println("Parameter name: " + name);
+        return file.getContent();
+    }
 
-	@POST
-	@Path("/multi")
-	@ApiOperation("多文件上传")
-	@Produce("application/json")
-	public String multiUpload(MultipartFile[] files) {
-		for (MultipartFile mf : files) {
-			System.out.println(mf.getName() + "," + mf.getContentType());
-		}
-		return "OK";
-	}
+    @POST
+    @Path("/multi")
+    @ApiOperation("多文件上传")
+    @Produce("application/json")
+    public String multiUpload(MultipartFile[] files) {
+        for (MultipartFile mf : files) {
+            System.out.println(mf.getName() + "," + mf.getContentType());
+        }
+        return "OK";
+    }
 }

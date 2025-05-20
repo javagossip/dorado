@@ -16,7 +16,7 @@
 
 package ai.houyi.dorado.springboot;
 
-import ai.houyi.dorado.rest.util.VirtualThreadPerTaskExecutorReflectionFactory;
+import ai.houyi.dorado.rest.util.VThreadExecutorFactory;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -24,8 +24,6 @@ import ai.houyi.dorado.rest.util.Constant;
 import ai.houyi.dorado.rest.util.StringUtils;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 /**
  * @author weiping wang
@@ -39,7 +37,7 @@ public class DoradoConfig {
     static {
         try {
             Thread.class.getMethod("ofVirtual").invoke(null);
-            virtualThreadExecutor = VirtualThreadPerTaskExecutorReflectionFactory.create("dorado-virtual-thread-pool");
+            virtualThreadExecutor = VThreadExecutorFactory.create("dorado-virtual-thread-pool");
             vmSupportVirtualThreads = true;
         } catch (Throwable ex) {
             // ignore this error
